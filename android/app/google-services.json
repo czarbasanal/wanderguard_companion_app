@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "740065181238",
+    "project_id": "wanderguard-1e83a",
+    "storage_bucket": "wanderguard-1e83a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:740065181238:android:8d80f2c1fde86e6813e297",
+        "android_client_info": {
+          "package_name": "com.example.wanderguard_companion_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDejbQ4MsFeh6gu0MTLg6rXNxTzj3Cb5QY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

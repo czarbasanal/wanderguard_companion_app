@@ -1,0 +1,318 @@
+{
+  "formName": "Registration",
+  "title": "Sign Up",
+  "description": "Hey, get on board",
+  "image": "",
+  "formType": "multi",
+  "step": {
+    "form1": {
+      "formName": "personalDetails",
+      "title": "Personal Details",
+      "description": "Please enter your personal details.",
+      "formFields": [
+        {
+          "elementType": "input",
+          "elementConfig": {
+            "type": "text",
+            "name": "first_name",
+            "label": "First Name",
+            "placeholder": "First Name",
+            "class": "form-control",
+            "resetIcon": true
+          },
+          "value": "",
+          "validation": {
+            "required": true,
+            "minLength": 2,
+            "maxLength": 50,
+            "isReadOnly": false,
+            "isDisabled": false,
+            "errorMessage": {
+              "required": "Please enter your first name",
+              "minLength": "Minimum 2 characters required",
+              "maxLength": "Maximum 50 characters allowed"
+            }
+          },
+          "valid": true,
+          "onchange": false
+        },
+        {
+          "elementType": "input",
+          "elementConfig": {
+            "type": "text",
+            "name": "last_name",
+            "label": "Last Name",
+            "placeholder": "Last Name",
+            "class": "form-control",
+            "resetIcon": true
+          },
+          "value": "",
+          "validation": {
+            "required": true,
+            "minLength": 2,
+            "maxLength": 50,
+            "isReadOnly": false,
+            "isDisabled": false,
+            "errorMessage": {
+              "required": "Please enter your last name",
+              "minLength": "Minimum 2 characters required",
+              "maxLength": "Maximum 50 characters allowed"
+            }
+          },
+          "valid": true,
+          "onchange": false
+        },
+        {
+          "elementType": "input",
+          "elementConfig": {
+            "type": "tel",
+            "name": "contact_no",
+            "label": "Contact Number",
+            "placeholder": "Contact Number",
+            "class": "form-control",
+            "resetIcon": true
+          },
+          "value": "",
+          "validation": {
+            "required": true,
+            "minLength": 10,
+            "maxLength": 15,
+            "isReadOnly": false,
+            "isDisabled": false,
+            "errorMessage": {
+              "required": "Please enter your contact number",
+              "minLength": "Minimum 10 digits required",
+              "maxLength": "Maximum 15 digits allowed"
+            }
+          },
+          "valid": true,
+          "onchange": false
+        }
+      ]
+    },
+    "form2": {
+      "formName": "address",
+      "title": "Address",
+      "description": "Please enter your complete address.",
+      "formFields": [
+        {
+          "elementType": "input",
+          "elementConfig": {
+            "type": "text",
+            "name": "street_address",
+            "label": "Street Address",
+            "placeholder": "Street Address",
+            "class": "form-control",
+            "resetIcon": true
+          },
+          "value": "",
+          "validation": {
+            "required": true,
+            "minLength": 5,
+            "maxLength": 100,
+            "isReadOnly": false,
+            "isDisabled": false,
+            "errorMessage": {
+              "required": "Please enter your street address",
+              "minLength": "Minimum 5 characters required",
+              "maxLength": "Maximum 100 characters allowed"
+            }
+          },
+          "valid": true,
+          "onchange": false
+        },
+        {
+          "elementType": "input",
+          "elementConfig": {
+            "type": "text",
+            "name": "city",
+            "label": "City",
+            "placeholder": "City",
+            "class": "form-control",
+            "resetIcon": true
+          },
+          "value": "",
+          "validation": {
+            "required": true,
+            "minLength": 2,
+            "maxLength": 50,
+            "isReadOnly": false,
+            "isDisabled": false,
+            "errorMessage": {
+              "required": "Please enter your city",
+              "minLength": "Minimum 2 characters required",
+              "maxLength": "Maximum 50 characters allowed"
+            }
+          },
+          "valid": true,
+          "onchange": false
+        },
+        {
+          "elementType": "input",
+          "elementConfig": {
+            "type": "text",
+            "name": "state",
+            "label": "State",
+            "placeholder": "State",
+            "class": "form-control",
+            "resetIcon": true
+          },
+          "value": "",
+          "validation": {
+            "required": true,
+            "minLength": 2,
+            "maxLength": 50,
+            "isReadOnly": false,
+            "isDisabled": false,
+            "errorMessage": {
+              "required": "Please enter your state",
+              "minLength": "Minimum 2 characters required",
+              "maxLength": "Maximum 50 characters allowed"
+            }
+          },
+          "valid": true,
+          "onchange": false
+        },
+        {
+          "elementType": "input",
+          "elementConfig": {
+            "type": "text",
+            "name": "postal_code",
+            "label": "Postal Code",
+            "placeholder": "Postal Code",
+            "class": "form-control",
+            "resetIcon": true
+          },
+          "value": "",
+          "validation": {
+            "required": true,
+            "minLength": 4,
+            "maxLength": 4,
+            "isReadOnly": false,
+            "isDisabled": false,
+            "errorMessage": {
+              "required": "Please enter your postal code",
+              "minLength": "Minimum 4 characters required",
+              "maxLength": "Maximum 4 characters allowed"
+            }
+          },
+          "valid": true,
+          "onchange": false
+        },
+        {
+          "elementType": "select",
+          "elementConfig": {
+            "name": "country",
+            "label": "Country",
+            "placeholder": "Country",
+            "class": "form-control",
+            "options": [
+              {
+                "value": "ph",
+                "displayValue": "Philippines"
+              }
+            ],
+            "isMulitpleSelect": false
+          },
+          "value": "",
+          "validation": {
+            "required": true,
+            "isReadOnly": false,
+            "isDisabled": false,
+            "errorMessage": {
+              "required": "Please select your country"
+            }
+          },
+          "valid": false
+        }
+      ]
+    },
+    "form3": {
+      "formName": "accountDetails",
+      "title": "Account Details",
+      "description": "Please enter your account details.",
+      "formFields": [
+        {
+          "elementType": "input",
+          "elementConfig": {
+            "type": "email",
+            "name": "email",
+            "label": "Email",
+            "placeholder": "Email",
+            "class": "form-control",
+            "resetIcon": true
+          },
+          "value": "",
+          "validation": {
+            "required": true,
+            "isEmail": true,
+            "maxLength": 50,
+            "rejex": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+            "isReadOnly": false,
+            "isDisabled": false,
+            "errorMessage": {
+              "required": "Please enter your email",
+              "maxLength": "Maximum 50 characters allowed",
+              "rejex": "Please enter a valid email"
+            }
+          },
+          "valid": true,
+          "onchange": false
+        },
+        {
+          "elementType": "input",
+          "elementConfig": {
+            "type": "password",
+            "name": "password",
+            "label": "Password",
+            "placeholder": "Password",
+            "class": "form-control",
+            "resetIcon": true
+          },
+          "value": "",
+          "validation": {
+            "required": true,
+            "minLength": 6,
+            "maxLength": 50,
+            "isReadOnly": false,
+            "isDisabled": false,
+            "errorMessage": {
+              "required": "Please enter your password",
+              "minLength": "Minimum 6 characters required",
+              "maxLength": "Maximum 50 characters allowed"
+            }
+          },
+          "valid": true,
+          "onchange": false
+        },
+        {
+          "elementType": "input",
+          "elementConfig": {
+            "type": "password",
+            "name": "confirm_password",
+            "label": "Confirm Password",
+            "placeholder": "Confirm Password",
+            "class": "form-control",
+            "resetIcon": true
+          },
+          "value": "",
+          "validation": {
+            "required": true,
+            "minLength": 6,
+            "maxLength": 50,
+            "isReadOnly": false,
+            "isDisabled": false,
+            "errorMessage": {
+              "required": "Please confirm your password",
+              "minLength": "Minimum 6 characters required",
+              "maxLength": "Maximum 50 characters allowed",
+              "match": "Passwords do not match"
+            }
+          },
+          "valid": true,
+          "onchange": false
+        }
+      ]
+    }
+  }
+}
