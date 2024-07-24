@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class GoogleMapGeofenceWidget extends StatefulWidget {
-  final Function(LatLng, double) onGeofenceSet;
+  final Function(GeoPoint, double) onGeofenceSet;
 
   const GoogleMapGeofenceWidget({Key? key, required this.onGeofenceSet})
       : super(key: key);
@@ -15,7 +16,7 @@ class GoogleMapGeofenceWidget extends StatefulWidget {
 class _GoogleMapGeofenceWidgetState extends State<GoogleMapGeofenceWidget> {
   late GoogleMapController mapController;
   LatLng _center = const LatLng(37.7749, -122.4194);
-  LatLng? _geofenceCenter;
+  GeoPoint? _geofenceCenter;
   double _geofenceRadius = 1000.0;
   Circle? _geofenceCircle;
 
@@ -25,7 +26,7 @@ class _GoogleMapGeofenceWidgetState extends State<GoogleMapGeofenceWidget> {
 
   void _setGeofence(LatLng position) {
     setState(() {
-      _geofenceCenter = position;
+      _geofenceCenter = GeoPoint(position.latitude, position.longitude);
       _geofenceCircle = Circle(
         circleId: CircleId('geofence'),
         center: position,
@@ -36,7 +37,7 @@ class _GoogleMapGeofenceWidgetState extends State<GoogleMapGeofenceWidget> {
       );
     });
 
-    widget.onGeofenceSet(position, _geofenceRadius);
+    widget.onGeofenceSet(_geofenceCenter!, _geofenceRadius);
   }
 
   @override
@@ -51,7 +52,9 @@ class _GoogleMapGeofenceWidgetState extends State<GoogleMapGeofenceWidget> {
               zoom: 11.0,
             ),
             circles: _geofenceCircle != null ? {_geofenceCircle!} : {},
-            onTap: _setGeofence,
+            onTap: (LatLng position) {
+              _setGeofence(position);
+            },
           ),
         ),
         if (_geofenceCenter != null)
@@ -72,7 +75,8 @@ class _GoogleMapGeofenceWidgetState extends State<GoogleMapGeofenceWidget> {
             setState(() {
               _geofenceRadius = value;
               if (_geofenceCenter != null) {
-                _setGeofence(_geofenceCenter!);
+                _setGeofence(LatLng(
+                    _geofenceCenter!.latitude, _geofenceCenter!.longitude));
               }
             });
           },

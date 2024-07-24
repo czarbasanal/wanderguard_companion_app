@@ -98,18 +98,18 @@ class _SignupScreenState extends State<SignupScreen> {
                               String firstName = data['0']['first_name'] ?? '';
                               String lastName = data['0']['last_name'] ?? '';
                               String contactNo = data['0']['contact_no'] ?? '';
-                              String streetAddress =
-                                  data['1']['street_address'] ?? '';
+                              String street = data['1']['street'] ?? '';
+                              String barangay = data['1']['barangay'] ?? '';
                               String city = data['1']['city'] ?? '';
-                              String state = data['1']['state'] ?? '';
+                              String province = data['1']['province'] ?? '';
                               String postalCode =
                                   data['1']['postal_code'] ?? '';
-                              String country = data['1']['country'] ?? '';
+
                               String email = data['2']['email'] ?? '';
                               String password = data['2']['password'] ?? '';
 
                               String address =
-                                  '$streetAddress, $city, $state, $postalCode, $country';
+                                  '$street, $barangay, $city, $province, $postalCode';
 
                               GeoPoint currentLocation = const GeoPoint(0, 0);
 

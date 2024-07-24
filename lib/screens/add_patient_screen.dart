@@ -1,13 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dynamic_multi_step_form/dynamic_multi_step_form.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-
-import '../controllers/patient_data_controller.dart';
-import '../../utils/colors.dart';
-import '../../widgets/dialogs/waiting_dialog.dart';
-import '../services/information_service.dart';
-import '../widgets/geofence_widget.dart';
-import '../widgets/custom_form_field.dart';
+import 'package:go_router/go_router.dart';
+import 'package:wanderguard_companion_app/screens/set_geofence_screen.dart';
+import 'package:wanderguard_companion_app/services/information_service.dart';
+import 'package:wanderguard_companion_app/utils/colors.dart';
+import 'package:wanderguard_companion_app/widgets/dialogs/waiting_dialog.dart';
 
 class AddPatientScreen extends StatefulWidget {
   static const String route = "/add_patient";
@@ -23,9 +19,6 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
   final _formKeyNew = GlobalKey<DynamicFormState>();
   int currentPageIndex = 0;
   String? addPatientConfig;
-
-  LatLng? geofenceCenter;
-  double? geofenceRadius;
 
   @override
   void initState() {
@@ -88,74 +81,26 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
                       Expanded(
                         child: DynamicForm(
                           addPatientConfig!,
-                          childElementList: [
-                            [
-                              ChildElement(
-                                index: 2,
-                                childElement: CustomFormField(
-                                  stepIndex:
-                                      2, // Assuming form3 is the third step
-                                  fieldIndex:
-                                      0, // Assuming this is the position you want the map to appear
-                                  builder: (context, key, field, isValid) {
-                                    return GoogleMapGeofenceWidget(
-                                      onGeofenceSet: (center, radius) {
-                                        setState(() {
-                                          geofenceCenter = center;
-                                          geofenceRadius = radius;
-                                        });
-                                      },
-                                    );
-                                  },
-                                ),
-                              ),
-                            ]
-                          ],
                           dynamicFormKey: _formKeyNew,
                           finalSubmitCallBack: (int currentPage,
                               Map<String, dynamic> data) async {
                             try {
-                              String firstName = data['0']['first_name'] ?? '';
-                              String lastName = data['0']['last_name'] ?? '';
-                              String dateOfBirthStr =
-                                  data['0']['date_of_birth'] ?? '';
-                              String contactNo = data['0']['contact_no'] ?? '';
-                              String street = data['1']['street'] ?? '';
-                              String barangay = data['1']['barangay'] ?? '';
-                              String city = data['1']['city'] ?? '';
-                              String province = data['1']['province'] ?? '';
-                              String email = data['3']['email'] ?? '';
-                              String password = data['3']['password'] ?? '';
-
-                              DateTime dateOfBirth =
-                                  DateTime.parse(dateOfBirthStr);
-
-                              String address =
-                                  '$street, $barangay, $city, $province';
-
-                              GeoPoint currentLocation = const GeoPoint(0, 0);
-
-                              // Use PatientDataController to add patient
-                              await WaitingDialog.show(
-                                context,
-                                future: PatientDataController().addPatient(
-                                  firstName: firstName,
-                                  lastName: lastName,
-                                  dateOfBirth: dateOfBirth,
-                                  contactNo: contactNo,
-                                  address: address,
-                                  lastLocTracked: currentLocation,
-                                  lastLocUpdated: DateTime.now(),
-                                  geofenceCenter: geofenceCenter,
-                                  geofenceRadius: geofenceRadius,
-                                  email: email,
-                                  password: password,
-                                ),
-                                prompt: 'Adding patient...',
-                              );
-                              if (mounted) {
-                                // GlobalRouter.I.router.go(HomeScreen.route);
-                              }
+                              final formData = {
+                                'first_name': data['0']['first_name'] ?? '',
+                                'last_name': data['0']['last_name'] ?? '',
+                                'date_of_birth':
+                                    data['0']['date_of_birth'] ?? '',
+                                'contact_no': data['0']['contact_no'] ?? '',
+                                'street': data['1']['street'] ?? '',
+                                'barangay': data['1']['barangay'] ?? '',
+                                'city': data['1']['city'] ?? '',
+                                'province': data['1']['province'] ?? '',
+                                'postal_code': data['1']['postal_code'] ?? '',
+                                'email': data['2']['email'] ?? '',
+                                'password': data['2']['password'] ?? '',
+                              };
+                              context.push(SetGeofenceScreen.route,
+                                  extra: formData);
                             } catch (e) {
                               Info.showSnackbarMessage(
                                 context,

@@ -75,14 +75,14 @@
           "value": "",
           "validation": {
             "required": true,
-            "minLength": 10,
-            "maxLength": 15,
+            "minLength": 11,
+            "maxLength": 11,
             "isReadOnly": false,
             "isDisabled": false,
             "errorMessage": {
               "required": "Please enter your contact number",
-              "minLength": "Minimum 10 digits required",
-              "maxLength": "Maximum 15 digits allowed"
+              "minLength": "Minimum 11 digits required",
+              "maxLength": "Maximum 11 digits allowed"
             }
           },
           "valid": true,
@@ -93,28 +93,28 @@
     "form2": {
       "formName": "address",
       "title": "Address",
-      "description": "Please enter your complete address.",
+      "description": "Please enter the patient's address details.",
       "formFields": [
         {
           "elementType": "input",
           "elementConfig": {
             "type": "text",
-            "name": "street_address",
-            "label": "Street Address",
-            "placeholder": "Street Address",
+            "name": "street",
+            "label": "Street",
+            "placeholder": "Street",
             "class": "form-control",
             "resetIcon": true
           },
           "value": "",
           "validation": {
             "required": true,
-            "minLength": 5,
+            "minLength": 2,
             "maxLength": 100,
             "isReadOnly": false,
             "isDisabled": false,
             "errorMessage": {
-              "required": "Please enter your street address",
-              "minLength": "Minimum 5 characters required",
+              "required": "Please enter the street",
+              "minLength": "Minimum 2 characters required",
               "maxLength": "Maximum 100 characters allowed"
             }
           },
@@ -125,9 +125,35 @@
           "elementType": "input",
           "elementConfig": {
             "type": "text",
+            "name": "barangay",
+            "label": "Barangay",
+            "placeholder": "Barangay",
+            "class": "form-control",
+            "resetIcon": true
+          },
+          "value": "",
+          "validation": {
+            "required": true,
+            "minLength": 2,
+            "maxLength": 50,
+            "isReadOnly": false,
+            "isDisabled": false,
+            "errorMessage": {
+              "required": "Please enter the barangay",
+              "minLength": "Minimum 2 characters required",
+              "maxLength": "Maximum 50 characters allowed"
+            }
+          },
+          "valid": true,
+          "onchange": false
+        },
+        {
+          "elementType": "input",
+          "elementConfig": {
+            "type": "text",
             "name": "city",
-            "label": "City",
-            "placeholder": "City",
+            "label": "City/Municipality",
+            "placeholder": "City/Municipality",
             "class": "form-control",
             "resetIcon": true
           },
@@ -139,7 +165,7 @@
             "isReadOnly": false,
             "isDisabled": false,
             "errorMessage": {
-              "required": "Please enter your city",
+              "required": "Please enter the city/municipality",
               "minLength": "Minimum 2 characters required",
               "maxLength": "Maximum 50 characters allowed"
             }
@@ -151,9 +177,9 @@
           "elementType": "input",
           "elementConfig": {
             "type": "text",
-            "name": "state",
-            "label": "State",
-            "placeholder": "State",
+            "name": "province",
+            "label": "Province",
+            "placeholder": "Province",
             "class": "form-control",
             "resetIcon": true
           },
@@ -165,7 +191,7 @@
             "isReadOnly": false,
             "isDisabled": false,
             "errorMessage": {
-              "required": "Please enter your state",
+              "required": "Please enter the province",
               "minLength": "Minimum 2 characters required",
               "maxLength": "Maximum 50 characters allowed"
             }
@@ -176,7 +202,7 @@
         {
           "elementType": "input",
           "elementConfig": {
-            "type": "text",
+            "type": "tel",
             "name": "postal_code",
             "label": "Postal Code",
             "placeholder": "Postal Code",
@@ -191,39 +217,13 @@
             "isReadOnly": false,
             "isDisabled": false,
             "errorMessage": {
-              "required": "Please enter your postal code",
-              "minLength": "Minimum 4 characters required",
-              "maxLength": "Maximum 4 characters allowed"
+              "required": "Please enter valid postal code",
+              "minLength": "Minimum 4 digits required",
+              "maxLength": "Maximum 4 digits allowed"
             }
           },
           "valid": true,
           "onchange": false
-        },
-        {
-          "elementType": "select",
-          "elementConfig": {
-            "name": "country",
-            "label": "Country",
-            "placeholder": "Country",
-            "class": "form-control",
-            "options": [
-              {
-                "value": "ph",
-                "displayValue": "Philippines"
-              }
-            ],
-            "isMulitpleSelect": false
-          },
-          "value": "",
-          "validation": {
-            "required": true,
-            "isReadOnly": false,
-            "isDisabled": false,
-            "errorMessage": {
-              "required": "Please select your country"
-            }
-          },
-          "valid": false
         }
       ]
     },

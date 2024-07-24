@@ -97,14 +97,14 @@
                     "value": "",
                     "validation": {
                         "required": true,
-                        "minLength": 10,
-                        "maxLength": 15,
+                        "minLength": 11,
+                        "maxLength": 11,
                         "isReadOnly": false,
                         "isDisabled": false,
                         "errorMessage": {
                             "required": "Please enter the contact number",
-                            "minLength": "Minimum 10 digits required",
-                            "maxLength": "Maximum 15 digits allowed"
+                            "minLength": "Minimum 11 digits required",
+                            "maxLength": "Maximum 11 digits allowed"
                         }
                     },
                     "valid": true,
@@ -220,37 +220,36 @@
                     },
                     "valid": true,
                     "onchange": false
-                }
-            ]
-        },
-        "form3": {
-            "formName": "geofenceDetails",
-            "title": "Geofence Details",
-            "description": "Set a geofence for the patient.",
-            "formFields": [
+                },
                 {
-                    "elementType": "custom",
+                    "elementType": "input",
                     "elementConfig": {
-                        "type": "geofence",
-                        "name": "geofence",
-                        "label": "Set Geofence",
-                        "placeholder": "Geofence",
+                        "type": "tel",
+                        "name": "postal_code",
+                        "label": "Postal Code",
+                        "placeholder": "Postal Code",
                         "class": "form-control",
                         "resetIcon": true
                     },
                     "value": "",
                     "validation": {
-                        "required": false,
+                        "required": true,
+                        "minLength": 4,
+                        "maxLength": 4,
                         "isReadOnly": false,
                         "isDisabled": false,
-                        "errorMessage": {}
+                        "errorMessage": {
+                            "required": "Please enter valid postal code",
+                            "minLength": "Minimum 4 digits required",
+                            "maxLength": "Maximum 4 digits allowed"
+                        }
                     },
                     "valid": true,
                     "onchange": false
                 }
             ]
         },
-        "form4": {
+        "form3": {
             "formName": "accountDetails",
             "title": "Account Details",
             "description": "Please enter the patient's account details.",

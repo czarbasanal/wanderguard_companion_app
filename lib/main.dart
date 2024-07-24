@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'controllers/auth_controller.dart';
 import 'controllers/companion_data_controller.dart';
+
 import 'firebase_options.dart';
 import 'routing/router.dart';
 import 'services/firestore_service.dart';
@@ -15,6 +16,7 @@ void main() async {
   AuthController.initialize();
   GlobalRouter.initialize();
   CompanionDataController.initialize();
+  // PatientDataController.initialize();
   FirestoreService.initialize();
   await AuthController.instance.loadSession();
   runApp(const MyApp());

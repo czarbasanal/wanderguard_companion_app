@@ -4,6 +4,7 @@ import "package:get_it/get_it.dart";
 import "package:go_router/go_router.dart";
 import "package:wanderguard_companion_app/screens/add_patient_screen.dart";
 import "package:wanderguard_companion_app/screens/patient_list_screen.dart";
+import "package:wanderguard_companion_app/screens/set_geofence_screen.dart";
 
 import "../controllers/auth_controller.dart";
 import "../enum/auth_state.enum.dart";
@@ -79,6 +80,16 @@ class GlobalRouter {
           name: SignupScreen.name,
           builder: (context, _) {
             return const SignupScreen();
+          },
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: SetGeofenceScreen.route,
+          name: SetGeofenceScreen.name,
+          builder: (context, state) {
+            final Map<String, dynamic> formData =
+                state.extra as Map<String, dynamic>;
+            return SetGeofenceScreen(formData: formData);
           },
         ),
         ShellRoute(

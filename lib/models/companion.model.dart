@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-import '../enum/account_type.enum.dart';
+import 'package:wanderguard_companion_app/enum/account_status.enum.dart';
+import 'package:wanderguard_companion_app/enum/account_type.enum.dart';
 
 class Companion {
   final String companionAcctId;
@@ -11,6 +11,7 @@ class Companion {
   final String contactNo;
   final String photoUrl;
   final AccountType acctType;
+  final AccountStatus acctStatus;
   final DateTime createdAt;
   final DateTime updatedAt;
   GeoPoint currentLocation;
@@ -24,6 +25,7 @@ class Companion {
     required this.contactNo,
     required this.photoUrl,
     required this.acctType,
+    required this.acctStatus,
     required this.createdAt,
     required this.updatedAt,
     required this.currentLocation,
@@ -44,7 +46,8 @@ class Companion {
       'address': address,
       'contactNo': contactNo,
       'photoUrl': photoUrl,
-      'acctType': acctType.toString(),
+      'acctType': AccountType.primaryCompanion.toString(),
+      'acctStatus': AccountStatus.offline.toString(),
       'createdAt': createdAt,
       'updatedAt': updatedAt,
       'currentLocation': currentLocation,
@@ -63,6 +66,8 @@ class Companion {
       photoUrl: data['photoUrl'],
       acctType: AccountType.values
           .firstWhere((e) => e.toString() == data['acctType']),
+      acctStatus: AccountStatus.values
+          .firstWhere((e) => e.toString() == data['acctStatus']),
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       updatedAt: (data['updatedAt'] as Timestamp).toDate(),
       currentLocation: data['currentLocation'],

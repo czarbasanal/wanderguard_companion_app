@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wanderguard_companion_app/enum/account_status.enum.dart';
 import 'package:wanderguard_companion_app/services/firestore_service.dart';
 
 import '../enum/account_type.enum.dart';
@@ -103,6 +104,7 @@ class AuthController with ChangeNotifier {
         contactNo: contactNo,
         photoUrl: '',
         acctType: AccountType.primaryCompanion,
+        acctStatus: AccountStatus.offline,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );

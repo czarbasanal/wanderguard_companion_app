@@ -1,12 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
 import 'package:get_it/get_it.dart';
-
-import '../enum/account_status.enum.dart';
-import '../enum/account_type.enum.dart';
-import '../models/companion.model.dart';
-import '../models/patient.model.dart';
+import 'package:wanderguard_companion_app/models/companion.model.dart';
+import 'package:wanderguard_companion_app/models/patient.model.dart';
 
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -52,26 +48,30 @@ class FirestoreService {
         // Get the newly created patient's UID
         String patientUid = userCredential.user!.uid;
 
-        // Store patient details in Firestore
-        final DocumentReference docRef =
-            _db.collection('patients').doc(patientUid);
+        // Create new patient with the UID
         final Patient newPatient = Patient(
           patientAcctId: patientUid,
           firstName: patient.firstName,
           lastName: patient.lastName,
-          dateOfBirth: patient.dateOfBirth,
-          contactNo: patient.contactNo,
-          address: patient.address,
-          lastLocTracked: patient.lastLocTracked,
-          lastLocUpdated: patient.lastLocUpdated,
-          companionAcctId: companionUser.uid,
-          geofenceCenter: patient.geofenceCenter,
-          geofenceRadius: patient.geofenceRadius,
           email: patient.email,
           password: patient.password,
-          acctType: AccountType.patient,
-          acctStatus: AccountStatus.offline,
+          homeAddress: patient.homeAddress,
+          contactNo: patient.contactNo,
+          dateOfBirth: patient.dateOfBirth,
+          photoUrl: '',
+          acctType: patient.acctType,
+          acctStatus: patient.acctStatus,
+          defaultGeofence: patient.defaultGeofence,
+          geofences: patient.geofences,
+          emergencyContacts: patient.emergencyContacts,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+          companionAcctId: companionUser.uid,
         );
+
+        // Store patient details in Firestore
+        final DocumentReference docRef =
+            _db.collection('patients').doc(patientUid);
         await docRef.set(newPatient.toFirestore());
       } catch (e) {
         throw Exception("Error registering patient: $e");
