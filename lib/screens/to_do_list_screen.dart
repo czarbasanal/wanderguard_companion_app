@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../models/daily_routine.model.dart';
 import '../models/medication.model.dart';
+import '../widgets/navbar.dart';
 import '../widgets/routine and medication/daily_routine_data.dart';
 import '../widgets/routine and medication/medication_data_widget.dart';
 
@@ -440,14 +441,21 @@ class _TodoListScreenState extends State<TodoListScreen> {
           style: GoogleFonts.poppins(),
         ),
       ),
-      body: Center(
-        child: GestureDetector(
-          onTap: _showCustomTodoListDialog,
-          child: Text(
-            'To-Do List',
-            style: GoogleFonts.poppins(fontSize: 24, color: Colors.blue),
+      body: Column(
+        children: [
+          Expanded(
+            child: Center(
+              child: GestureDetector(
+                onTap: _showCustomTodoListDialog,
+                child: Text(
+                  'To-Do List',
+                  style: GoogleFonts.poppins(fontSize: 24, color: Colors.blue),
+                ),
+              ),
+            ),
           ),
-        ),
+          Navbar(),
+        ],
       ),
     );
   }

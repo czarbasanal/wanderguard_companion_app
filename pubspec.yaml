@@ -46,3 +46,7 @@ flutter:
     - lib/assets/images/Asset3.png
     - lib/assets/icons/edit.svg
     - lib/assets/icons/add.svg
+    - lib/assets/icons/home.svg
+    - lib/assets/icons/patients.svg
+    - lib/assets/icons/notification.svg
+    - lib/assets/icons/menu.svg
