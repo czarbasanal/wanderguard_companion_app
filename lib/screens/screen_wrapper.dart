@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:wanderguard_companion_app/screens/add_patient_screen.dart';
 
 import '../routing/router.dart';
 import 'home_screen.dart';
@@ -16,7 +16,11 @@ class ScreenWrapper extends StatefulWidget {
 class _ScreenWrapperState extends State<ScreenWrapper> {
   int index = 0;
 
-  List<String> routes = [HomeScreen.route, ProfileScreen.route];
+  List<String> routes = [
+    HomeScreen.route,
+    AddPatientScreen.route,
+    ProfileScreen.route
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -37,12 +41,13 @@ class _ScreenWrapperState extends State<ScreenWrapper> {
             index = i;
 
             GlobalRouter.I.router.go(routes[i]);
-            // context.go(routes[i]);
           });
         },
         items: const [
           BottomNavigationBarItem(
               icon: Icon(Icons.home_rounded), label: "Home"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.people_alt_rounded), label: "Patients"),
           BottomNavigationBarItem(
               icon: Icon(Icons.menu_rounded), label: "Profile"),
         ],

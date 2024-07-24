@@ -1,0 +1,1 @@
+enum AccountStatus { online, offline }

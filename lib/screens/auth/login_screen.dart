@@ -94,12 +94,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                         validator: MultiValidator([
                           RequiredValidator(
-                              errorText: 'Please fill out the username'),
-                          MaxLengthValidator(32,
-                              errorText:
-                                  "Username cannot exceed 32 characters"),
-                          EmailValidator(
-                              errorText: "Please select a valid email"),
+                              errorText: 'Please enter your username'),
+                          MinLengthValidator(2,
+                              errorText: "Minimum 2 characters required"),
+                          MaxLengthValidator(50,
+                              errorText: "Maximum 50 characters allowed"),
                         ]).call,
                       ),
                       const SizedBox(height: 16),
@@ -128,16 +127,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                         validator: MultiValidator([
                           RequiredValidator(errorText: "Password is required"),
-                          MinLengthValidator(12,
-                              errorText:
-                                  "Password must be at least 12 characters long"),
-                          MaxLengthValidator(128,
-                              errorText:
-                                  "Password cannot exceed 72 characters"),
-                          PatternValidator(
-                              r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+?\-=[\]{};':,.<>]).*$",
-                              errorText:
-                                  'Password must contain at least one symbol, one uppercase letter, one lowercase letter, and one number.')
+                          MinLengthValidator(6,
+                              errorText: "Minimum 6 characters required"),
+                          MaxLengthValidator(50,
+                              errorText: "Maximum 50 characters allowed"),
                         ]).call,
                       ),
                       Row(

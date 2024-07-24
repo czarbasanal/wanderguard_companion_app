@@ -1,29 +1,31 @@
-import 'package:dynamic_multi_step_form/dynamic_multi_step_form.dart';
-import 'package:go_router/go_router.dart';
-import 'package:wanderguard_companion_app/utils/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dynamic_multi_step_form/dynamic_multi_step_form.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import '../../controllers/auth_controller.dart';
-import '../../routing/router.dart';
-import '../../services/information_service.dart';
+import '../controllers/patient_data_controller.dart';
+import '../../utils/colors.dart';
 import '../../widgets/dialogs/waiting_dialog.dart';
-import '../home_screen.dart';
-import 'onboarding_screen.dart';
+import '../services/information_service.dart';
+import '../widgets/geofence_widget.dart';
+import '../widgets/custom_form_field.dart';
 
-class SignupScreen extends StatefulWidget {
-  static const String route = "/signup";
-  static const String name = "Sign up";
+class AddPatientScreen extends StatefulWidget {
+  static const String route = "/add_patient";
+  static const String name = "Add Patient";
 
-  const SignupScreen({super.key});
+  const AddPatientScreen({super.key});
 
   @override
-  State<SignupScreen> createState() => _SignupScreenState();
+  State<AddPatientScreen> createState() => _AddPatientScreenState();
 }
 
-class _SignupScreenState extends State<SignupScreen> {
+class _AddPatientScreenState extends State<AddPatientScreen> {
   final _formKeyNew = GlobalKey<DynamicFormState>();
   int currentPageIndex = 0;
-  String? signupConfig;
+  String? addPatientConfig;
+
+  LatLng? geofenceCenter;
+  double? geofenceRadius;
 
   @override
   void initState() {
@@ -33,8 +35,8 @@ class _SignupScreenState extends State<SignupScreen> {
 
   Future<void> _loadFormJson() async {
     try {
-      signupConfig =
-          await localJsonRw.localRead(fileName: "signup_form_config.json");
+      addPatientConfig =
+          await localJsonRw.localRead(fileName: "add_patient_form.json");
       setState(() {});
     } catch (error) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -56,7 +58,7 @@ class _SignupScreenState extends State<SignupScreen> {
         surfaceTintColor: Colors.white,
         centerTitle: true,
         title: const Text(
-          "Register",
+          "Add Patient",
           style: TextStyle(fontWeight: FontWeight.w800),
         ),
         leading: IconButton(
@@ -65,15 +67,11 @@ class _SignupScreenState extends State<SignupScreen> {
             size: 20,
           ),
           onPressed: () {
-            if (GoRouter.of(context).canPop()) {
-              context.pop();
-            } else {
-              context.go(OnboardingScreen.route);
-            }
+            Navigator.of(context).pop();
           },
         ),
       ),
-      body: signupConfig == null
+      body: addPatientConfig == null
           ? const Center(
               child: WaitingDialog(
                 prompt: "Loading form...",
@@ -89,45 +87,74 @@ class _SignupScreenState extends State<SignupScreen> {
                     children: [
                       Expanded(
                         child: DynamicForm(
-                          signupConfig!,
-                          childElementList: [],
+                          addPatientConfig!,
+                          childElementList: [
+                            [
+                              ChildElement(
+                                index: 2,
+                                childElement: CustomFormField(
+                                  stepIndex:
+                                      2, // Assuming form3 is the third step
+                                  fieldIndex:
+                                      0, // Assuming this is the position you want the map to appear
+                                  builder: (context, key, field, isValid) {
+                                    return GoogleMapGeofenceWidget(
+                                      onGeofenceSet: (center, radius) {
+                                        setState(() {
+                                          geofenceCenter = center;
+                                          geofenceRadius = radius;
+                                        });
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                            ]
+                          ],
                           dynamicFormKey: _formKeyNew,
                           finalSubmitCallBack: (int currentPage,
                               Map<String, dynamic> data) async {
                             try {
                               String firstName = data['0']['first_name'] ?? '';
                               String lastName = data['0']['last_name'] ?? '';
+                              String dateOfBirthStr =
+                                  data['0']['date_of_birth'] ?? '';
                               String contactNo = data['0']['contact_no'] ?? '';
-                              String streetAddress =
-                                  data['1']['street_address'] ?? '';
+                              String street = data['1']['street'] ?? '';
+                              String barangay = data['1']['barangay'] ?? '';
                               String city = data['1']['city'] ?? '';
-                              String state = data['1']['state'] ?? '';
-                              String postalCode =
-                                  data['1']['postal_code'] ?? '';
-                              String country = data['1']['country'] ?? '';
-                              String email = data['2']['email'] ?? '';
-                              String password = data['2']['password'] ?? '';
+                              String province = data['1']['province'] ?? '';
+                              String email = data['3']['email'] ?? '';
+                              String password = data['3']['password'] ?? '';
+
+                              DateTime dateOfBirth =
+                                  DateTime.parse(dateOfBirthStr);
 
                               String address =
-                                  '$streetAddress, $city, $state, $postalCode, $country';
+                                  '$street, $barangay, $city, $province';
 
                               GeoPoint currentLocation = const GeoPoint(0, 0);
 
+                              // Use PatientDataController to add patient
                               await WaitingDialog.show(
                                 context,
-                                future: AuthController.instance.register(
-                                  email,
-                                  password,
-                                  firstName,
-                                  lastName,
-                                  contactNo,
-                                  address,
-                                  currentLocation,
+                                future: PatientDataController().addPatient(
+                                  firstName: firstName,
+                                  lastName: lastName,
+                                  dateOfBirth: dateOfBirth,
+                                  contactNo: contactNo,
+                                  address: address,
+                                  lastLocTracked: currentLocation,
+                                  lastLocUpdated: DateTime.now(),
+                                  geofenceCenter: geofenceCenter,
+                                  geofenceRadius: geofenceRadius,
+                                  email: email,
+                                  password: password,
                                 ),
-                                prompt: 'Signing up...',
+                                prompt: 'Adding patient...',
                               );
                               if (mounted) {
-                                GlobalRouter.I.router.go(HomeScreen.route);
+                                // GlobalRouter.I.router.go(HomeScreen.route);
                               }
                             } catch (e) {
                               Info.showSnackbarMessage(

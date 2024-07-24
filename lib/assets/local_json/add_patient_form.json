@@ -1,0 +1,314 @@
+{
+    "formName": "Add Patient",
+    "title": "Add Patient",
+    "description": "Please enter the details to add a new patient",
+    "image": "",
+    "formType": "multi",
+    "step": {
+        "form1": {
+            "formName": "patientDetails",
+            "title": "Patient Details",
+            "description": "Please enter the patient's personal details.",
+            "formFields": [
+                {
+                    "elementType": "input",
+                    "elementConfig": {
+                        "type": "text",
+                        "name": "first_name",
+                        "label": "First Name",
+                        "placeholder": "First Name",
+                        "class": "form-control",
+                        "resetIcon": true
+                    },
+                    "value": "",
+                    "validation": {
+                        "required": true,
+                        "minLength": 2,
+                        "maxLength": 50,
+                        "isReadOnly": false,
+                        "isDisabled": false,
+                        "errorMessage": {
+                            "required": "Please enter the first name",
+                            "minLength": "Minimum 2 characters required",
+                            "maxLength": "Maximum 50 characters allowed"
+                        }
+                    },
+                    "valid": true,
+                    "onchange": false
+                },
+                {
+                    "elementType": "input",
+                    "elementConfig": {
+                        "type": "text",
+                        "name": "last_name",
+                        "label": "Last Name",
+                        "placeholder": "Last Name",
+                        "class": "form-control",
+                        "resetIcon": true
+                    },
+                    "value": "",
+                    "validation": {
+                        "required": true,
+                        "minLength": 2,
+                        "maxLength": 50,
+                        "isReadOnly": false,
+                        "isDisabled": false,
+                        "errorMessage": {
+                            "required": "Please enter the last name",
+                            "minLength": "Minimum 2 characters required",
+                            "maxLength": "Maximum 50 characters allowed"
+                        }
+                    },
+                    "valid": true,
+                    "onchange": false
+                },
+                {
+                    "elementType": "input",
+                    "elementConfig": {
+                        "type": "date",
+                        "name": "date_of_birth",
+                        "label": "Date of Birth",
+                        "placeholder": "Date of Birth",
+                        "class": "form-control",
+                        "resetIcon": true
+                    },
+                    "value": "",
+                    "validation": {
+                        "required": true,
+                        "isReadOnly": false,
+                        "isDisabled": false,
+                        "errorMessage": {
+                            "required": "Please enter the date of birth"
+                        }
+                    },
+                    "valid": true,
+                    "onchange": false
+                },
+                {
+                    "elementType": "input",
+                    "elementConfig": {
+                        "type": "tel",
+                        "name": "contact_no",
+                        "label": "Contact Number",
+                        "placeholder": "Contact Number",
+                        "class": "form-control",
+                        "resetIcon": true
+                    },
+                    "value": "",
+                    "validation": {
+                        "required": true,
+                        "minLength": 10,
+                        "maxLength": 15,
+                        "isReadOnly": false,
+                        "isDisabled": false,
+                        "errorMessage": {
+                            "required": "Please enter the contact number",
+                            "minLength": "Minimum 10 digits required",
+                            "maxLength": "Maximum 15 digits allowed"
+                        }
+                    },
+                    "valid": true,
+                    "onchange": false
+                }
+            ]
+        },
+        "form2": {
+            "formName": "address",
+            "title": "Address",
+            "description": "Please enter the patient's address details.",
+            "formFields": [
+                {
+                    "elementType": "input",
+                    "elementConfig": {
+                        "type": "text",
+                        "name": "street",
+                        "label": "Street",
+                        "placeholder": "Street",
+                        "class": "form-control",
+                        "resetIcon": true
+                    },
+                    "value": "",
+                    "validation": {
+                        "required": true,
+                        "minLength": 2,
+                        "maxLength": 100,
+                        "isReadOnly": false,
+                        "isDisabled": false,
+                        "errorMessage": {
+                            "required": "Please enter the street",
+                            "minLength": "Minimum 2 characters required",
+                            "maxLength": "Maximum 100 characters allowed"
+                        }
+                    },
+                    "valid": true,
+                    "onchange": false
+                },
+                {
+                    "elementType": "input",
+                    "elementConfig": {
+                        "type": "text",
+                        "name": "barangay",
+                        "label": "Barangay",
+                        "placeholder": "Barangay",
+                        "class": "form-control",
+                        "resetIcon": true
+                    },
+                    "value": "",
+                    "validation": {
+                        "required": true,
+                        "minLength": 2,
+                        "maxLength": 50,
+                        "isReadOnly": false,
+                        "isDisabled": false,
+                        "errorMessage": {
+                            "required": "Please enter the barangay",
+                            "minLength": "Minimum 2 characters required",
+                            "maxLength": "Maximum 50 characters allowed"
+                        }
+                    },
+                    "valid": true,
+                    "onchange": false
+                },
+                {
+                    "elementType": "input",
+                    "elementConfig": {
+                        "type": "text",
+                        "name": "city",
+                        "label": "City/Municipality",
+                        "placeholder": "City/Municipality",
+                        "class": "form-control",
+                        "resetIcon": true
+                    },
+                    "value": "",
+                    "validation": {
+                        "required": true,
+                        "minLength": 2,
+                        "maxLength": 50,
+                        "isReadOnly": false,
+                        "isDisabled": false,
+                        "errorMessage": {
+                            "required": "Please enter the city/municipality",
+                            "minLength": "Minimum 2 characters required",
+                            "maxLength": "Maximum 50 characters allowed"
+                        }
+                    },
+                    "valid": true,
+                    "onchange": false
+                },
+                {
+                    "elementType": "input",
+                    "elementConfig": {
+                        "type": "text",
+                        "name": "province",
+                        "label": "Province",
+                        "placeholder": "Province",
+                        "class": "form-control",
+                        "resetIcon": true
+                    },
+                    "value": "",
+                    "validation": {
+                        "required": true,
+                        "minLength": 2,
+                        "maxLength": 50,
+                        "isReadOnly": false,
+                        "isDisabled": false,
+                        "errorMessage": {
+                            "required": "Please enter the province",
+                            "minLength": "Minimum 2 characters required",
+                            "maxLength": "Maximum 50 characters allowed"
+                        }
+                    },
+                    "valid": true,
+                    "onchange": false
+                }
+            ]
+        },
+        "form3": {
+            "formName": "geofenceDetails",
+            "title": "Geofence Details",
+            "description": "Set a geofence for the patient.",
+            "formFields": [
+                {
+                    "elementType": "custom",
+                    "elementConfig": {
+                        "type": "geofence",
+                        "name": "geofence",
+                        "label": "Set Geofence",
+                        "placeholder": "Geofence",
+                        "class": "form-control",
+                        "resetIcon": true
+                    },
+                    "value": "",
+                    "validation": {
+                        "required": false,
+                        "isReadOnly": false,
+                        "isDisabled": false,
+                        "errorMessage": {}
+                    },
+                    "valid": true,
+                    "onchange": false
+                }
+            ]
+        },
+        "form4": {
+            "formName": "accountDetails",
+            "title": "Account Details",
+            "description": "Please enter the patient's account details.",
+            "formFields": [
+                {
+                    "elementType": "input",
+                    "elementConfig": {
+                        "type": "email",
+                        "name": "email",
+                        "label": "Email",
+                        "placeholder": "Email",
+                        "class": "form-control",
+                        "resetIcon": true
+                    },
+                    "value": "",
+                    "validation": {
+                        "required": true,
+                        "isEmail": true,
+                        "maxLength": 50,
+                        "rejex": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+                        "isReadOnly": false,
+                        "isDisabled": false,
+                        "errorMessage": {
+                            "required": "Please enter the email",
+                            "maxLength": "Maximum 50 characters allowed",
+                            "rejex": "Please enter a valid email"
+                        }
+                    },
+                    "valid": true,
+                    "onchange": false
+                },
+                {
+                    "elementType": "input",
+                    "elementConfig": {
+                        "type": "password",
+                        "name": "password",
+                        "label": "Password",
+                        "placeholder": "Password",
+                        "class": "form-control",
+                        "resetIcon": true
+                    },
+                    "value": "",
+                    "validation": {
+                        "required": true,
+                        "minLength": 6,
+                        "maxLength": 50,
+                        "isReadOnly": false,
+                        "isDisabled": false,
+                        "errorMessage": {
+                            "required": "Please enter the password",
+                            "minLength": "Minimum 6 characters required",
+                            "maxLength": "Maximum 50 characters allowed"
+                        }
+                    },
+                    "valid": true,
+                    "onchange": false
+                }
+            ]
+        }
+    }
+}
