@@ -56,8 +56,8 @@ class Patient {
       'contactNo': contactNo,
       'dateOfBirth': dateOfBirth,
       'photoUrl': photoUrl,
-      'acctType': AccountType.patient.toString(),
-      'acctStatus': AccountStatus.offline.toString(),
+      'acctType': acctType.name,
+      'acctStatus': acctStatus.name,
       'defaultGeofence': defaultGeofence.toFirestore(),
       'geofences': geofences.map((geofence) => geofence.toFirestore()).toList(),
       'emergencyContacts':
@@ -78,12 +78,10 @@ class Patient {
       password: data['password'],
       homeAddress: data['homeAddress'],
       contactNo: data['contactNo'],
-      dateOfBirth: data['dateOfBirth'],
+      dateOfBirth: (data['dateOfBirth'] as Timestamp).toDate(),
       photoUrl: data['photoUrl'],
-      acctType: AccountType.values
-          .firstWhere((e) => e.toString() == data['acctType']),
-      acctStatus: AccountStatus.values
-          .firstWhere((e) => e.toString() == data['acctStatus']),
+      acctType: AccountTypeExtension.fromString(data['acctType']),
+      acctStatus: AccountStatusExtension.fromString(data['acctStatus']),
       defaultGeofence: Geofence.fromFirestore(data['defaultGeofence']),
       geofences: (data['geofences'] as List)
           .map((geofenceData) => Geofence.fromFirestore(geofenceData))

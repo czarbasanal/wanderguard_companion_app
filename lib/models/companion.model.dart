@@ -46,8 +46,8 @@ class Companion {
       'address': address,
       'contactNo': contactNo,
       'photoUrl': photoUrl,
-      'acctType': AccountType.primaryCompanion.toString(),
-      'acctStatus': AccountStatus.offline.toString(),
+      'acctType': acctType.name,
+      'acctStatus': acctStatus.name,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
       'currentLocation': currentLocation,
@@ -64,10 +64,8 @@ class Companion {
       address: data['address'],
       contactNo: data['contactNo'],
       photoUrl: data['photoUrl'],
-      acctType: AccountType.values
-          .firstWhere((e) => e.toString() == data['acctType']),
-      acctStatus: AccountStatus.values
-          .firstWhere((e) => e.toString() == data['acctStatus']),
+      acctType: AccountTypeExtension.fromString(data['acctType']),
+      acctStatus: AccountStatusExtension.fromString(data['acctStatus']),
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       updatedAt: (data['updatedAt'] as Timestamp).toDate(),
       currentLocation: data['currentLocation'],

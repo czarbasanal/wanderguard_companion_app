@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
+import 'package:wanderguard_companion_app/enum/account_status.enum.dart';
+import 'package:wanderguard_companion_app/enum/account_type.enum.dart';
 import 'package:wanderguard_companion_app/models/companion.model.dart';
 import 'package:wanderguard_companion_app/models/patient.model.dart';
 
@@ -59,8 +61,8 @@ class FirestoreService {
           contactNo: patient.contactNo,
           dateOfBirth: patient.dateOfBirth,
           photoUrl: '',
-          acctType: patient.acctType,
-          acctStatus: patient.acctStatus,
+          acctType: AccountType.patient,
+          acctStatus: AccountStatus.offline,
           defaultGeofence: patient.defaultGeofence,
           geofences: patient.geofences,
           emergencyContacts: patient.emergencyContacts,
