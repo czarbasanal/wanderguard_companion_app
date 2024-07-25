@@ -17,6 +17,8 @@ class Patient {
   final String photoUrl;
   final AccountType acctType;
   final AccountStatus acctStatus;
+  final GeoPoint lastLocTracked;
+  final DateTime lastLocUpdated;
   final Geofence defaultGeofence;
   final List<Geofence> geofences;
   final List<EmergencyContact> emergencyContacts;
@@ -36,6 +38,8 @@ class Patient {
     required this.photoUrl,
     required this.acctType,
     required this.acctStatus,
+    required this.lastLocTracked,
+    required this.lastLocUpdated,
     required this.defaultGeofence,
     required this.geofences,
     required this.emergencyContacts,
@@ -58,6 +62,8 @@ class Patient {
       'photoUrl': photoUrl,
       'acctType': acctType.name,
       'acctStatus': acctStatus.name,
+      'lastLocTracked': lastLocTracked,
+      'lastLocUpdated': lastLocUpdated,
       'defaultGeofence': defaultGeofence.toFirestore(),
       'geofences': geofences.map((geofence) => geofence.toFirestore()).toList(),
       'emergencyContacts':
@@ -82,6 +88,8 @@ class Patient {
       photoUrl: data['photoUrl'],
       acctType: AccountTypeExtension.fromString(data['acctType']),
       acctStatus: AccountStatusExtension.fromString(data['acctStatus']),
+      lastLocTracked: data['lastLocTracked'],
+      lastLocUpdated: data['lastLocUpdated'],
       defaultGeofence: Geofence.fromFirestore(data['defaultGeofence']),
       geofences: (data['geofences'] as List)
           .map((geofenceData) => Geofence.fromFirestore(geofenceData))

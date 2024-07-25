@@ -64,6 +64,8 @@ class _SetGeofenceScreenState extends State<SetGeofenceScreen> {
         photoUrl: '',
         acctType: AccountType.patient,
         acctStatus: AccountStatus.offline,
+        lastLocTracked: GeoPoint(0, 0),
+        lastLocUpdated: DateTime.now(),
         defaultGeofence: Geofence(
           center: geofenceCenter!,
           radius: geofenceRadius!,

@@ -63,6 +63,8 @@ class FirestoreService {
           photoUrl: '',
           acctType: AccountType.patient,
           acctStatus: AccountStatus.offline,
+          lastLocTracked: GeoPoint(0, 0),
+          lastLocUpdated: DateTime.now(),
           defaultGeofence: patient.defaultGeofence,
           geofences: patient.geofences,
           emergencyContacts: patient.emergencyContacts,
