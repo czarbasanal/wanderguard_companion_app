@@ -1,5 +1,6 @@
 import 'package:dynamic_multi_step_form/dynamic_multi_step_form.dart';
 import 'package:go_router/go_router.dart';
+import 'package:wanderguard_companion_app/routing/router.dart';
 import 'package:wanderguard_companion_app/screens/set_geofence_screen.dart';
 import 'package:wanderguard_companion_app/services/information_service.dart';
 import 'package:wanderguard_companion_app/utils/colors.dart';
@@ -60,7 +61,7 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
             size: 20,
           ),
           onPressed: () {
-            Navigator.of(context).pop();
+            GlobalRouter.I.router.pop();
           },
         ),
       ),
@@ -121,30 +122,25 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
                           },
                         ),
                       ),
-                      Container(
-                        color: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 15)
-                            .copyWith(bottom: 8),
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12)),
-                            backgroundColor: CustomColors.primaryColor,
-                            maximumSize:
-                                Size(MediaQuery.of(context).size.width, 50),
-                            minimumSize:
-                                Size(MediaQuery.of(context).size.width, 50),
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: MaterialButton(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                          clipBehavior: Clip.hardEdge,
-                          onPressed: () async {
+                          textColor: CustomColors.secondaryColor,
+                          color: CustomColors.primaryColor,
+                          minWidth: double.infinity,
+                          height: 55,
+                          onPressed: () {
                             _formKeyNew.currentState!.nextStepCustomClick();
                           },
                           child: const Text(
                             'Next',
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(fontSize: 16),
                           ),
                         ),
-                      )
+                      ),
                     ],
                   ),
                 )

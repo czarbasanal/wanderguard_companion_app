@@ -1,12 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:wanderguard_companion_app/enum/account_status.enum.dart';
 import 'package:wanderguard_companion_app/enum/account_type.enum.dart';
+import 'package:wanderguard_companion_app/routing/router.dart';
 import 'package:wanderguard_companion_app/services/firestore_service.dart';
 import 'package:wanderguard_companion_app/services/information_service.dart';
 import 'package:wanderguard_companion_app/utils/colors.dart';
 import 'package:wanderguard_companion_app/widgets/dialogs/waiting_dialog.dart';
-import 'package:wanderguard_companion_app/widgets/geofence_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:wanderguard_companion_app/models/patient.model.dart';
 import 'package:wanderguard_companion_app/models/geofence.model.dart';
@@ -26,11 +27,29 @@ class SetGeofenceScreen extends StatefulWidget {
 class _SetGeofenceScreenState extends State<SetGeofenceScreen> {
   GeoPoint? geofenceCenter;
   double? geofenceRadius;
+  Set<Marker> markers = {};
+  Set<Circle> circles = {};
 
   void _onGeofenceSet(GeoPoint center, double radius) {
     setState(() {
       geofenceCenter = center;
       geofenceRadius = radius;
+      markers = {
+        Marker(
+          markerId: MarkerId('geofence_center'),
+          position: LatLng(center.latitude, center.longitude),
+        ),
+      };
+      circles = {
+        Circle(
+          circleId: CircleId('geofence_radius'),
+          center: LatLng(center.latitude, center.longitude),
+          radius: radius,
+          fillColor: Colors.deepPurpleAccent.withOpacity(0.2),
+          strokeColor: Colors.deepPurpleAccent,
+          strokeWidth: 2,
+        ),
+      };
     });
   }
 
@@ -97,29 +116,149 @@ class _SetGeofenceScreenState extends State<SetGeofenceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: CustomColors.tertiaryColor,
       appBar: AppBar(
-        title: const Text("Set Geofence"),
+        backgroundColor: CustomColors.tertiaryColor,
+        surfaceTintColor: CustomColors.tertiaryColor,
+        title: const Text(
+          "Set Geofence",
+          style: TextStyle(fontWeight: FontWeight.w800),
+        ),
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_ios_rounded,
+            size: 20,
+          ),
+          onPressed: () {
+            GlobalRouter.I.router.pop();
+          },
+        ),
       ),
-      body: Column(
+      body: Stack(
         children: [
-          Expanded(
-            child: GoogleMapGeofenceWidget(onGeofenceSet: _onGeofenceSet),
+          GoogleMapGeofenceWidget(
+            onGeofenceSet: _onGeofenceSet,
+            markers: markers,
+            circles: circles,
           ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-              onPressed: geofenceCenter != null && geofenceRadius != null
-                  ? _onFinalSubmit
-                  : null,
-              child: const Text("Add Patient"),
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size.fromHeight(50),
-                backgroundColor: CustomColors.primaryColor,
-              ),
+          if (geofenceCenter != null && geofenceRadius != null)
+            DraggableScrollableSheet(
+              initialChildSize: 0.33,
+              minChildSize: 0.33,
+              maxChildSize: 0.33,
+              builder:
+                  (BuildContext context, ScrollController scrollController) {
+                return Container(
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    color: CustomColors.secondaryColor,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(20.0),
+                      topRight: Radius.circular(20.0),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.15),
+                        blurRadius: 12,
+                        spreadRadius: 1,
+                      ),
+                    ],
+                  ),
+                  child: ListView(
+                    controller: scrollController,
+                    children: [
+                      Text(
+                        'Geofence Center: (${geofenceCenter!.latitude}, ${geofenceCenter!.longitude})',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'Radius: ${geofenceRadius!.toStringAsFixed(1)} meters',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(height: 16),
+                      Slider(
+                        activeColor: CustomColors.primaryColor,
+                        inactiveColor: Colors.grey.shade400,
+                        value: geofenceRadius!,
+                        min: 20,
+                        max: 1000,
+                        divisions: 98,
+                        label: geofenceRadius!.round().toString(),
+                        onChanged: (double value) {
+                          setState(() {
+                            geofenceRadius = value;
+                            _onGeofenceSet(geofenceCenter!, geofenceRadius!);
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      MaterialButton(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        textColor: CustomColors.secondaryColor,
+                        color: CustomColors.primaryColor,
+                        minWidth: double.infinity,
+                        height: 55,
+                        onPressed:
+                            geofenceCenter != null && geofenceRadius != null
+                                ? _onFinalSubmit
+                                : null,
+                        child: const Text(
+                          'Add Patient',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
-          ),
         ],
       ),
+    );
+  }
+}
+
+class GoogleMapGeofenceWidget extends StatefulWidget {
+  final Function(GeoPoint, double) onGeofenceSet;
+  final Set<Marker> markers;
+  final Set<Circle> circles;
+
+  const GoogleMapGeofenceWidget({
+    Key? key,
+    required this.onGeofenceSet,
+    required this.markers,
+    required this.circles,
+  }) : super(key: key);
+
+  @override
+  _GoogleMapGeofenceWidgetState createState() =>
+      _GoogleMapGeofenceWidgetState();
+}
+
+class _GoogleMapGeofenceWidgetState extends State<GoogleMapGeofenceWidget> {
+  double _radius = 100.0;
+
+  @override
+  Widget build(BuildContext context) {
+    return GoogleMap(
+      initialCameraPosition: CameraPosition(
+        target: LatLng(10.3157, 123.8854),
+        zoom: 14.0,
+      ),
+      markers: widget.markers,
+      circles: widget.circles,
+      onTap: (LatLng position) {
+        setState(() {
+          widget.onGeofenceSet(
+            GeoPoint(position.latitude, position.longitude),
+            _radius,
+          );
+        });
+      },
+      onMapCreated: (GoogleMapController controller) {},
     );
   }
 }

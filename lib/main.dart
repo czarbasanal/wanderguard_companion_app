@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:wanderguard_companion_app/utils/colors.dart';
 import 'controllers/auth_controller.dart';
 import 'controllers/companion_data_controller.dart';
 
@@ -34,7 +35,8 @@ class MyApp extends StatelessWidget {
           routerConfig: GlobalRouter.I.router,
           title: 'WanderGuard Companion App',
           theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
+            colorScheme:
+                ColorScheme.fromSeed(seedColor: CustomColors.tertiaryColor),
             textTheme: GoogleFonts.poppinsTextTheme(
               Theme.of(context).textTheme,
             ),

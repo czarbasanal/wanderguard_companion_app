@@ -2,6 +2,7 @@ import "dart:async";
 import "package:flutter/material.dart";
 import "package:get_it/get_it.dart";
 import "package:go_router/go_router.dart";
+import "package:wanderguard_companion_app/screens/add_patient_screen.dart";
 import "package:wanderguard_companion_app/screens/patient_list_screen.dart";
 import "package:wanderguard_companion_app/screens/set_geofence_screen.dart";
 
@@ -89,6 +90,14 @@ class GlobalRouter {
             final Map<String, dynamic> formData =
                 state.extra as Map<String, dynamic>;
             return SetGeofenceScreen(formData: formData);
+          },
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: AddPatientScreen.route,
+          name: AddPatientScreen.name,
+          builder: (context, state) {
+            return AddPatientScreen();
           },
         ),
         ShellRoute(

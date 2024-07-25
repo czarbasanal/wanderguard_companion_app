@@ -149,30 +149,25 @@ class _SignupScreenState extends State<SignupScreen> {
                           },
                         ),
                       ),
-                      Container(
-                        color: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 15)
-                            .copyWith(bottom: 8),
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12)),
-                            backgroundColor: CustomColors.primaryColor,
-                            maximumSize:
-                                Size(MediaQuery.of(context).size.width, 50),
-                            minimumSize:
-                                Size(MediaQuery.of(context).size.width, 50),
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: MaterialButton(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                          clipBehavior: Clip.hardEdge,
-                          onPressed: () async {
+                          textColor: CustomColors.secondaryColor,
+                          color: CustomColors.primaryColor,
+                          minWidth: double.infinity,
+                          height: 55,
+                          onPressed: () {
                             _formKeyNew.currentState!.nextStepCustomClick();
                           },
                           child: const Text(
                             'Next',
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(fontSize: 16),
                           ),
                         ),
-                      )
+                      ),
                     ],
                   ),
                 )

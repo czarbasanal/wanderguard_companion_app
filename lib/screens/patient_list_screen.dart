@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:wanderguard_companion_app/models/patient.model.dart';
+import 'package:wanderguard_companion_app/routing/router.dart';
+import 'package:wanderguard_companion_app/screens/add_patient_screen.dart';
 import 'package:wanderguard_companion_app/services/firestore_service.dart';
 import 'package:wanderguard_companion_app/utils/colors.dart';
 import 'package:wanderguard_companion_app/widgets/dialogs/waiting_dialog.dart';
@@ -18,12 +22,17 @@ class _PatientListScreenState extends State<PatientListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: CustomColors.tertiaryColor,
       appBar: AppBar(
+        backgroundColor: CustomColors.tertiaryColor,
+        surfaceTintColor: CustomColors.tertiaryColor,
         title: const Text('My Patients',
             style: TextStyle(fontWeight: FontWeight.w800)),
         actions: [
           IconButton(
-              onPressed: () {},
+              onPressed: () {
+                GlobalRouter.I.router.push(AddPatientScreen.route);
+              },
               icon: const Icon(
                 Icons.add_rounded,
                 size: 30,
@@ -35,7 +44,7 @@ class _PatientListScreenState extends State<PatientListScreen> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return WaitingDialog(
-              prompt: 'Loading patients...',
+              prompt: 'Loading...',
               color: CustomColors.primaryColor,
             );
           }
@@ -47,7 +56,7 @@ class _PatientListScreenState extends State<PatientListScreen> {
           final patients = snapshot.data;
 
           if (patients == null || patients.isEmpty) {
-            return Center(child: Text('No registered patients yet.'));
+            return const Center(child: Text('No registered patients yet.'));
           }
 
           return ListView.builder(
@@ -57,78 +66,94 @@ class _PatientListScreenState extends State<PatientListScreen> {
               return Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Card(
+                  color: CustomColors.secondaryColor,
+                  elevation: 2,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(16),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(24.0),
                     child: Column(
                       children: [
-                        CircleAvatar(
-                          radius: 50,
-                          backgroundImage: NetworkImage(patient.photoUrl),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: Image.network(
+                            patient.photoUrl,
+                            width: 150,
+                            height: 150,
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 16),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              '${patient.firstName} ${patient.lastName}',
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
+                            Expanded(
+                              child: Text(
+                                '${patient.firstName} ${patient.lastName}',
+                                style: const TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                            IconButton(
-                              icon: Icon(Icons.edit),
-                              onPressed: () {
-                                // Edit patient functionality
-                              },
+                            GestureDetector(
+                              onTap: () {},
+                              child: SvgPicture.asset(
+                                'lib/assets/icons/edit-patient-icon.svg',
+                                width: 20,
+                                height: 20,
+                              ),
                             ),
                           ],
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 16),
                         buildPatientInfo('Age:',
                             calculateAge(patient.dateOfBirth).toString()),
                         buildPatientInfo('Address:', patient.homeAddress),
                         buildPatientInfo('Contact No:', patient.contactNo),
+                        buildPatientInfo('Status:', patient.acctStatus.name),
                         buildPatientInfo('Last Location:',
                             patient.lastLocTracked.toString()),
-                        buildPatientInfo('Last Online:', 'static data'),
-                        buildPatientInfo('Transfer Status:', 'static data'),
-                        SizedBox(height: 10),
-                        GestureDetector(
-                          onTap: () {
-                            // Transfer patient functionality
+                        const SizedBox(height: 24),
+                        MaterialButton(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          textColor: CustomColors.secondaryColor,
+                          color: CustomColors.primaryColor,
+                          minWidth: double.infinity,
+                          height: 50,
+                          onPressed: () {
+                            // Implement locate patient here
                           },
-                          child: Text(
-                            'transfer patient',
-                            style: TextStyle(
-                              backgroundColor: CustomColors.primaryColor,
-                              fontWeight: FontWeight.bold,
+                          child: const Text(
+                            'Locate',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: CustomColors.primaryColor,
+                            side: BorderSide(
+                                color:
+                                    CustomColors.primaryColor), // Border color
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
                             ),
+                            minimumSize:
+                                const Size(double.infinity, 50), // Text color
                           ),
-                        ),
-                        const SizedBox(height: 10),
-                        ElevatedButton(
                           onPressed: () {
-                            // Locate patient functionality
+                            // Implement call patient here
                           },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: CustomColors.primaryColor,
+                          child: const Text(
+                            'Call Patient',
+                            style: TextStyle(fontSize: 16),
                           ),
-                          child: Text('Locate'),
-                        ),
-                        const SizedBox(height: 10),
-                        ElevatedButton(
-                          onPressed: () {
-                            // Call patient functionality
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: CustomColors.primaryColor,
-                          ),
-                          child: Text('Call Patient'),
-                        ),
+                        )
                       ],
                     ),
                   ),
@@ -146,16 +171,21 @@ Widget buildPatientInfo(String label, String value) {
   return Padding(
     padding: const EdgeInsets.symmetric(vertical: 2.0),
     child: Row(
-      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          maxLines: 1,
-          style: TextStyle(
-              fontWeight: FontWeight.bold, overflow: TextOverflow.ellipsis),
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
         SizedBox(width: 5),
-        Text(value),
+        Expanded(
+          child: Text(
+            value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
       ],
     ),
   );
