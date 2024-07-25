@@ -2,7 +2,6 @@ import "dart:async";
 import "package:flutter/material.dart";
 import "package:get_it/get_it.dart";
 import "package:go_router/go_router.dart";
-import "package:wanderguard_companion_app/screens/add_patient_screen.dart";
 import "package:wanderguard_companion_app/screens/patient_list_screen.dart";
 import "package:wanderguard_companion_app/screens/set_geofence_screen.dart";
 
@@ -105,10 +104,10 @@ class GlobalRouter {
             ),
             GoRoute(
               parentNavigatorKey: _shellNavigatorKey,
-              path: AddPatientScreen.route,
-              name: AddPatientScreen.name,
+              path: PatientListScreen.route,
+              name: PatientListScreen.name,
               builder: (context, _) {
-                return AddPatientScreen();
+                return PatientListScreen();
               },
             ),
             GoRoute(

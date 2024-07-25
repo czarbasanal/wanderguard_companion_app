@@ -40,17 +40,14 @@ class FirestoreService {
     final User? companionUser = _auth.currentUser;
     if (companionUser != null) {
       try {
-        // Register the patient with Firebase Auth
         UserCredential userCredential =
             await _auth.createUserWithEmailAndPassword(
           email: patient.email,
           password: patient.password,
         );
 
-        // Get the newly created patient's UID
         String patientUid = userCredential.user!.uid;
 
-        // Create new patient with the UID
         final Patient newPatient = Patient(
           patientAcctId: patientUid,
           firstName: patient.firstName,
@@ -73,7 +70,6 @@ class FirestoreService {
           companionAcctId: companionUser.uid,
         );
 
-        // Store patient details in Firestore
         final DocumentReference docRef =
             _db.collection('patients').doc(patientUid);
         await docRef.set(newPatient.toFirestore());
@@ -83,5 +79,19 @@ class FirestoreService {
     } else {
       throw Exception("No user is currently logged in.");
     }
+  }
+
+  Future<List<Patient>> getPatients() async {
+    final User? currentUser = _auth.currentUser;
+    if (currentUser == null) {
+      throw Exception("No user is currently logged in.");
+    }
+
+    final querySnapshot = await _db
+        .collection('patients')
+        .where('companionAcctId', isEqualTo: currentUser.uid)
+        .get();
+
+    return querySnapshot.docs.map((doc) => Patient.fromFirestore(doc)).toList();
   }
 }

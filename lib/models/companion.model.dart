@@ -48,8 +48,8 @@ class Companion {
       'photoUrl': photoUrl,
       'acctType': acctType.name,
       'acctStatus': acctStatus.name,
-      'createdAt': createdAt,
-      'updatedAt': updatedAt,
+      'createdAt': Timestamp.fromDate(createdAt),
+      'updatedAt': Timestamp.fromDate(updatedAt),
       'currentLocation': currentLocation,
     };
   }

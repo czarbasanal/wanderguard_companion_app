@@ -58,18 +58,18 @@ class Patient {
       'password': password,
       'homeAddress': homeAddress,
       'contactNo': contactNo,
-      'dateOfBirth': dateOfBirth,
+      'dateOfBirth': Timestamp.fromDate(dateOfBirth),
       'photoUrl': photoUrl,
       'acctType': acctType.name,
       'acctStatus': acctStatus.name,
       'lastLocTracked': lastLocTracked,
-      'lastLocUpdated': lastLocUpdated,
+      'lastLocUpdated': Timestamp.fromDate(lastLocUpdated),
       'defaultGeofence': defaultGeofence.toFirestore(),
       'geofences': geofences.map((geofence) => geofence.toFirestore()).toList(),
       'emergencyContacts':
           emergencyContacts.map((contact) => contact.toFirestore()).toList(),
-      'createdAt': createdAt,
-      'updatedAt': updatedAt,
+      'createdAt': Timestamp.fromDate(createdAt),
+      'updatedAt': Timestamp.fromDate(updatedAt),
       'companionAcctId': companionAcctId,
     };
   }
@@ -89,7 +89,7 @@ class Patient {
       acctType: AccountTypeExtension.fromString(data['acctType']),
       acctStatus: AccountStatusExtension.fromString(data['acctStatus']),
       lastLocTracked: data['lastLocTracked'],
-      lastLocUpdated: data['lastLocUpdated'],
+      lastLocUpdated: (data['lastLocUpdated'] as Timestamp).toDate(),
       defaultGeofence: Geofence.fromFirestore(data['defaultGeofence']),
       geofences: (data['geofences'] as List)
           .map((geofenceData) => Geofence.fromFirestore(geofenceData))

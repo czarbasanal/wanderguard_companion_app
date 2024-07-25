@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wanderguard_companion_app/screens/add_patient_screen.dart';
+import 'package:wanderguard_companion_app/screens/patient_list_screen.dart';
 
 import '../routing/router.dart';
 import 'home_screen.dart';
@@ -18,7 +18,7 @@ class _ScreenWrapperState extends State<ScreenWrapper> {
 
   List<String> routes = [
     HomeScreen.route,
-    AddPatientScreen.route,
+    PatientListScreen.route,
     ProfileScreen.route
   ];
 
