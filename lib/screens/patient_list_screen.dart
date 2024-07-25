@@ -61,6 +61,7 @@ class _PatientListScreenState extends State<PatientListScreen> {
 
           return ListView.builder(
             itemCount: patients.length,
+            physics: const BouncingScrollPhysics(),
             itemBuilder: (context, index) {
               final patient = patients[index];
               return Padding(
