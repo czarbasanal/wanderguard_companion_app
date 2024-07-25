@@ -9,7 +9,7 @@ import "../screens/auth/login_screen.dart";
 import "../screens/auth/onboarding_screen.dart";
 import "../screens/auth/signup_screen.dart";
 import "../screens/home_screen.dart";
-import "../screens/profile_screen.dart";
+import "../screens/profile/profile_screen.dart";
 import "../screens/screen_wrapper.dart";
 
 class GlobalRouter {

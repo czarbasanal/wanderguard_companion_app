@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../routing/router.dart';
 import 'home_screen.dart';
-import 'profile_screen.dart';
+import 'profile/profile_screen.dart';
 
 class ScreenWrapper extends StatefulWidget {
   final Widget? child;
