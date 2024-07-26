@@ -44,7 +44,7 @@ class GlobalRouter {
       if (state.matchedLocation == SignupScreen.route) {
         return null;
       }
-      return OnboardingScreen.route;
+      return OnBoardingScreen.route;
     }
     return null;
   }
@@ -54,16 +54,16 @@ class GlobalRouter {
     _shellNavigatorKey = GlobalKey<NavigatorState>();
     router = GoRouter(
       navigatorKey: _rootNavigatorKey,
-      initialLocation: OnboardingScreen.route,
+      initialLocation: OnBoardingScreen.route,
       redirect: handleRedirect,
       refreshListenable: AuthController.instance,
       routes: [
         GoRoute(
           parentNavigatorKey: _rootNavigatorKey,
-          path: OnboardingScreen.route,
-          name: OnboardingScreen.name,
+          path: OnBoardingScreen.route,
+          name: OnBoardingScreen.name,
           builder: (context, _) {
-            return const OnboardingScreen();
+            return const OnBoardingScreen();
           },
         ),
         GoRoute(

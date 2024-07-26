@@ -40,16 +40,7 @@ flutter:
   uses-material-design: true
   assets:
     - lib/assets/
-    - lib/assets/local_json/
+    - lib/assets/images/
     - lib/assets/icons/
-
-    - lib/assets/images/logo.png
-    - lib/assets/images/Asset1.png
-    - lib/assets/images/Asset2.png
-    - lib/assets/images/Asset3.png
-    - lib/assets/icons/edit.svg
-    - lib/assets/icons/add.svg
-    - lib/assets/icons/home.svg
-    - lib/assets/icons/patients.svg
-    - lib/assets/icons/notification.svg
-    - lib/assets/icons/menu.svg
+    - lib/assets/local_json/
+    

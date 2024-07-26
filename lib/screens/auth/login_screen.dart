@@ -2,16 +2,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:go_router/go_router.dart';
+import 'package:wanderguard_companion_app/screens/auth/onboarding_screen.dart';
 
 import '../../controllers/auth_controller.dart';
 import '../../utils/colors.dart';
 import '../../widgets/dialogs/waiting_dialog.dart';
-import 'onboarding_screen.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   static const String route = "/login";
   static const String name = "Login Screen";
-  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -64,7 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
             if (GoRouter.of(context).canPop()) {
               context.pop();
             } else {
-              context.go(OnboardingScreen.route);
+              context.go(OnBoardingScreen.route);
             }
           },
         ),

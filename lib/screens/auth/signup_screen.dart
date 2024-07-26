@@ -1,5 +1,6 @@
 import 'package:dynamic_multi_step_form/dynamic_multi_step_form.dart';
 import 'package:go_router/go_router.dart';
+import 'package:wanderguard_companion_app/screens/auth/onboarding_screen.dart';
 import 'package:wanderguard_companion_app/utils/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -8,13 +9,12 @@ import '../../routing/router.dart';
 import '../../services/information_service.dart';
 import '../../widgets/dialogs/waiting_dialog.dart';
 import '../home_screen.dart';
-import 'onboarding_screen.dart';
 
 class SignupScreen extends StatefulWidget {
+  const SignupScreen({super.key});
+
   static const String route = "/signup";
   static const String name = "Sign up";
-
-  const SignupScreen({super.key});
 
   @override
   State<SignupScreen> createState() => _SignupScreenState();
@@ -68,7 +68,7 @@ class _SignupScreenState extends State<SignupScreen> {
             if (GoRouter.of(context).canPop()) {
               context.pop();
             } else {
-              context.go(OnboardingScreen.route);
+              context.go(OnBoardingScreen.route);
             }
           },
         ),
