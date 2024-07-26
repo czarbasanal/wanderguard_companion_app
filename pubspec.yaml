@@ -1,12 +1,13 @@
 name: wanderguard_companion_app
 description: "A new Flutter project."
-publish_to: 'none'
+publish_to: "none"
 version: 0.1.0
 
 environment:
-  sdk: '>=3.4.3 <4.0.0'
+  sdk: ">=3.4.3 <4.0.0"
 
 dependencies:
+  carousel_slider: ^4.2.1
   cloud_firestore: ^5.1.0
   cupertino_icons: ^1.0.8
   dynamic_multi_step_form: ^1.1.5
@@ -28,6 +29,7 @@ dependencies:
   intl: ^0.19.0
   location: ^7.0.0
   shared_preferences: ^2.2.3
+  smooth_page_indicator: ^1.2.0+3
 
 dev_dependencies:
   flutter_test:
@@ -41,4 +43,13 @@ flutter:
     - lib/assets/local_json/
     - lib/assets/icons/
 
-
+    - lib/assets/images/logo.png
+    - lib/assets/images/Asset1.png
+    - lib/assets/images/Asset2.png
+    - lib/assets/images/Asset3.png
+    - lib/assets/icons/edit.svg
+    - lib/assets/icons/add.svg
+    - lib/assets/icons/home.svg
+    - lib/assets/icons/patients.svg
+    - lib/assets/icons/notification.svg
+    - lib/assets/icons/menu.svg
