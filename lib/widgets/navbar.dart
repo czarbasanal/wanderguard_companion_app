@@ -45,7 +45,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
       ),
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           _buildNavItem('lib/assets/icons/home.svg', 0),
           SizedBox(width: widget.iconGap),

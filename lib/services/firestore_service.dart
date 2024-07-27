@@ -7,14 +7,14 @@ import 'package:wanderguard_companion_app/models/companion.model.dart';
 import 'package:wanderguard_companion_app/models/patient.model.dart';
 
 class FirestoreService {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  static FirestoreService get instance => GetIt.instance<FirestoreService>();
-
   static void initialize() {
     GetIt.instance.registerSingleton<FirestoreService>(FirestoreService());
   }
+
+  static FirestoreService get instance => GetIt.instance<FirestoreService>();
+
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<void> addOrUpdateCompanion(Companion companion) async {
     final companionRef =

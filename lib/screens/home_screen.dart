@@ -1,22 +1,17 @@
-import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:http/http.dart' as http;
-import 'dart:ui' as ui;
+import 'package:wanderguard_companion_app/models/patient.model.dart';
+import 'package:wanderguard_companion_app/services/firestore_service.dart';
+import 'package:wanderguard_companion_app/services/information_service.dart';
+import 'package:wanderguard_companion_app/services/location_service.dart';
+import 'package:wanderguard_companion_app/services/shared_preferences_service.dart';
 
 import 'package:wanderguard_companion_app/utils/colors.dart';
+import 'package:wanderguard_companion_app/utils/custom_marker_generator.dart';
 import 'package:wanderguard_companion_app/utils/geopoint_converter.dart';
 import 'package:wanderguard_companion_app/utils/size_config.dart';
-import '../services/information_service.dart';
-import '../widgets/dialogs/waiting_dialog.dart';
-import '../controllers/companion_data_controller.dart';
-import '../services/firestore_service.dart';
-import '../models/companion.model.dart';
-import '../models/patient.model.dart';
+import 'package:wanderguard_companion_app/widgets/dialogs/waiting_dialog.dart';
 
 class HomeScreen extends StatefulWidget {
   static const route = '/home';
@@ -43,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _determinePosition().then((position) {
+    LocationService.instance.getCurrentLocation().then((position) {
       setState(() {
         _initialPosition = CameraPosition(
           target: LatLng(position.latitude, position.longitude),
@@ -51,84 +46,27 @@ class _HomeScreenState extends State<HomeScreen> {
         );
         _loadingLocation = false;
       });
-      _updateCurrentLocation(position);
+      LocationService.instance.updateCompanionLocation(position);
     }).catchError((e) {
       setState(() {
         _loadingLocation = false;
       });
       Info.showSnackbarMessage(context, message: e.toString(), label: "Error");
     });
+
+    _loadMarkers();
   }
 
-  Future<Position> _determinePosition() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      throw 'Location services are disabled.';
-    }
-
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        throw 'Location permissions are denied';
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      throw 'Location permissions are permanently denied, we cannot request permissions.';
-    }
-
-    return await Geolocator.getCurrentPosition();
-  }
-
-  Future<void> _updateCurrentLocation(Position position) async {
-    try {
-      Companion? companion =
-          CompanionDataController.instance.companionModelNotifier.value;
-      if (companion != null) {
-        companion.updateCurrentLocation(
-            GeoPoint(position.latitude, position.longitude));
-        await FirestoreService.instance.addOrUpdateCompanion(companion);
-      }
-    } catch (e) {
-      Info.showSnackbarMessage(context,
-          message: "Failed to update location: $e", label: "Error");
-    }
-  }
-
-  Future<BitmapDescriptor> _createCustomMarker(String imageUrl) async {
-    final http.Response response = await http.get(Uri.parse(imageUrl));
-    if (response.statusCode != 200) {
-      throw Exception('Failed to load image');
-    }
-
-    final Uint8List imageData = response.bodyBytes;
-    final ui.Codec codec = await ui.instantiateImageCodec(imageData,
-        targetHeight: 100, targetWidth: 100);
-    final ui.FrameInfo frameInfo = await codec.getNextFrame();
-    final ui.Image image = frameInfo.image;
-
-    final ui.PictureRecorder pictureRecorder = ui.PictureRecorder();
-    final Canvas canvas = Canvas(pictureRecorder);
-    final Paint paint = Paint()..isAntiAlias = true;
-    final double size = 100.0;
-
-    canvas.drawCircle(
-        Offset(size / 2, size / 2), size / 2, paint..color = Colors.white);
-    canvas.clipPath(Path()..addOval(Rect.fromLTWH(0, 0, size, size)));
-    canvas.drawImage(image, Offset(0, 0), paint);
-
-    final ui.Image markerImage = await pictureRecorder
-        .endRecording()
-        .toImage(size.toInt(), size.toInt());
-    final ByteData? byteData =
-        await markerImage.toByteData(format: ui.ImageByteFormat.png);
-
-    return BitmapDescriptor.fromBytes(byteData!.buffer.asUint8List());
+  Future<void> _loadMarkers() async {
+    List<Marker> savedMarkers =
+        await SharedPreferenceService.instance.loadMarkers();
+    setState(() {
+      _markers.addAll(savedMarkers);
+    });
   }
 
   void _addMarker(LatLng position, String markerId, String imageUrl) {
-    _createCustomMarker(imageUrl).then((markerIcon) {
+    createCustomMarker(imageUrl).then((markerIcon) {
       final marker = Marker(
         markerId: MarkerId(markerId),
         position: position,
@@ -140,6 +78,8 @@ class _HomeScreenState extends State<HomeScreen> {
         _controller.animateCamera(CameraUpdate.newLatLng(position));
         _loadingMarker = false;
       });
+
+      SharedPreferenceService.instance.saveMarkers(_markers.toList());
     });
   }
 
@@ -231,10 +171,10 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           if (_loadingMarker)
             Container(
-              color: Colors.white.withOpacity(0.85),
+              color: Colors.white.withOpacity(0.8),
               child: Center(
                 child: WaitingDialog(
-                  prompt: "Locating Patient...",
+                  prompt: "Loading marker...",
                   color: CustomColors.primaryColor,
                 ),
               ),
@@ -376,15 +316,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                       foregroundColor:
                                           CustomColors.primaryColor,
                                       side: BorderSide(
-                                          color: CustomColors
-                                              .primaryColor), // Border color
+                                          color: CustomColors.primaryColor),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(5),
                                       ),
                                       minimumSize: Size(
                                           SizeConfig.screenWidth * 0.05,
-                                          SizeConfig.screenHeight *
-                                              0.048), // Text color
+                                          SizeConfig.screenHeight * 0.048),
                                     ),
                                     onPressed: () {
                                       // Implement call patient here
