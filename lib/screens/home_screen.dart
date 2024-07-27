@@ -231,7 +231,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           if (_loadingMarker)
             Container(
-              color: Colors.white.withOpacity(0.8),
+              color: Colors.white.withOpacity(0.85),
               child: Center(
                 child: WaitingDialog(
                   prompt: "Locating Patient...",
