@@ -1,23 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:wanderguard_companion_app/utils/colors.dart';
 
-class Navbar extends StatefulWidget {
+class CustomBottomNavBar extends StatefulWidget {
   final double iconGap;
   final double height;
+  final ValueChanged<int>? onTap;
+  final int selectedIndex;
 
-  Navbar({this.iconGap = 0.0, this.height = 70.0});
+  CustomBottomNavBar({
+    this.iconGap = 0.0,
+    this.height = 70.0,
+    this.onTap,
+    this.selectedIndex = 0,
+  });
 
   @override
-  _NavbarState createState() => _NavbarState();
+  _CustomBottomNavBarState createState() => _CustomBottomNavBarState();
 }
 
-class _NavbarState extends State<Navbar> {
-  int _selectedIndex = 0;
-
+class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    widget.onTap?.call(index);
   }
 
   @override
@@ -26,7 +30,7 @@ class _NavbarState extends State<Navbar> {
       height: widget.height,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(15.0),
           topRight: Radius.circular(15.0),
         ),
@@ -39,7 +43,7 @@ class _NavbarState extends State<Navbar> {
           ),
         ],
       ),
-      padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
@@ -60,7 +64,12 @@ class _NavbarState extends State<Navbar> {
       onTap: () => _onItemTapped(index),
       child: SvgPicture.asset(
         iconPath,
-        color: _selectedIndex == index ? Color(0xFF8048C8) : Colors.grey,
+        colorFilter: ColorFilter.mode(
+          widget.selectedIndex == index
+              ? CustomColors.primaryColor
+              : Colors.grey,
+          BlendMode.srcIn,
+        ),
       ),
     );
   }

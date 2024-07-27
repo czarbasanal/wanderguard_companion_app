@@ -130,6 +130,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                   ),
                   const SizedBox(height: 40.0),
                   MaterialButton(
+                    elevation: 0,
                     color: CustomColors.tertiaryColor,
                     minWidth: 65 * SizeConfig.blockSizeHorizontal,
                     height: 5.5 * SizeConfig.blockSizeVertical,
