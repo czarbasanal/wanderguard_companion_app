@@ -81,17 +81,20 @@ class FirestoreService {
     }
   }
 
-  Future<List<Patient>> getPatients() async {
+  Stream<List<Patient>> getPatientsStream() {
     final User? currentUser = _auth.currentUser;
     if (currentUser == null) {
       throw Exception("No user is currently logged in.");
     }
 
-    final querySnapshot = await _db
+    return _db
         .collection('patients')
         .where('companionAcctId', isEqualTo: currentUser.uid)
-        .get();
-
-    return querySnapshot.docs.map((doc) => Patient.fromFirestore(doc)).toList();
+        .snapshots()
+        .map((querySnapshot) {
+      return querySnapshot.docs
+          .map((doc) => Patient.fromFirestore(doc))
+          .toList();
+    });
   }
 }

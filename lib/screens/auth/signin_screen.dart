@@ -48,8 +48,6 @@ class _SigninScreenState extends State<SigninScreen> {
 
   @override
   Widget build(BuildContext context) {
-    SizeConfig().init(context);
-
     return Scaffold(
       backgroundColor: CustomColors.secondaryColor,
       appBar: AppBar(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wanderguard_companion_app/screens/notification_screen.dart';
 import 'package:wanderguard_companion_app/screens/patient_list_screen.dart';
 import 'package:wanderguard_companion_app/widgets/navbar.dart';
 import '../routing/router.dart';
@@ -19,6 +20,7 @@ class _ScreenWrapperState extends State<ScreenWrapper> {
   List<String> routes = [
     HomeScreen.route,
     PatientListScreen.route,
+    NotificationScreen.route,
     ProfileScreen.route
   ];
 
@@ -36,7 +38,7 @@ class _ScreenWrapperState extends State<ScreenWrapper> {
       body: SafeArea(child: widget.child ?? const Placeholder()),
       bottomNavigationBar: CustomBottomNavBar(
         iconGap: 10.0,
-        height: 70.0,
+        height: 65.0,
         onTap: _onItemTapped,
         selectedIndex: index,
       ),

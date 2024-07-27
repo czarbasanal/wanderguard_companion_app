@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wanderguard_companion_app/utils/colors.dart';
 
 import '../controllers/auth_controller.dart';
 
@@ -20,33 +21,20 @@ class ProfileScreen extends StatelessWidget {
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 40.0, horizontal: 24),
-          child: Container(
-            padding: const EdgeInsets.only(top: 3, left: 3),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(50),
-                border: const Border(
-                  bottom: BorderSide(color: Colors.black),
-                  top: BorderSide(color: Colors.black),
-                  left: BorderSide(color: Colors.black),
-                  right: BorderSide(color: Colors.black),
-                )),
-            child: MaterialButton(
-              minWidth: double.infinity,
-              height: 60,
-              onPressed: () {
-                AuthController.instance.logout();
-              },
-              color: Colors.deepPurpleAccent,
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(50)),
-              child: const Text(
-                "Logout",
-                style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 18,
-                    color: Colors.white),
-              ),
+          child: MaterialButton(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            textColor: CustomColors.secondaryColor,
+            color: CustomColors.primaryColor,
+            minWidth: double.infinity,
+            height: 55,
+            onPressed: () {
+              AuthController.instance.logout();
+            },
+            child: const Text(
+              'Logout',
+              style: TextStyle(fontSize: 16),
             ),
           ),
         ),
