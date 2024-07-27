@@ -1,8 +1,12 @@
+import 'dart:typed_data';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:http/http.dart' as http;
+import 'dart:ui' as ui;
 
 import 'package:wanderguard_companion_app/utils/colors.dart';
 import 'package:wanderguard_companion_app/utils/geopoint_converter.dart';
@@ -31,6 +35,10 @@ class _HomeScreenState extends State<HomeScreen> {
   );
   bool _loadingLocation = true;
   late GoogleMapController _controller;
+  final Set<Marker> _markers = {};
+  bool _loadingMarker = false;
+  final DraggableScrollableController _scrollableController =
+      DraggableScrollableController();
 
   @override
   void initState() {
@@ -88,6 +96,53 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<BitmapDescriptor> _createCustomMarker(String imageUrl) async {
+    final http.Response response = await http.get(Uri.parse(imageUrl));
+    if (response.statusCode != 200) {
+      throw Exception('Failed to load image');
+    }
+
+    final Uint8List imageData = response.bodyBytes;
+    final ui.Codec codec = await ui.instantiateImageCodec(imageData,
+        targetHeight: 100, targetWidth: 100);
+    final ui.FrameInfo frameInfo = await codec.getNextFrame();
+    final ui.Image image = frameInfo.image;
+
+    final ui.PictureRecorder pictureRecorder = ui.PictureRecorder();
+    final Canvas canvas = Canvas(pictureRecorder);
+    final Paint paint = Paint()..isAntiAlias = true;
+    final double size = 100.0;
+
+    canvas.drawCircle(
+        Offset(size / 2, size / 2), size / 2, paint..color = Colors.white);
+    canvas.clipPath(Path()..addOval(Rect.fromLTWH(0, 0, size, size)));
+    canvas.drawImage(image, Offset(0, 0), paint);
+
+    final ui.Image markerImage = await pictureRecorder
+        .endRecording()
+        .toImage(size.toInt(), size.toInt());
+    final ByteData? byteData =
+        await markerImage.toByteData(format: ui.ImageByteFormat.png);
+
+    return BitmapDescriptor.fromBytes(byteData!.buffer.asUint8List());
+  }
+
+  void _addMarker(LatLng position, String markerId, String imageUrl) {
+    _createCustomMarker(imageUrl).then((markerIcon) {
+      final marker = Marker(
+        markerId: MarkerId(markerId),
+        position: position,
+        icon: markerIcon,
+      );
+
+      setState(() {
+        _markers.add(marker);
+        _controller.animateCamera(CameraUpdate.newLatLng(position));
+        _loadingMarker = false;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -105,13 +160,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   myLocationEnabled: true,
                   myLocationButtonEnabled: true,
                   zoomControlsEnabled: false,
+                  markers: _markers,
                   onMapCreated: (GoogleMapController controller) {
                     _controller = controller;
                   },
                 ),
           DraggableScrollableSheet(
-            initialChildSize: 0.2,
-            minChildSize: 0.1,
+            controller: _scrollableController,
+            initialChildSize: 0.06,
+            minChildSize: 0.06,
             maxChildSize: 0.7,
             builder: (BuildContext context, ScrollController scrollController) {
               return Container(
@@ -138,10 +195,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Container(
-                          width: SizeConfig.screenWidth * 0.25,
+                          width: SizeConfig.screenWidth * 0.2,
                           height: 3,
                           decoration: BoxDecoration(
-                              color: Colors.grey,
+                              color: CustomColors.primaryColor,
                               borderRadius: BorderRadius.circular(50)),
                         ),
                         const SizedBox(height: 16),
@@ -172,6 +229,16 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
           ),
+          if (_loadingMarker)
+            Container(
+              color: Colors.white.withOpacity(0.8),
+              child: Center(
+                child: WaitingDialog(
+                  prompt: "Locating Patient...",
+                  color: CustomColors.primaryColor,
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -208,7 +275,7 @@ class _HomeScreenState extends State<HomeScreen> {
               future:
                   GeoPointConverter.geoPointToAddress(patient.lastLocTracked),
               builder: (context, lastLocSnapshot) {
-                final address = lastLocSnapshot.data ?? 'Fetching location...';
+                final location = lastLocSnapshot.data ?? 'Fetching location...';
 
                 return Card(
                   color: CustomColors.tertiaryColor,
@@ -217,13 +284,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         ClipRRect(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(12),
                           child: Image.network(
                             patient.photoUrl,
-                            width: 70,
-                            height: 70,
+                            width: 85,
+                            height: 85,
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -235,43 +303,112 @@ class _HomeScreenState extends State<HomeScreen> {
                               Text(
                                 '${patient.firstName} ${patient.lastName}',
                                 style: const TextStyle(
-                                  fontSize: 16,
+                                  fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               Text(
                                 patient.contactNo,
-                                style: TextStyle(fontSize: 14),
+                                style: const TextStyle(fontSize: 14),
                               ),
-                              Text(
-                                'Last Location: $address',
-                                style: TextStyle(fontSize: 14),
+                              const SizedBox(height: 5),
+                              const Text(
+                                'Last Location:',
+                                style: TextStyle(
+                                    fontSize: 14, fontWeight: FontWeight.bold),
                               ),
+                              Text(location,
+                                  style: const TextStyle(fontSize: 14)),
+                              const SizedBox(height: 16),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  MaterialButton(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    minWidth: SizeConfig.screenWidth * 0.1,
+                                    height: SizeConfig.screenHeight * 0.048,
+                                    color: CustomColors.primaryColor,
+                                    onPressed: () {
+                                      setState(() {
+                                        _loadingMarker = true;
+                                      });
+                                      _scrollableController
+                                          .animateTo(0.06,
+                                              duration: const Duration(
+                                                  milliseconds: 500),
+                                              curve: Curves.easeInOut)
+                                          .then((_) {
+                                        _addMarker(
+                                          LatLng(
+                                            patient.lastLocTracked.latitude,
+                                            patient.lastLocTracked.longitude,
+                                          ),
+                                          patient.patientAcctId,
+                                          patient.photoUrl,
+                                        );
+                                      });
+                                    },
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          CupertinoIcons.placemark_fill,
+                                          color: CustomColors.secondaryColor,
+                                          size: 24,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          'Locate',
+                                          style: TextStyle(
+                                              fontSize: 15,
+                                              color:
+                                                  CustomColors.secondaryColor),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      foregroundColor:
+                                          CustomColors.primaryColor,
+                                      side: BorderSide(
+                                          color: CustomColors
+                                              .primaryColor), // Border color
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                      minimumSize: Size(
+                                          SizeConfig.screenWidth * 0.05,
+                                          SizeConfig.screenHeight *
+                                              0.048), // Text color
+                                    ),
+                                    onPressed: () {
+                                      // Implement call patient here
+                                    },
+                                    child: const Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          CupertinoIcons.phone_fill,
+                                          size: 24,
+                                        ),
+                                        SizedBox(width: 8),
+                                        Text(
+                                          'Call',
+                                          style: TextStyle(fontSize: 15),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              )
                             ],
                           ),
-                        ),
-                        Column(
-                          children: [
-                            ElevatedButton(
-                              onPressed: () {
-                                // Implement call patient
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: CustomColors.primaryColor,
-                              ),
-                              child: Text('Call'),
-                            ),
-                            SizedBox(height: 5),
-                            ElevatedButton(
-                              onPressed: () {
-                                // Implement locate patient
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: CustomColors.primaryColor,
-                              ),
-                              child: Text('Locate'),
-                            ),
-                          ],
                         ),
                       ],
                     ),
