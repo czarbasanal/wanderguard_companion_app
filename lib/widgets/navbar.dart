@@ -29,17 +29,17 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
     return Container(
       height: widget.height,
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(15.0),
-          topRight: Radius.circular(15.0),
-        ),
+        color: CustomColors.tertiaryColor,
+        // borderRadius: const BorderRadius.only(
+        //   topLeft: Radius.circular(16.0),
+        //   topRight: Radius.circular(16.0),
+        // ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            spreadRadius: 5,
-            blurRadius: 7,
-            offset: Offset(0, 3),
+            color: Colors.black.withOpacity(0.2),
+            spreadRadius: 3,
+            blurRadius: 1,
+            offset: const Offset(0, 3),
           ),
         ],
       ),

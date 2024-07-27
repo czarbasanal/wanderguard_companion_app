@@ -13,10 +13,10 @@
         {
           "elementType": "input",
           "elementConfig": {
-            "type": "text",
+            "type": "name",
             "name": "first_name",
             "label": "First Name",
-            "placeholder": "First Name",
+            "placeholder": "",
             "class": "form-control",
             "resetIcon": true
           },
@@ -42,7 +42,7 @@
             "type": "text",
             "name": "last_name",
             "label": "Last Name",
-            "placeholder": "Last Name",
+            "placeholder": "",
             "class": "form-control",
             "resetIcon": true
           },
@@ -68,7 +68,7 @@
             "type": "tel",
             "name": "contact_no",
             "label": "Contact Number",
-            "placeholder": "Contact Number",
+            "placeholder": "",
             "class": "form-control",
             "resetIcon": true
           },

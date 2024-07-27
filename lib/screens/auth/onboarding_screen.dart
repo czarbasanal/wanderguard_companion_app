@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:wanderguard_companion_app/routing/router.dart';
-import 'package:wanderguard_companion_app/screens/auth/login_screen.dart';
+import 'package:wanderguard_companion_app/screens/auth/signin_screen.dart';
 import 'package:wanderguard_companion_app/screens/auth/signup_screen.dart';
 import 'package:wanderguard_companion_app/utils/colors.dart';
 import 'package:wanderguard_companion_app/utils/size_config.dart';
@@ -138,7 +138,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                       borderRadius: BorderRadius.circular(10.0),
                     ),
                     onPressed: () {
-                      GlobalRouter.I.router.go(LoginScreen.route);
+                      GlobalRouter.I.router.go(SigninScreen.route);
                     },
                     child: Text(
                       'Sign In',

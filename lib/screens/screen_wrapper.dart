@@ -32,6 +32,7 @@ class _ScreenWrapperState extends State<ScreenWrapper> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
       body: SafeArea(child: widget.child ?? const Placeholder()),
       bottomNavigationBar: CustomBottomNavBar(
         iconGap: 10.0,

@@ -8,7 +8,7 @@ import "package:wanderguard_companion_app/screens/set_geofence_screen.dart";
 
 import "../controllers/auth_controller.dart";
 import "../enum/auth_state.enum.dart";
-import "../screens/auth/login_screen.dart";
+import "../screens/auth/signin_screen.dart";
 import "../screens/auth/onboarding_screen.dart";
 import "../screens/auth/signup_screen.dart";
 import "../screens/home_screen.dart";
@@ -29,7 +29,7 @@ class GlobalRouter {
   FutureOr<String?> handleRedirect(
       BuildContext context, GoRouterState state) async {
     if (AuthController.instance.state == AuthState.authenticated) {
-      if (state.matchedLocation == LoginScreen.route) {
+      if (state.matchedLocation == SigninScreen.route) {
         return HomeScreen.route;
       }
       if (state.matchedLocation == SignupScreen.route) {
@@ -38,7 +38,7 @@ class GlobalRouter {
       return null;
     }
     if (AuthController.instance.state != AuthState.authenticated) {
-      if (state.matchedLocation == LoginScreen.route) {
+      if (state.matchedLocation == SigninScreen.route) {
         return null;
       }
       if (state.matchedLocation == SignupScreen.route) {
@@ -68,10 +68,10 @@ class GlobalRouter {
         ),
         GoRoute(
           parentNavigatorKey: _rootNavigatorKey,
-          path: LoginScreen.route,
-          name: LoginScreen.name,
+          path: SigninScreen.route,
+          name: SigninScreen.name,
           builder: (context, _) {
-            return const LoginScreen();
+            return const SigninScreen();
           },
         ),
         GoRoute(

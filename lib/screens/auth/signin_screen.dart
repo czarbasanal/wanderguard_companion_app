@@ -10,17 +10,17 @@ import '../../controllers/auth_controller.dart';
 import '../../utils/colors.dart';
 import '../../widgets/dialogs/waiting_dialog.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class SigninScreen extends StatefulWidget {
+  const SigninScreen({super.key});
 
   static const String route = "/login";
   static const String name = "Login Screen";
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<SigninScreen> createState() => _SigninScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SigninScreenState extends State<SigninScreen> {
   late GlobalKey<FormState> formKey;
   late TextEditingController username, password;
   late FocusNode usernameFn, passwordFn;
@@ -51,7 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
     SizeConfig().init(context);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: CustomColors.secondaryColor,
       appBar: AppBar(
         elevation: 0,
         automaticallyImplyLeading: false,
@@ -68,8 +68,8 @@ class _LoginScreenState extends State<LoginScreen> {
             }
           },
         ),
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.white,
+        backgroundColor: CustomColors.secondaryColor,
+        surfaceTintColor: CustomColors.secondaryColor,
       ),
       body: SafeArea(
         child: Column(

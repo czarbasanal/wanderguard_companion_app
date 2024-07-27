@@ -66,10 +66,10 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
         ),
       ),
       body: addPatientConfig == null
-          ? const Center(
+          ? Center(
               child: WaitingDialog(
                 prompt: "Loading form...",
-                color: Colors.deepPurpleAccent,
+                color: CustomColors.primaryColor,
               ),
             )
           : Column(
