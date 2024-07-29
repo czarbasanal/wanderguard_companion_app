@@ -2,7 +2,7 @@ import 'package:dynamic_multi_step_form/dynamic_multi_step_form.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:wanderguard_companion_app/screens/auth/onboarding_screen.dart';
+import 'package:wanderguard_companion_app/screens/onboarding/onboarding_screen.dart';
 import 'package:wanderguard_companion_app/utils/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:wanderguard_companion_app/utils/size_config.dart';
@@ -11,7 +11,7 @@ import '../../controllers/auth_controller.dart';
 import '../../routing/router.dart';
 import '../../services/information_service.dart';
 import '../../widgets/dialogs/waiting_dialog.dart';
-import '../home_screen.dart';
+import '../home/home_screen.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});

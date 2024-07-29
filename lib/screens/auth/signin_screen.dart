@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:go_router/go_router.dart';
-import 'package:wanderguard_companion_app/screens/auth/onboarding_screen.dart';
+import 'package:wanderguard_companion_app/screens/onboarding/onboarding_screen.dart';
 import 'package:wanderguard_companion_app/utils/size_config.dart';
 
 import '../../controllers/auth_controller.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wanderguard_companion_app/utils/colors.dart';
 
-import '../controllers/auth_controller.dart';
+import '../../controllers/auth_controller.dart';
 
 class ProfileScreen extends StatelessWidget {
   static const route = '/profile';

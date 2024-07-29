@@ -2,18 +2,18 @@ import "dart:async";
 import "package:flutter/material.dart";
 import "package:get_it/get_it.dart";
 import "package:go_router/go_router.dart";
-import "package:wanderguard_companion_app/screens/add_patient_screen.dart";
-import "package:wanderguard_companion_app/screens/notification_screen.dart";
-import "package:wanderguard_companion_app/screens/patient_list_screen.dart";
-import "package:wanderguard_companion_app/screens/set_geofence_screen.dart";
+import "package:wanderguard_companion_app/screens/patients/add_patient_screen.dart";
+import "package:wanderguard_companion_app/screens/notifications/notification_screen.dart";
+import "package:wanderguard_companion_app/screens/patients/patient_list_screen.dart";
+import "package:wanderguard_companion_app/screens/patients/set_geofence_screen.dart";
 
 import "../controllers/auth_controller.dart";
 import "../enum/auth_state.enum.dart";
 import "../screens/auth/signin_screen.dart";
-import "../screens/auth/onboarding_screen.dart";
+import "../screens/onboarding/onboarding_screen.dart";
 import "../screens/auth/signup_screen.dart";
-import "../screens/home_screen.dart";
-import "../screens/profile_screen.dart";
+import "../screens/home/home_screen.dart";
+import "../screens/profile/profile_screen.dart";
 import "../screens/screen_wrapper.dart";
 
 class GlobalRouter {

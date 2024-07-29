@@ -4,7 +4,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:wanderguard_companion_app/enum/account_status.enum.dart';
 import 'package:wanderguard_companion_app/enum/account_type.enum.dart';
 import 'package:wanderguard_companion_app/routing/router.dart';
-import 'package:wanderguard_companion_app/screens/patient_list_screen.dart';
+import 'package:wanderguard_companion_app/screens/patients/patient_list_screen.dart';
 import 'package:wanderguard_companion_app/services/firestore_service.dart';
 import 'package:wanderguard_companion_app/services/information_service.dart';
 import 'package:wanderguard_companion_app/utils/colors.dart';
