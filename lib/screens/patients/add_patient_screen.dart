@@ -1,7 +1,7 @@
 import 'package:dynamic_multi_step_form/dynamic_multi_step_form.dart';
 import 'package:go_router/go_router.dart';
 import 'package:wanderguard_companion_app/routing/router.dart';
-import 'package:wanderguard_companion_app/screens/set_geofence_screen.dart';
+import 'package:wanderguard_companion_app/screens/patients/set_geofence_screen.dart';
 import 'package:wanderguard_companion_app/services/information_service.dart';
 import 'package:wanderguard_companion_app/utils/colors.dart';
 import 'package:wanderguard_companion_app/widgets/dialogs/waiting_dialog.dart';
@@ -66,10 +66,10 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
         ),
       ),
       body: addPatientConfig == null
-          ? const Center(
+          ? Center(
               child: WaitingDialog(
                 prompt: "Loading form...",
-                color: Colors.deepPurpleAccent,
+                color: CustomColors.primaryColor,
               ),
             )
           : Column(

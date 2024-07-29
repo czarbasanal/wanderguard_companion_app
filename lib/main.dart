@@ -1,7 +1,11 @@
+import 'package:dynamic_multi_step_form/dynamic_multi_step_form.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:wanderguard_companion_app/services/location_service.dart';
+import 'package:wanderguard_companion_app/services/shared_preferences_service.dart';
 import 'package:wanderguard_companion_app/utils/colors.dart';
+import 'package:wanderguard_companion_app/utils/form_textfield_config.dart';
+import 'package:wanderguard_companion_app/utils/size_config.dart';
 import 'controllers/auth_controller.dart';
 import 'controllers/companion_data_controller.dart';
 
@@ -19,7 +23,15 @@ void main() async {
   CompanionDataController.initialize();
   // PatientDataController.initialize();
   FirestoreService.initialize();
+  LocationService.initialize();
+  SharedPreferenceService.initialize();
   await AuthController.instance.loadSession();
+
+  ConfigurationSetting.instance.setTextFieldViewConfig =
+      FormTextFieldConfig.textFieldConfiguration;
+  ConfigurationSetting.instance.setTelTextFieldViewConfig =
+      FormTextFieldConfig.telTextFieldConfiguration;
+
   runApp(const MyApp());
 }
 
@@ -28,6 +40,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
+
     return Builder(
       builder: (context) {
         return MaterialApp.router(

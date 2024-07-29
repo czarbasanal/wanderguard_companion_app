@@ -13,10 +13,10 @@
         {
           "elementType": "input",
           "elementConfig": {
-            "type": "text",
+            "type": "name",
             "name": "first_name",
             "label": "First Name",
-            "placeholder": "First Name",
+            "placeholder": "",
             "class": "form-control",
             "resetIcon": true
           },
@@ -42,7 +42,7 @@
             "type": "text",
             "name": "last_name",
             "label": "Last Name",
-            "placeholder": "Last Name",
+            "placeholder": "",
             "class": "form-control",
             "resetIcon": true
           },
@@ -68,7 +68,7 @@
             "type": "tel",
             "name": "contact_no",
             "label": "Contact Number",
-            "placeholder": "Contact Number",
+            "placeholder": "",
             "class": "form-control",
             "resetIcon": true
           },
@@ -101,7 +101,7 @@
             "type": "text",
             "name": "street",
             "label": "Street",
-            "placeholder": "Street",
+            "placeholder": "",
             "class": "form-control",
             "resetIcon": true
           },
@@ -127,7 +127,7 @@
             "type": "text",
             "name": "barangay",
             "label": "Barangay",
-            "placeholder": "Barangay",
+            "placeholder": "",
             "class": "form-control",
             "resetIcon": true
           },
@@ -153,7 +153,7 @@
             "type": "text",
             "name": "city",
             "label": "City/Municipality",
-            "placeholder": "City/Municipality",
+            "placeholder": "",
             "class": "form-control",
             "resetIcon": true
           },
@@ -179,7 +179,7 @@
             "type": "text",
             "name": "province",
             "label": "Province",
-            "placeholder": "Province",
+            "placeholder": "",
             "class": "form-control",
             "resetIcon": true
           },
@@ -205,7 +205,7 @@
             "type": "tel",
             "name": "postal_code",
             "label": "Postal Code",
-            "placeholder": "Postal Code",
+            "placeholder": "",
             "class": "form-control",
             "resetIcon": true
           },
@@ -238,7 +238,7 @@
             "type": "email",
             "name": "email",
             "label": "Email",
-            "placeholder": "Email",
+            "placeholder": "",
             "class": "form-control",
             "resetIcon": true
           },
@@ -265,7 +265,7 @@
             "type": "password",
             "name": "password",
             "label": "Password",
-            "placeholder": "Password",
+            "placeholder": "",
             "class": "form-control",
             "resetIcon": true
           },
@@ -291,7 +291,7 @@
             "type": "password",
             "name": "confirm_password",
             "label": "Confirm Password",
-            "placeholder": "Confirm Password",
+            "placeholder": "",
             "class": "form-control",
             "resetIcon": true
           },

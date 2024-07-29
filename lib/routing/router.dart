@@ -2,17 +2,18 @@ import "dart:async";
 import "package:flutter/material.dart";
 import "package:get_it/get_it.dart";
 import "package:go_router/go_router.dart";
-import "package:wanderguard_companion_app/screens/add_patient_screen.dart";
-import "package:wanderguard_companion_app/screens/patient_list_screen.dart";
-import "package:wanderguard_companion_app/screens/set_geofence_screen.dart";
+import "package:wanderguard_companion_app/screens/patients/add_patient_screen.dart";
+import "package:wanderguard_companion_app/screens/notifications/notification_screen.dart";
+import "package:wanderguard_companion_app/screens/patients/patient_list_screen.dart";
+import "package:wanderguard_companion_app/screens/patients/set_geofence_screen.dart";
 
 import "../controllers/auth_controller.dart";
 import "../enum/auth_state.enum.dart";
-import "../screens/auth/login_screen.dart";
-import "../screens/auth/onboarding_screen.dart";
+import "../screens/auth/signin_screen.dart";
+import "../screens/onboarding/onboarding_screen.dart";
 import "../screens/auth/signup_screen.dart";
-import "../screens/home_screen.dart";
-import "../screens/profile_screen.dart";
+import "../screens/home/home_screen.dart";
+import "../screens/profile/profile_screen.dart";
 import "../screens/screen_wrapper.dart";
 
 class GlobalRouter {
@@ -29,7 +30,7 @@ class GlobalRouter {
   FutureOr<String?> handleRedirect(
       BuildContext context, GoRouterState state) async {
     if (AuthController.instance.state == AuthState.authenticated) {
-      if (state.matchedLocation == LoginScreen.route) {
+      if (state.matchedLocation == SigninScreen.route) {
         return HomeScreen.route;
       }
       if (state.matchedLocation == SignupScreen.route) {
@@ -38,13 +39,13 @@ class GlobalRouter {
       return null;
     }
     if (AuthController.instance.state != AuthState.authenticated) {
-      if (state.matchedLocation == LoginScreen.route) {
+      if (state.matchedLocation == SigninScreen.route) {
         return null;
       }
       if (state.matchedLocation == SignupScreen.route) {
         return null;
       }
-      return OnboardingScreen.route;
+      return OnBoardingScreen.route;
     }
     return null;
   }
@@ -54,24 +55,24 @@ class GlobalRouter {
     _shellNavigatorKey = GlobalKey<NavigatorState>();
     router = GoRouter(
       navigatorKey: _rootNavigatorKey,
-      initialLocation: OnboardingScreen.route,
+      initialLocation: OnBoardingScreen.route,
       redirect: handleRedirect,
       refreshListenable: AuthController.instance,
       routes: [
         GoRoute(
           parentNavigatorKey: _rootNavigatorKey,
-          path: OnboardingScreen.route,
-          name: OnboardingScreen.name,
+          path: OnBoardingScreen.route,
+          name: OnBoardingScreen.name,
           builder: (context, _) {
-            return const OnboardingScreen();
+            return const OnBoardingScreen();
           },
         ),
         GoRoute(
           parentNavigatorKey: _rootNavigatorKey,
-          path: LoginScreen.route,
-          name: LoginScreen.name,
+          path: SigninScreen.route,
+          name: SigninScreen.name,
           builder: (context, _) {
-            return const LoginScreen();
+            return const SigninScreen();
           },
         ),
         GoRoute(
@@ -117,6 +118,14 @@ class GlobalRouter {
               name: PatientListScreen.name,
               builder: (context, _) {
                 return PatientListScreen();
+              },
+            ),
+            GoRoute(
+              parentNavigatorKey: _shellNavigatorKey,
+              path: NotificationScreen.route,
+              name: NotificationScreen.name,
+              builder: (context, _) {
+                return NotificationScreen();
               },
             ),
             GoRoute(

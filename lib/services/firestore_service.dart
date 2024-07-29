@@ -7,14 +7,14 @@ import 'package:wanderguard_companion_app/models/companion.model.dart';
 import 'package:wanderguard_companion_app/models/patient.model.dart';
 
 class FirestoreService {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  static FirestoreService get instance => GetIt.instance<FirestoreService>();
-
   static void initialize() {
     GetIt.instance.registerSingleton<FirestoreService>(FirestoreService());
   }
+
+  static FirestoreService get instance => GetIt.instance<FirestoreService>();
+
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<void> addOrUpdateCompanion(Companion companion) async {
     final companionRef =
@@ -81,17 +81,20 @@ class FirestoreService {
     }
   }
 
-  Future<List<Patient>> getPatients() async {
+  Stream<List<Patient>> getPatientsStream() {
     final User? currentUser = _auth.currentUser;
     if (currentUser == null) {
       throw Exception("No user is currently logged in.");
     }
 
-    final querySnapshot = await _db
+    return _db
         .collection('patients')
         .where('companionAcctId', isEqualTo: currentUser.uid)
-        .get();
-
-    return querySnapshot.docs.map((doc) => Patient.fromFirestore(doc)).toList();
+        .snapshots()
+        .map((querySnapshot) {
+      return querySnapshot.docs
+          .map((doc) => Patient.fromFirestore(doc))
+          .toList();
+    });
   }
 }

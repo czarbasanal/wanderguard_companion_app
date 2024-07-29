@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:wanderguard_companion_app/screens/patient_list_screen.dart';
-import 'package:wanderguard_companion_app/utils/colors.dart';
-
+import 'package:wanderguard_companion_app/screens/notifications/notification_screen.dart';
+import 'package:wanderguard_companion_app/screens/patients/patient_list_screen.dart';
+import 'package:wanderguard_companion_app/utils/size_config.dart';
+import 'package:wanderguard_companion_app/widgets/navbar.dart';
 import '../routing/router.dart';
-import 'home_screen.dart';
-import 'profile_screen.dart';
+import 'home/home_screen.dart';
+import 'profile/profile_screen.dart';
 
 class ScreenWrapper extends StatefulWidget {
   final Widget? child;
@@ -20,38 +21,27 @@ class _ScreenWrapperState extends State<ScreenWrapper> {
   List<String> routes = [
     HomeScreen.route,
     PatientListScreen.route,
+    NotificationScreen.route,
     ProfileScreen.route
   ];
+
+  void _onItemTapped(int i) {
+    setState(() {
+      index = i;
+      GlobalRouter.I.router.go(routes[i]);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
       body: SafeArea(child: widget.child ?? const Placeholder()),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        elevation: 4,
-        useLegacyColorScheme: false,
-        backgroundColor: CustomColors.tertiaryColor,
-        selectedFontSize: 13,
-        unselectedFontSize: 13,
-        selectedItemColor: Colors.deepPurpleAccent,
-        unselectedItemColor: Colors.grey.shade600,
-        currentIndex: index,
-        onTap: (i) {
-          setState(() {
-            index = i;
-
-            GlobalRouter.I.router.go(routes[i]);
-          });
-        },
-        items: const [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.home_rounded), label: "Home"),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.people_alt_rounded), label: "Patients"),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.menu_rounded), label: "Profile"),
-        ],
+      bottomNavigationBar: CustomBottomNavBar(
+        iconGap: SizeConfig.screenWidth * 0.16,
+        height: 65.0,
+        onTap: _onItemTapped,
+        selectedIndex: index,
       ),
     );
   }

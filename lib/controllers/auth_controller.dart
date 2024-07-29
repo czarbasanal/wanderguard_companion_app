@@ -123,7 +123,7 @@ class AuthController with ChangeNotifier {
     await _auth.signOut();
     CompanionDataController.instance.setCompanion(null);
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('companionAcctId');
+    await prefs.clear();
   }
 
   Future<void> loadSession() async {
