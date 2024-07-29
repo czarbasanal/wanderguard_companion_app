@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:wanderguard_companion_app/controllers/patient_data_controller.dart';
 import 'package:wanderguard_companion_app/enum/account_status.enum.dart';
 import 'package:wanderguard_companion_app/enum/account_type.enum.dart';
 import 'package:wanderguard_companion_app/routing/router.dart';
 import 'package:wanderguard_companion_app/screens/patients/patient_list_screen.dart';
-import 'package:wanderguard_companion_app/services/firestore_service.dart';
 import 'package:wanderguard_companion_app/services/information_service.dart';
 import 'package:wanderguard_companion_app/utils/colors.dart';
 import 'package:wanderguard_companion_app/widgets/dialogs/waiting_dialog.dart';
@@ -99,11 +99,11 @@ class _SetGeofenceScreenState extends State<SetGeofenceScreen> {
 
       await WaitingDialog.show(
         context,
-        future: FirestoreService.instance.addPatient(newPatient),
+        future: PatientDataController.instance.addPatient(newPatient),
         prompt: 'Adding patient...',
       );
       if (mounted) {
-        Navigator.of(context).pop();
+        GlobalRouter.I.router.go(PatientListScreen.route);
       }
     } catch (e) {
       Info.showSnackbarMessage(
@@ -168,11 +168,6 @@ class _SetGeofenceScreenState extends State<SetGeofenceScreen> {
                   child: ListView(
                     controller: scrollController,
                     children: [
-                      Text(
-                        'Geofence Center: (${geofenceCenter!.latitude}, ${geofenceCenter!.longitude})',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      const SizedBox(height: 10),
                       Text(
                         'Radius: ${geofenceRadius!.toStringAsFixed(1)} meters',
                         style: const TextStyle(fontSize: 16),

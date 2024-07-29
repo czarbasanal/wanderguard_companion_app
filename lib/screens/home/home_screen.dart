@@ -12,6 +12,7 @@ import 'package:wanderguard_companion_app/utils/custom_marker_generator.dart';
 import 'package:wanderguard_companion_app/utils/geopoint_converter.dart';
 import 'package:wanderguard_companion_app/utils/size_config.dart';
 import 'package:wanderguard_companion_app/widgets/dialogs/waiting_dialog.dart';
+import 'package:wanderguard_companion_app/controllers/patient_data_controller.dart';
 
 class HomeScreen extends StatefulWidget {
   static const route = '/home';
@@ -199,7 +200,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildPatientList() {
     return StreamBuilder<List<Patient>>(
-      stream: FirestoreService.instance.getPatientsStream(),
+      stream: PatientDataController.instance.getPatientsStream(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
@@ -224,149 +225,168 @@ class _HomeScreenState extends State<HomeScreen> {
           itemCount: patients.length,
           itemBuilder: (context, index) {
             final patient = patients[index];
-            return FutureBuilder<String>(
-              future:
-                  GeoPointConverter.geoPointToAddress(patient.lastLocTracked),
-              builder: (context, lastLocSnapshot) {
-                final location = lastLocSnapshot.data ?? 'Fetching location...';
+            PatientDataController.instance
+                .listenToPatientChanges(patient.patientAcctId);
+            return ValueListenableBuilder<Patient?>(
+              valueListenable:
+                  PatientDataController.instance.patientModelNotifier,
+              builder: (context, updatedPatient, child) {
+                if (updatedPatient?.patientAcctId != patient.patientAcctId) {
+                  return Container(); // or any placeholder widget
+                }
 
-                return Card(
-                  color: CustomColors.secondaryColor,
-                  elevation: 2,
-                  margin: const EdgeInsets.symmetric(vertical: 8),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: CachedNetworkImage(
-                            imageUrl: patient.photoUrl,
-                            width: 85,
-                            height: 85,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => WaitingDialog(
-                              color: CustomColors.primaryColor,
-                            ),
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.error),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '${patient.firstName} ${patient.lastName}',
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
+                return FutureBuilder<String>(
+                  future: GeoPointConverter.geoPointToAddress(
+                      updatedPatient!.lastLocTracked),
+                  builder: (context, lastLocSnapshot) {
+                    final location =
+                        lastLocSnapshot.data ?? 'Fetching location...';
+
+                    return Card(
+                      color: CustomColors.secondaryColor,
+                      elevation: 2,
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: CachedNetworkImage(
+                                imageUrl: updatedPatient.photoUrl,
+                                width: 85,
+                                height: 85,
+                                fit: BoxFit.cover,
+                                placeholder: (context, url) => WaitingDialog(
+                                  color: CustomColors.primaryColor,
                                 ),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.error),
                               ),
-                              Text(
-                                patient.contactNo,
-                                style: const TextStyle(fontSize: 14),
-                              ),
-                              const SizedBox(height: 5),
-                              const Text(
-                                'Last Location:',
-                                style: TextStyle(
-                                    fontSize: 14, fontWeight: FontWeight.bold),
-                              ),
-                              Text(location,
-                                  style: const TextStyle(fontSize: 14)),
-                              const SizedBox(height: 16),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  MaterialButton(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(5),
-                                    ),
-                                    minWidth: SizeConfig.screenWidth * 0.1,
-                                    height: SizeConfig.screenHeight * 0.048,
-                                    color: CustomColors.primaryColor,
-                                    onPressed: () {
-                                      setState(() {
-                                        _loadingMarker = true;
-                                      });
-                                      _scrollableController
-                                          .animateTo(0.06,
-                                              duration: const Duration(
-                                                  milliseconds: 500),
-                                              curve: Curves.easeInOut)
-                                          .then((_) {
-                                        _addMarker(
-                                          LatLng(
-                                            patient.lastLocTracked.latitude,
-                                            patient.lastLocTracked.longitude,
-                                          ),
-                                          patient.patientAcctId,
-                                          patient.photoUrl,
-                                        );
-                                      });
-                                    },
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          CupertinoIcons.placemark_fill,
-                                          color: CustomColors.secondaryColor,
-                                          size: 24,
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          'Locate',
-                                          style: TextStyle(
-                                              fontSize: 15,
-                                              color:
-                                                  CustomColors.secondaryColor),
-                                        ),
-                                      ],
+                                  Text(
+                                    '${updatedPatient.firstName} ${updatedPatient.lastName}',
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                      foregroundColor:
-                                          CustomColors.primaryColor,
-                                      side: BorderSide(
-                                          color: CustomColors.primaryColor),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(5),
+                                  Text(
+                                    updatedPatient.contactNo,
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
+                                  const SizedBox(height: 5),
+                                  const Text(
+                                    'Last Location:',
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(location,
+                                      style: const TextStyle(fontSize: 14)),
+                                  const SizedBox(height: 16),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      MaterialButton(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                        ),
+                                        minWidth: SizeConfig.screenWidth * 0.1,
+                                        height: SizeConfig.screenHeight * 0.048,
+                                        color: CustomColors.primaryColor,
+                                        onPressed: () {
+                                          setState(() {
+                                            _loadingMarker = true;
+                                          });
+                                          _scrollableController
+                                              .animateTo(0.06,
+                                                  duration: const Duration(
+                                                      milliseconds: 500),
+                                                  curve: Curves.easeInOut)
+                                              .then((_) {
+                                            _addMarker(
+                                              LatLng(
+                                                updatedPatient
+                                                    .lastLocTracked.latitude,
+                                                updatedPatient
+                                                    .lastLocTracked.longitude,
+                                              ),
+                                              updatedPatient.patientAcctId,
+                                              updatedPatient.photoUrl,
+                                            );
+                                          });
+                                        },
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              CupertinoIcons.placemark_fill,
+                                              color:
+                                                  CustomColors.secondaryColor,
+                                              size: 24,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              'Locate',
+                                              style: TextStyle(
+                                                  fontSize: 15,
+                                                  color: CustomColors
+                                                      .secondaryColor),
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                      minimumSize: Size(
-                                          SizeConfig.screenWidth * 0.05,
-                                          SizeConfig.screenHeight * 0.048),
-                                    ),
-                                    onPressed: () {},
-                                    child: const Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          CupertinoIcons.phone_fill,
-                                          size: 24,
+                                      OutlinedButton(
+                                        style: OutlinedButton.styleFrom(
+                                          foregroundColor:
+                                              CustomColors.primaryColor,
+                                          side: BorderSide(
+                                              color: CustomColors.primaryColor),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(5),
+                                          ),
+                                          minimumSize: Size(
+                                              SizeConfig.screenWidth * 0.05,
+                                              SizeConfig.screenHeight * 0.048),
                                         ),
-                                        SizedBox(width: 8),
-                                        Text(
-                                          'Call',
-                                          style: TextStyle(fontSize: 15),
+                                        onPressed: () {},
+                                        child: const Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              CupertinoIcons.phone_fill,
+                                              size: 24,
+                                            ),
+                                            SizedBox(width: 8),
+                                            Text(
+                                              'Call',
+                                              style: TextStyle(fontSize: 15),
+                                            ),
+                                          ],
                                         ),
-                                      ],
-                                    ),
+                                      )
+                                    ],
                                   )
                                 ],
-                              )
-                            ],
-                          ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
+                      ),
+                    );
+                  },
                 );
               },
             );

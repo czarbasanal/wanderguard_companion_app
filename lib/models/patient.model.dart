@@ -102,4 +102,8 @@ class Patient {
       companionAcctId: data['companionAcctId'],
     );
   }
+
+  bool checkIfWithinGeofence() {
+    return defaultGeofence.isWithinGeofence(lastLocTracked);
+  }
 }

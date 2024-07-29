@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:wanderguard_companion_app/services/firestore_service.dart';
 
 import '../models/companion.model.dart';
 
@@ -17,6 +18,25 @@ class CompanionDataController with ChangeNotifier {
 
   static CompanionDataController get instance =>
       GetIt.instance<CompanionDataController>();
+
+  Future<void> addOrUpdateCompanion(Companion companion) async {
+    await FirestoreService.instance.addOrUpdateDocument(
+        'companions', companion.companionAcctId, companion.toFirestore());
+  }
+
+  Future<Companion?> getCompanion(String companionAcctId) async {
+    final doc = await FirestoreService.instance
+        .getDocument('companions', companionAcctId);
+    if (doc.exists) {
+      return Companion.fromFirestore(doc);
+    }
+    return null;
+  }
+
+  Future<void> deleteCompanion(String companionAcctId) async {
+    await FirestoreService.instance
+        .deleteDocument('companions', companionAcctId);
+  }
 
   void setCompanion(Companion? companion) {
     companionModelNotifier.value = companion;

@@ -8,6 +8,8 @@ import 'package:wanderguard_companion_app/services/firestore_service.dart';
 import 'package:wanderguard_companion_app/utils/colors.dart';
 import 'package:wanderguard_companion_app/utils/geopoint_converter.dart';
 import 'package:wanderguard_companion_app/widgets/dialogs/waiting_dialog.dart';
+import 'package:wanderguard_companion_app/controllers/patient_data_controller.dart';
+import 'package:wanderguard_companion_app/widgets/dialogs/confirmation_dialog.dart';
 
 class PatientListScreen extends StatefulWidget {
   const PatientListScreen({super.key});
@@ -20,6 +22,35 @@ class PatientListScreen extends StatefulWidget {
 }
 
 class _PatientListScreenState extends State<PatientListScreen> {
+  void _deletePatient(String patientAcctId) async {
+    final bool confirmed = await showDialog(
+      context: context,
+      builder: (context) => ConfirmationDialog(
+        title: 'Delete Patient',
+        content: 'Are you sure you want to delete this patient?',
+        onConfirm: () {
+          Navigator.of(context).pop(true);
+        },
+        onCancel: () {
+          Navigator.of(context).pop(false);
+        },
+      ),
+    );
+
+    if (confirmed) {
+      try {
+        await PatientDataController.instance.deletePatient(patientAcctId);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Patient deleted successfully')),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to delete patient: $e')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,7 +72,7 @@ class _PatientListScreenState extends State<PatientListScreen> {
         ],
       ),
       body: StreamBuilder<List<Patient>>(
-        stream: FirestoreService.instance.getPatientsStream(),
+        stream: PatientDataController.instance.getPatientsStream(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return WaitingDialog(
@@ -74,103 +105,128 @@ class _PatientListScreenState extends State<PatientListScreen> {
 
                   return Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: Card(
-                      color: CustomColors.secondaryColor,
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(24.0),
-                        child: Column(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(16),
-                              child: CachedNetworkImage(
-                                imageUrl: patient.photoUrl,
-                                width: 150,
-                                height: 150,
-                                fit: BoxFit.cover,
-                                placeholder: (context, url) => WaitingDialog(
-                                  color: CustomColors.primaryColor,
-                                ),
-                                errorWidget: (context, url, error) =>
-                                    const Icon(Icons.error),
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    child: Stack(
+                      children: [
+                        Card(
+                          color: CustomColors.secondaryColor,
+                          elevation: 2,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(24.0),
+                            child: Column(
                               children: [
-                                Expanded(
-                                  child: Text(
-                                    '${patient.firstName} ${patient.lastName}',
-                                    style: const TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: CachedNetworkImage(
+                                    imageUrl: patient.photoUrl,
+                                    width: 150,
+                                    height: 150,
+                                    fit: BoxFit.cover,
+                                    placeholder: (context, url) =>
+                                        WaitingDialog(
+                                      color: CustomColors.primaryColor,
                                     ),
-                                    overflow: TextOverflow.ellipsis,
+                                    errorWidget: (context, url, error) =>
+                                        const Icon(Icons.error),
                                   ),
                                 ),
-                                GestureDetector(
-                                  onTap: () {},
-                                  child: SvgPicture.asset(
-                                    'lib/assets/icons/edit-patient-icon.svg',
-                                    width: 20,
-                                    height: 20,
+                                const SizedBox(height: 16),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        '${patient.firstName} ${patient.lastName}',
+                                        style: const TextStyle(
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {},
+                                      child: SvgPicture.asset(
+                                        'lib/assets/icons/edit-patient-icon.svg',
+                                        width: 20,
+                                        height: 20,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 16),
+                                buildPatientInfo(
+                                    'Age:',
+                                    calculateAge(patient.dateOfBirth)
+                                        .toString()),
+                                buildPatientInfo(
+                                    'Address:', patient.homeAddress),
+                                buildPatientInfo(
+                                    'Contact No:', patient.contactNo),
+                                buildPatientInfo(
+                                    'Status:', patient.acctStatus.name),
+                                buildPatientInfo('Last Location:', address),
+                                const SizedBox(height: 24),
+                                MaterialButton(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  textColor: CustomColors.secondaryColor,
+                                  color: CustomColors.primaryColor,
+                                  minWidth: double.infinity,
+                                  height: 50,
+                                  onPressed: () {
+                                    // Implement locate patient here
+                                  },
+                                  child: const Text(
+                                    'Locate',
+                                    style: TextStyle(fontSize: 16),
                                   ),
                                 ),
+                                const SizedBox(height: 16),
+                                OutlinedButton(
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: CustomColors.primaryColor,
+                                    side: BorderSide(
+                                        color: CustomColors
+                                            .primaryColor), // Border color
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    minimumSize: const Size(
+                                        double.infinity, 50), // Text color
+                                  ),
+                                  onPressed: () {
+                                    // Implement call patient here
+                                  },
+                                  child: const Text(
+                                    'Call Patient',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                )
                               ],
                             ),
-                            const SizedBox(height: 16),
-                            buildPatientInfo('Age:',
-                                calculateAge(patient.dateOfBirth).toString()),
-                            buildPatientInfo('Address:', patient.homeAddress),
-                            buildPatientInfo('Contact No:', patient.contactNo),
-                            buildPatientInfo(
-                                'Status:', patient.acctStatus.name),
-                            buildPatientInfo('Last Location:', address),
-                            const SizedBox(height: 24),
-                            MaterialButton(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              textColor: CustomColors.secondaryColor,
-                              color: CustomColors.primaryColor,
-                              minWidth: double.infinity,
-                              height: 50,
-                              onPressed: () {
-                                // Implement locate patient here
-                              },
-                              child: const Text(
-                                'Locate',
-                                style: TextStyle(fontSize: 16),
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            OutlinedButton(
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: CustomColors.primaryColor,
-                                side: BorderSide(
-                                    color: CustomColors
-                                        .primaryColor), // Border color
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                minimumSize: const Size(
-                                    double.infinity, 50), // Text color
-                              ),
-                              onPressed: () {
-                                // Implement call patient here
-                              },
-                              child: const Text(
-                                'Call Patient',
-                                style: TextStyle(fontSize: 16),
-                              ),
-                            )
-                          ],
+                          ),
                         ),
-                      ),
+                        Positioned(
+                          top: 30,
+                          right: 26,
+                          child: GestureDetector(
+                            onTap: () {
+                              _deletePatient(patient.patientAcctId);
+                            },
+                            child: SvgPicture.asset(
+                              'lib/assets/icons/delete-patient.svg',
+                              width: 20,
+                              height: 20,
+                              color: Colors.red,
+                            ),
+                          ),
+                        )
+                      ],
                     ),
                   );
                 },
