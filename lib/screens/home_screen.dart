@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -6,7 +7,6 @@ import 'package:wanderguard_companion_app/services/firestore_service.dart';
 import 'package:wanderguard_companion_app/services/information_service.dart';
 import 'package:wanderguard_companion_app/services/location_service.dart';
 import 'package:wanderguard_companion_app/services/shared_preferences_service.dart';
-
 import 'package:wanderguard_companion_app/utils/colors.dart';
 import 'package:wanderguard_companion_app/utils/custom_marker_generator.dart';
 import 'package:wanderguard_companion_app/utils/geopoint_converter.dart';
@@ -34,6 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _loadingMarker = false;
   final DraggableScrollableController _scrollableController =
       DraggableScrollableController();
+  final ValueNotifier<bool> _isSheetDragged = ValueNotifier(false);
 
   @override
   void initState() {
@@ -71,6 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
         markerId: MarkerId(markerId),
         position: position,
         icon: markerIcon,
+        infoWindow: InfoWindow(title: imageUrl),
       );
 
       setState(() {
@@ -111,9 +113,12 @@ class _HomeScreenState extends State<HomeScreen> {
             minChildSize: 0.06,
             maxChildSize: 0.7,
             builder: (BuildContext context, ScrollController scrollController) {
+              _scrollableController.addListener(() {
+                _isSheetDragged.value = _scrollableController.size > 0.06;
+              });
               return Container(
                 decoration: BoxDecoration(
-                  color: CustomColors.secondaryColor,
+                  color: CustomColors.tertiaryColor,
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.1),
@@ -134,12 +139,20 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Container(
-                          width: SizeConfig.screenWidth * 0.2,
-                          height: 3,
-                          decoration: BoxDecoration(
-                              color: CustomColors.primaryColor,
-                              borderRadius: BorderRadius.circular(50)),
+                        ValueListenableBuilder(
+                          valueListenable: _isSheetDragged,
+                          builder: (context, isDragged, child) {
+                            return Container(
+                              width: SizeConfig.screenWidth * 0.15,
+                              height: 3,
+                              decoration: BoxDecoration(
+                                color: isDragged
+                                    ? CustomColors.primaryColor
+                                    : Colors.grey,
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                            );
+                          },
                         ),
                         const SizedBox(height: 16),
                         Row(
@@ -174,7 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
               color: Colors.white.withOpacity(0.8),
               child: Center(
                 child: WaitingDialog(
-                  prompt: "Loading marker...",
+                  prompt: "Locating Patient...",
                   color: CustomColors.primaryColor,
                 ),
               ),
@@ -218,7 +231,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 final location = lastLocSnapshot.data ?? 'Fetching location...';
 
                 return Card(
-                  color: CustomColors.tertiaryColor,
+                  color: CustomColors.secondaryColor,
                   elevation: 2,
                   margin: const EdgeInsets.symmetric(vertical: 8),
                   child: Padding(
@@ -228,11 +241,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadius.circular(12),
-                          child: Image.network(
-                            patient.photoUrl,
+                          child: CachedNetworkImage(
+                            imageUrl: patient.photoUrl,
                             width: 85,
                             height: 85,
                             fit: BoxFit.cover,
+                            placeholder: (context, url) => WaitingDialog(
+                              color: CustomColors.primaryColor,
+                            ),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -324,9 +342,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           SizeConfig.screenWidth * 0.05,
                                           SizeConfig.screenHeight * 0.048),
                                     ),
-                                    onPressed: () {
-                                      // Implement call patient here
-                                    },
+                                    onPressed: () {},
                                     child: const Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,

@@ -44,6 +44,7 @@ class LocationService {
             .doc(companion.companionAcctId)
             .update({
           'currentLocation': GeoPoint(position.latitude, position.longitude),
+          'updatedAt': DateTime.now(),
         });
       }
     } catch (e) {

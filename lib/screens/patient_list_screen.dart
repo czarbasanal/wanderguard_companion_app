@@ -1,9 +1,6 @@
-// patient_list_screen.dart
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:geocoding/geocoding.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:wanderguard_companion_app/models/patient.model.dart';
 import 'package:wanderguard_companion_app/routing/router.dart';
 import 'package:wanderguard_companion_app/screens/add_patient_screen.dart';
@@ -89,11 +86,16 @@ class _PatientListScreenState extends State<PatientListScreen> {
                           children: [
                             ClipRRect(
                               borderRadius: BorderRadius.circular(16),
-                              child: Image.network(
-                                patient.photoUrl,
+                              child: CachedNetworkImage(
+                                imageUrl: patient.photoUrl,
                                 width: 150,
                                 height: 150,
                                 fit: BoxFit.cover,
+                                placeholder: (context, url) => WaitingDialog(
+                                  color: CustomColors.primaryColor,
+                                ),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.error),
                               ),
                             ),
                             const SizedBox(height: 16),

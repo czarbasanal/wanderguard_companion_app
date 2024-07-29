@@ -15,7 +15,7 @@ class SharedPreferenceService {
   Future<void> saveMarkers(List<Marker> markers) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> markerData = markers.map((marker) {
-      return '${marker.position.latitude},${marker.position.longitude},${marker.markerId.value},${marker.icon.toString()}';
+      return '${marker.position.latitude},${marker.position.longitude},${marker.markerId.value},${marker.infoWindow.title}';
     }).toList();
     await prefs.setStringList('markers', markerData);
   }
@@ -40,5 +40,11 @@ class SharedPreferenceService {
       ));
     }
     return markers;
+  }
+
+  Future<bool> isMarkerExists(String markerId) async {
+    List<Marker> savedMarkers =
+        await SharedPreferenceService.instance.loadMarkers();
+    return savedMarkers.any((marker) => marker.markerId.value == markerId);
   }
 }
