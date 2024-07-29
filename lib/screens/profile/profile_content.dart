@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wanderguard_companion_app/screens/profile/backup_companion_list.dart';
 import '../../controllers/auth_controller.dart';
 import 'companion_detail.dart';
 import 'profile_screen.dart';
@@ -25,7 +26,15 @@ class ProfileContent extends StatelessWidget {
                 iconPath: 'lib/assets/icons/pending.svg', title: 'Pending'),
             SectionItem(
                 iconPath: 'lib/assets/icons/patients.svg',
-                title: 'Backup Companion'),
+                title: 'Backup Companion',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => BackupCompanionList(),
+                    ),
+                  );
+                }),
             SectionItem(
                 iconPath: 'lib/assets/icons/logout.svg',
                 title: 'Logout',

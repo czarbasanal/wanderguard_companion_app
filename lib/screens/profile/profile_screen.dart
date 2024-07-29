@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../controllers/auth_controller.dart';
 import '../../utils/size_config.dart';
+import '../../widgets/navbar.dart';
 import 'profile_content.dart';
 
 class ProfileScreen extends StatefulWidget {
