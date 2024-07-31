@@ -10,7 +10,7 @@ class FirestoreService {
 
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  Future<void> addOrUpdateDocument(
+  Future<void> addDocument(
       String collection, String docId, Map<String, dynamic> data) async {
     final docRef = _db.collection(collection).doc(docId);
     await docRef.set(data);
@@ -25,6 +25,12 @@ class FirestoreService {
   Future<void> deleteDocument(String collection, String docId) async {
     final docRef = _db.collection(collection).doc(docId);
     await docRef.delete();
+  }
+
+  Future<void> updateDocument(
+      String collection, String docId, Map<String, dynamic> data) async {
+    final docRef = _db.collection(collection).doc(docId);
+    await docRef.update(data);
   }
 
   Stream<DocumentSnapshot<Map<String, dynamic>>> getDocumentStream(

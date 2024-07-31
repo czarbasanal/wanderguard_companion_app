@@ -25,7 +25,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     SizeConfig().init(context);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: CustomColors.tertiaryColor,
       body: SingleChildScrollView(
         child: Column(
           children: [

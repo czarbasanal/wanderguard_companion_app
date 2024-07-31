@@ -107,7 +107,7 @@ class AuthController with ChangeNotifier {
         updatedAt: DateTime.now(),
       );
 
-      await CompanionDataController.instance.addOrUpdateCompanion(newCompanion);
+      await CompanionDataController.instance.addCompanion(newCompanion);
       CompanionDataController.instance.setCompanion(newCompanion);
     } catch (e) {
       throw Exception(e.toString());

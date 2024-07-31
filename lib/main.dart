@@ -3,6 +3,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:wanderguard_companion_app/controllers/patient_data_controller.dart';
 import 'package:wanderguard_companion_app/services/location_service.dart';
+import 'package:wanderguard_companion_app/services/notification_service.dart';
+import 'package:wanderguard_companion_app/services/permission_service.dart';
 import 'package:wanderguard_companion_app/services/shared_preferences_service.dart';
 import 'package:wanderguard_companion_app/utils/colors.dart';
 import 'package:wanderguard_companion_app/utils/form_textfield_config.dart';
@@ -26,6 +28,8 @@ void main() async {
   FirestoreService.initialize();
   LocationService.initialize();
   SharedPreferenceService.initialize();
+  await PermissionService.initialize();
+  await NotificationService.initialize();
   await AuthController.instance.loadSession();
 
   ConfigurationSetting.instance.setTextFieldViewConfig =

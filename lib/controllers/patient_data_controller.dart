@@ -84,8 +84,8 @@ class PatientDataController with ChangeNotifier {
           companionAcctId: companionUser.uid,
         );
 
-        await FirestoreService.instance.addOrUpdateDocument(
-            'patients', patientUid, newPatient.toFirestore());
+        await FirestoreService.instance
+            .addDocument('patients', patientUid, newPatient.toFirestore());
       } catch (e) {
         throw Exception("Error registering patient: $e");
       }
