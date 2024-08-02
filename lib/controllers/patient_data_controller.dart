@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:wanderguard_companion_app/enum/account_status.enum.dart';
 import 'package:wanderguard_companion_app/enum/account_type.enum.dart';
+import 'package:wanderguard_companion_app/models/patient.model.dart';
 import 'package:wanderguard_companion_app/services/firestore_service.dart';
-import '../models/patient.model.dart';
+import 'package:wanderguard_companion_app/services/notification_service.dart';
 
 class PatientDataController with ChangeNotifier {
   ValueNotifier<Patient?> patientModelNotifier = ValueNotifier(null);
@@ -46,6 +47,14 @@ class PatientDataController with ChangeNotifier {
         final patient = Patient.fromFirestore(snapshot);
         patientModelNotifier.value = patient;
         notifyListeners();
+
+        if (!patient.isWithinGeofence) {
+          NotificationService.showPersistentNotification(
+            1,
+            'WanderGuard Alert',
+            'Patient ${patient.firstName} ${patient.lastName} is outside the geofence!',
+          );
+        }
       }
     }
   }
@@ -71,14 +80,15 @@ class PatientDataController with ChangeNotifier {
           homeAddress: patient.homeAddress,
           contactNo: patient.contactNo,
           dateOfBirth: patient.dateOfBirth,
-          photoUrl: '',
+          photoUrl: patient.photoUrl,
           acctType: AccountType.patient,
           acctStatus: AccountStatus.offline,
-          lastLocTracked: GeoPoint(0, 0),
+          lastLocTracked: const GeoPoint(0, 0),
           lastLocUpdated: DateTime.now(),
           defaultGeofence: patient.defaultGeofence,
           geofences: patient.geofences,
           emergencyContacts: patient.emergencyContacts,
+          isWithinGeofence: true,
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
           companionAcctId: companionUser.uid,
@@ -111,6 +121,18 @@ class PatientDataController with ChangeNotifier {
     return FirestoreService.instance.getCollectionStream('patients').map(
         (snapshot) =>
             snapshot.docs.map((doc) => Patient.fromFirestore(doc)).toList());
+  }
+
+  ValueNotifier<Patient?> getPatientNotifier(String patientAcctId) {
+    final notifier = ValueNotifier<Patient?>(null);
+    FirestoreService.instance
+        .getDocumentStream('patients', patientAcctId)
+        .listen((snapshot) {
+      if (snapshot.exists) {
+        notifier.value = Patient.fromFirestore(snapshot);
+      }
+    });
+    return notifier;
   }
 
   @override

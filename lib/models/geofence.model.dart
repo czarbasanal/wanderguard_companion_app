@@ -3,7 +3,7 @@ import 'package:geolocator/geolocator.dart';
 
 class Geofence {
   final GeoPoint center;
-  final double radius; // in meters
+  final double radius;
 
   Geofence({
     required this.center,

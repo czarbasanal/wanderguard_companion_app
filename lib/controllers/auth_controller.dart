@@ -12,6 +12,7 @@ import 'package:wanderguard_companion_app/enum/account_type.enum.dart';
 import 'package:wanderguard_companion_app/enum/auth_state.enum.dart';
 import 'package:wanderguard_companion_app/models/companion.model.dart';
 import 'package:wanderguard_companion_app/controllers/companion_data_controller.dart';
+import 'package:wanderguard_companion_app/state/homescreen_state.dart';
 
 class AuthController with ChangeNotifier {
   final auth.FirebaseAuth _auth = auth.FirebaseAuth.instance;
@@ -122,6 +123,7 @@ class AuthController with ChangeNotifier {
     CompanionDataController.instance.setCompanion(null);
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
+    HomeScreenState.instance.reset();
   }
 
   Future<void> loadSession() async {

@@ -1,11 +1,13 @@
 import 'package:dynamic_multi_step_form/dynamic_multi_step_form.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:wanderguard_companion_app/controllers/patient_data_controller.dart';
 import 'package:wanderguard_companion_app/services/location_service.dart';
 import 'package:wanderguard_companion_app/services/notification_service.dart';
 import 'package:wanderguard_companion_app/services/permission_service.dart';
 import 'package:wanderguard_companion_app/services/shared_preferences_service.dart';
+import 'package:wanderguard_companion_app/state/homescreen_state.dart';
 import 'package:wanderguard_companion_app/utils/colors.dart';
 import 'package:wanderguard_companion_app/utils/form_textfield_config.dart';
 import 'package:wanderguard_companion_app/utils/size_config.dart';
@@ -31,13 +33,21 @@ void main() async {
   await PermissionService.initialize();
   await NotificationService.initialize();
   await AuthController.instance.loadSession();
+  HomeScreenState.initialize();
 
   ConfigurationSetting.instance.setTextFieldViewConfig =
       FormTextFieldConfig.textFieldConfiguration;
   ConfigurationSetting.instance.setTelTextFieldViewConfig =
       FormTextFieldConfig.telTextFieldConfiguration;
 
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => HomeScreenState()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

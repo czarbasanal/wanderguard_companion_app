@@ -100,6 +100,8 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
                                 'postal_code': data['1']['postal_code'] ?? '',
                                 'email': data['2']['email'] ?? '',
                                 'password': data['2']['password'] ?? '',
+                                'profile_photo':
+                                    data['2']['profile_photo'] ?? ''
                               };
                               context.push(SetGeofenceScreen.route,
                                   extra: formData);
