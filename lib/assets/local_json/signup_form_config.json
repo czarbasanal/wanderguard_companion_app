@@ -68,6 +68,7 @@
             "type": "tel",
             "name": "contact_no",
             "label": "Contact Number",
+            "keyboardRejex": "^[0-9+]+",
             "placeholder": "",
             "class": "form-control",
             "resetIcon": true

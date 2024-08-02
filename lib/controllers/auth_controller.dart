@@ -8,12 +8,11 @@ import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wanderguard_companion_app/enum/account_status.enum.dart';
-import 'package:wanderguard_companion_app/services/firestore_service.dart';
-
-import '../enum/account_type.enum.dart';
-import '../enum/auth_state.enum.dart';
-import '../models/companion.model.dart';
-import 'companion_data_controller.dart';
+import 'package:wanderguard_companion_app/enum/account_type.enum.dart';
+import 'package:wanderguard_companion_app/enum/auth_state.enum.dart';
+import 'package:wanderguard_companion_app/models/companion.model.dart';
+import 'package:wanderguard_companion_app/controllers/companion_data_controller.dart';
+import 'package:wanderguard_companion_app/state/homescreen_state.dart';
 
 class AuthController with ChangeNotifier {
   final auth.FirebaseAuth _auth = auth.FirebaseAuth.instance;
@@ -59,7 +58,7 @@ class AuthController with ChangeNotifier {
         password: password,
       );
 
-      final Companion? companion = await FirestoreService.instance
+      final Companion? companion = await CompanionDataController.instance
           .getCompanion(userCredential.user!.uid);
       CompanionDataController.instance.setCompanion(companion);
     } catch (e) {
@@ -68,7 +67,7 @@ class AuthController with ChangeNotifier {
     }
   }
 
-  signInWithGoogle() async {
+  Future<void> signInWithGoogle() async {
     GoogleSignInAccount? gSign = await _googleSignIn.signIn();
     if (gSign == null) throw Exception("No Signed in account");
     GoogleSignInAuthentication googleAuth = await gSign.authentication;
@@ -109,7 +108,7 @@ class AuthController with ChangeNotifier {
         updatedAt: DateTime.now(),
       );
 
-      await FirestoreService.instance.addOrUpdateCompanion(newCompanion);
+      await CompanionDataController.instance.addCompanion(newCompanion);
       CompanionDataController.instance.setCompanion(newCompanion);
     } catch (e) {
       throw Exception(e.toString());
@@ -124,6 +123,7 @@ class AuthController with ChangeNotifier {
     CompanionDataController.instance.setCompanion(null);
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
+    HomeScreenState.instance.reset();
   }
 
   Future<void> loadSession() async {
@@ -132,8 +132,8 @@ class AuthController with ChangeNotifier {
     String? companionAcctId = prefs.getString('companionAcctId');
     if (companionAcctId != null) {
       try {
-        final Companion? companion =
-            await FirestoreService.instance.getCompanion(companionAcctId);
+        final Companion? companion = await CompanionDataController.instance
+            .getCompanion(companionAcctId);
         CompanionDataController.instance.setCompanion(companion);
         handleUserChanges(FirebaseAuth.instance.currentUser);
       } catch (e) {

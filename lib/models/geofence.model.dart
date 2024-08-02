@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:geolocator/geolocator.dart';
 
 class Geofence {
   final GeoPoint center;
-  final double radius; // in meters
+  final double radius;
 
   Geofence({
     required this.center,
@@ -21,5 +22,16 @@ class Geofence {
       center: data['center'],
       radius: data['radius'],
     );
+  }
+
+  bool isWithinGeofence(GeoPoint location) {
+    double distanceInMeters = Geolocator.distanceBetween(
+      location.latitude,
+      location.longitude,
+      center.latitude,
+      center.longitude,
+    );
+
+    return distanceInMeters <= radius;
   }
 }

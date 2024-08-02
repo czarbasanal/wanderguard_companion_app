@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get_it/get_it.dart';
+import 'package:wanderguard_companion_app/services/firestore_service.dart';
 
 import '../models/companion.model.dart';
 
@@ -17,6 +19,25 @@ class CompanionDataController with ChangeNotifier {
 
   static CompanionDataController get instance =>
       GetIt.instance<CompanionDataController>();
+
+  Future<void> addCompanion(Companion companion) async {
+    await FirestoreService.instance.addDocument(
+        'companions', companion.companionAcctId, companion.toFirestore());
+  }
+
+  Future<Companion?> getCompanion(String companionAcctId) async {
+    final doc = await FirestoreService.instance
+        .getDocument('companions', companionAcctId);
+    if (doc.exists) {
+      return Companion.fromFirestore(doc);
+    }
+    return null;
+  }
+
+  Future<void> deleteCompanion(String companionAcctId) async {
+    await FirestoreService.instance
+        .deleteDocument('companions', companionAcctId);
+  }
 
   void setCompanion(Companion? companion) {
     companionModelNotifier.value = companion;
@@ -46,6 +67,26 @@ class CompanionDataController with ChangeNotifier {
         companionModelNotifier.value = companion;
         notifyListeners();
       }
+    }
+  }
+
+  Future<void> updateCompanionLocation(Position position) async {
+    try {
+      Companion? companion = companionModelNotifier.value;
+      if (companion != null) {
+        companion.updateCurrentLocation(
+            GeoPoint(position.latitude, position.longitude));
+        await FirestoreService.instance.updateDocument(
+          'companions',
+          companion.companionAcctId,
+          {
+            'currentLocation': GeoPoint(position.latitude, position.longitude),
+            'updatedAt': Timestamp.fromDate(DateTime.now()),
+          },
+        );
+      }
+    } catch (e) {
+      throw 'Failed to update location: $e';
     }
   }
 

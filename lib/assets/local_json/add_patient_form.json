@@ -90,6 +90,7 @@
                         "type": "tel",
                         "name": "contact_no",
                         "label": "Contact Number",
+                        "keyboardRejex": "^[0-9+]+",
                         "placeholder": "",
                         "class": "form-control",
                         "resetIcon": true
@@ -306,6 +307,52 @@
                     },
                     "valid": true,
                     "onchange": false
+                },
+                {
+                    "elementType": "input",
+                    "elementConfig": {
+                        "type": "password",
+                        "name": "confirm_password",
+                        "label": "Confirm Password",
+                        "placeholder": "",
+                        "class": "form-control",
+                        "resetIcon": true
+                    },
+                    "value": "",
+                    "validation": {
+                        "required": true,
+                        "minLength": 6,
+                        "maxLength": 50,
+                        "isReadOnly": false,
+                        "isDisabled": false,
+                        "errorMessage": {
+                            "required": "Please confirm your password",
+                            "minLength": "Minimum 6 characters required",
+                            "maxLength": "Maximum 50 characters allowed",
+                            "match": "Passwords do not match"
+                        }
+                    },
+                    "valid": true,
+                    "onchange": false
+                },
+                {
+                    "elementType": "upload_image",
+                    "elementConfig": {
+                        "name": "profile_photo",
+                        "label": "Upload Photo",
+                        "enableLabel": true,
+                        "initialValue": ""
+                    },
+                    "value": "",
+                    "validation": {
+                        "required": true,
+                        "isReadOnly": false,
+                        "isDisabled": false,
+                        "errorMessage": {
+                            "required": "Please upload photo"
+                        }
+                    },
+                    "valid": false
                 }
             ]
         }

@@ -42,5 +42,7 @@ Future<Uint8List> _loadImage(String imageUrl) async {
   });
 
   stream.addListener(listener);
+  stream.removeListener(listener);
+
   return completer.future;
 }

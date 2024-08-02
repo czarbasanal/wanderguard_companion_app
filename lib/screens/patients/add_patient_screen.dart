@@ -29,6 +29,7 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
 
   Future<void> _loadFormJson() async {
     try {
+      addPatientConfig = null;
       addPatientConfig =
           await localJsonRw.localRead(fileName: "add_patient_form.json");
       setState(() {});
@@ -99,9 +100,13 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
                                 'postal_code': data['1']['postal_code'] ?? '',
                                 'email': data['2']['email'] ?? '',
                                 'password': data['2']['password'] ?? '',
+                                'profile_photo':
+                                    data['2']['profile_photo'] ?? ''
                               };
                               context.push(SetGeofenceScreen.route,
                                   extra: formData);
+
+                              _formKeyNew.currentState!.formSubmitData.clear();
                             } catch (e) {
                               Info.showSnackbarMessage(
                                 context,
