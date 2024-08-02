@@ -31,12 +31,10 @@ class Companion {
     required this.currentLocation,
   });
 
-  // Method to update the current location
   void updateCurrentLocation(GeoPoint newLocation) {
     currentLocation = newLocation;
   }
 
-  // Convert Companion to Firestore document
   Map<String, dynamic> toFirestore() {
     return {
       'companionAcctId': companionAcctId,

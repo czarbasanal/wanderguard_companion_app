@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:wanderguard_companion_app/models/companion.model.dart';
+import 'package:wanderguard_companion_app/routing/router.dart';
+import 'package:wanderguard_companion_app/screens/profile/backup_companions/backup_list_screen.dart';
 import 'package:wanderguard_companion_app/widgets/section.dart';
 import 'package:wanderguard_companion_app/widgets/section_item.dart';
-import '../../controllers/auth_controller.dart';
+import '../controllers/auth_controller.dart';
 import 'companion_detail.dart';
 
 class ProfileContent extends StatelessWidget {
@@ -52,7 +54,10 @@ class ProfileContent extends StatelessWidget {
                 trailingIcon: const Icon(
                   Icons.arrow_forward_ios_rounded,
                   color: Color(0xFF313131),
-                )),
+                ),
+                onTap: () {
+                  GlobalRouter.I.router.push(BackupCompanionListScreen.route);
+                }),
             SectionItem(
                 leadingIcon: 'lib/assets/icons/logout.svg',
                 title: 'Logout',

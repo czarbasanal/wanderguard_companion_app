@@ -2,16 +2,14 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:wanderguard_companion_app/controllers/companion_data_controller.dart';
 import 'package:wanderguard_companion_app/models/companion.model.dart';
-import 'package:wanderguard_companion_app/routing/router.dart';
 import 'package:wanderguard_companion_app/utils/colors.dart';
 import 'package:wanderguard_companion_app/utils/size_config.dart';
 import 'package:wanderguard_companion_app/widgets/dialogs/waiting_dialog.dart';
-import 'profile_content.dart';
+import '../../widgets/profile_content.dart';
 
 class ProfileScreen extends StatefulWidget {
   static const route = '/profile';
