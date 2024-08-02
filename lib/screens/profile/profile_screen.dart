@@ -1,7 +1,16 @@
+import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:wanderguard_companion_app/controllers/companion_data_controller.dart';
+import 'package:wanderguard_companion_app/models/companion.model.dart';
+import 'package:wanderguard_companion_app/routing/router.dart';
 import 'package:wanderguard_companion_app/utils/colors.dart';
-import '../../utils/size_config.dart';
+import 'package:wanderguard_companion_app/utils/size_config.dart';
+import 'package:wanderguard_companion_app/widgets/dialogs/waiting_dialog.dart';
 import 'profile_content.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -13,67 +22,218 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  bool isEditMode = false;
-  void toggleEditMode() {
+  bool isLoading = true;
+  Companion? companion;
+  TextEditingController? firstNameController;
+  TextEditingController? lastNameController;
+  TextEditingController? phoneNumberController;
+  TextEditingController? emailController;
+  TextEditingController? addressController;
+  final ImagePicker _picker = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+    fetchCompanionData();
+  }
+
+  Future<void> fetchCompanionData() async {
+    companion = CompanionDataController.instance.companionModelNotifier.value;
+    if (companion != null) {
+      firstNameController = TextEditingController(text: companion!.firstName);
+      lastNameController = TextEditingController(text: companion!.lastName);
+      phoneNumberController = TextEditingController(text: companion!.contactNo);
+      emailController = TextEditingController(text: companion!.email);
+      addressController = TextEditingController(text: companion!.address);
+    }
     setState(() {
-      isEditMode = !isEditMode;
+      isLoading = false;
+    });
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    final pickedFile = await _picker.pickImage(source: source);
+    if (pickedFile != null) {
+      _uploadImage(pickedFile);
+    }
+  }
+
+  Future<void> _uploadImage(XFile pickedFile) async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      final ref = FirebaseStorage.instance
+          .ref()
+          .child('companion_photos')
+          .child('${companion!.companionAcctId}.jpg');
+      await ref.putFile(File(pickedFile.path));
+      final url = await ref.getDownloadURL();
+
+      // Update the companion's photoUrl in Firestore
+      final updatedCompanion = companion!.copyWith(photoUrl: url);
+      await CompanionDataController.instance.updateCompanion(updatedCompanion);
+
+      setState(() {
+        companion = updatedCompanion;
+      });
+    } catch (error) {
+      print('Error uploading image: $error');
+    }
+
+    setState(() {
+      isLoading = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    SizeConfig().init(context);
+    if (isLoading) {
+      return Scaffold(
+        backgroundColor: CustomColors.tertiaryColor,
+        body: Center(
+          child: WaitingDialog(
+            prompt: 'Loading...',
+            color: CustomColors.primaryColor,
+          ),
+        ),
+      );
+    }
 
     return Scaffold(
       backgroundColor: CustomColors.tertiaryColor,
       body: SingleChildScrollView(
-        child: Column(
+        child: Stack(
           children: [
-            Container(
-              color: CustomColors.primaryColor,
-              child: Column(
-                children: [
-                  const SizedBox(height: 40),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+            Column(
+              children: [
+                Container(
+                  color: CustomColors.primaryColor,
+                  width: SizeConfig.screenWidth,
+                  height: SizeConfig.screenHeight * 0.2,
+                  child: Column(
                     children: [
-                      Text(
-                        'Profile',
-                        style: GoogleFonts.poppins(
-                          textStyle: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.white),
-                        ),
+                      const SizedBox(
+                        height: 20,
                       ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          const SizedBox(
+                            width: 16,
+                          ),
+                          Text('Profile',
+                              style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w800,
+                                  color: CustomColors.secondaryColor))
+                        ],
+                      )
                     ],
                   ),
-                  const SizedBox(height: 20),
-                  const CircleAvatar(
-                    radius: 50,
+                ),
+                const SizedBox(height: 100),
+                ProfileContent(
+                  companion: companion!,
+                  firstNameController: firstNameController!,
+                  lastNameController: lastNameController!,
+                  phoneNumberController: phoneNumberController!,
+                  emailController: emailController!,
+                  addressController: addressController!,
+                ),
+              ],
+            ),
+            Positioned(
+              top: SizeConfig.screenHeight * 0.11,
+              left: SizeConfig.screenWidth * 0.32,
+              child: Container(
+                width: 150,
+                height: 150,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.white,
+                    width: 5.0,
                   ),
-                  const SizedBox(height: 10),
-                  ElevatedButton(
-                    onPressed: toggleEditMode,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromARGB(255, 161, 159, 159),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5.0),
+                ),
+                child: ClipOval(
+                  child: CachedNetworkImage(
+                    imageUrl: companion!.photoUrl,
+                    width: 150,
+                    height: 150,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => Container(
+                      width: 150,
+                      height: 150,
+                      color: CustomColors.primaryColor,
+                      child: Center(
+                        child: WaitingDialog(
+                          color: CustomColors.primaryColor,
+                        ),
                       ),
                     ),
-                    child: Text(
-                      isEditMode ? 'Save Profile' : 'Edit Profile',
-                      style: const TextStyle(color: Colors.white),
+                    errorWidget: (context, url, error) => Container(
+                      width: 150,
+                      height: 150,
+                      decoration: BoxDecoration(
+                        color: CustomColors.tertiaryColor,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Image.asset(
+                        'lib/assets/images/profile-placeholder.png',
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 20),
-                ],
+                ),
               ),
             ),
-            const SizedBox(height: 20),
-            ProfileContent(isEditMode: isEditMode),
+            Positioned(
+              top: 200,
+              right: 130,
+              child: Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                    color: CustomColors.tertiaryColor, shape: BoxShape.circle),
+                child: IconButton(
+                  onPressed: () => _showImageSourceActionSheet(context),
+                  icon: const Icon(
+                    CupertinoIcons.photo_camera_solid,
+                    size: 24,
+                    color: Colors.grey,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showImageSourceActionSheet(BuildContext context) {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (_) => CupertinoActionSheet(
+        title: const Text('Choose an image source'),
+        actions: [
+          CupertinoActionSheetAction(
+            onPressed: () {
+              _pickImage(ImageSource.camera);
+            },
+            child: Text('Camera',
+                style: TextStyle(color: CustomColors.primaryColor)),
+          ),
+          CupertinoActionSheetAction(
+            onPressed: () {
+              _pickImage(ImageSource.gallery);
+            },
+            child: Text('Gallery',
+                style: TextStyle(color: CustomColors.primaryColor)),
+          ),
+        ],
       ),
     );
   }

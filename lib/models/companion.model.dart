@@ -71,4 +71,34 @@ class Companion {
       currentLocation: data['currentLocation'],
     );
   }
+
+  Companion copyWith({
+    String? companionAcctId,
+    String? firstName,
+    String? lastName,
+    String? email,
+    String? address,
+    String? contactNo,
+    String? photoUrl,
+    AccountType? acctType,
+    AccountStatus? acctStatus,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    GeoPoint? currentLocation,
+  }) {
+    return Companion(
+      companionAcctId: companionAcctId ?? this.companionAcctId,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      email: email ?? this.email,
+      address: address ?? this.address,
+      contactNo: contactNo ?? this.contactNo,
+      photoUrl: photoUrl ?? this.photoUrl,
+      acctType: acctType ?? this.acctType,
+      acctStatus: acctStatus ?? this.acctStatus,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      currentLocation: currentLocation ?? this.currentLocation,
+    );
+  }
 }
