@@ -1,12 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:wanderguard_companion_app/models/patient.model.dart';
 import 'package:wanderguard_companion_app/controllers/patient_data_controller.dart';
 import 'package:wanderguard_companion_app/screens/profile/backup_companions/add_backup_screen.dart';
 import 'package:wanderguard_companion_app/utils/colors.dart';
-import 'package:wanderguard_companion_app/utils/geopoint_converter.dart';
 import 'package:wanderguard_companion_app/widgets/dialogs/waiting_dialog.dart';
 import 'package:wanderguard_companion_app/routing/router.dart';
 
@@ -66,6 +64,7 @@ class _SelectPatientScreenState extends State<SelectPatientScreen> {
           }
 
           return ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             shrinkWrap: true,
             physics: const BouncingScrollPhysics(),
             itemCount: patients.length,
@@ -103,8 +102,8 @@ class _SelectPatientScreenState extends State<SelectPatientScreen> {
                               borderRadius: BorderRadius.circular(12),
                               child: CachedNetworkImage(
                                 imageUrl: updatedPatient.photoUrl,
-                                width: 85,
-                                height: 85,
+                                width: 100,
+                                height: 100,
                                 fit: BoxFit.cover,
                                 placeholder: (context, url) => WaitingDialog(
                                   color: CustomColors.primaryColor,
@@ -131,23 +130,15 @@ class _SelectPatientScreenState extends State<SelectPatientScreen> {
                                   ),
                                   const SizedBox(height: 5),
                                   const Text(
-                                    'Last Location:',
+                                    'Address:',
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  FutureBuilder<String>(
-                                    future: GeoPointConverter.geoPointToAddress(
-                                        updatedPatient.lastLocTracked),
-                                    builder: (context, lastLocSnapshot) {
-                                      final location = lastLocSnapshot.data ??
-                                          'Fetching location...';
-                                      return Text(
-                                        location,
-                                        style: const TextStyle(fontSize: 14),
-                                      );
-                                    },
+                                  Text(
+                                    updatedPatient.homeAddress,
+                                    style: const TextStyle(fontSize: 14),
                                   ),
                                   const SizedBox(height: 16),
                                 ],
