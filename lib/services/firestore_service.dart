@@ -39,7 +39,15 @@ class FirestoreService {
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>>> getCollectionStream(
-      String collection) {
-    return _db.collection(collection).snapshots();
+    String path, {
+    Query<Map<String, dynamic>> Function(Query<Map<String, dynamic>> query)?
+        queryBuilder,
+  }) {
+    Query<Map<String, dynamic>> query =
+        FirebaseFirestore.instance.collection(path);
+    if (queryBuilder != null) {
+      query = queryBuilder(query);
+    }
+    return query.snapshots();
   }
 }

@@ -140,13 +140,14 @@ class BackupCompanionDataController with ChangeNotifier {
 
   Stream<List<BackupCompanion>> getBackupCompanionsByCompanionAcctId(
       String companionAcctId) {
-    return FirebaseFirestore.instance
-        .collection('backup_companions')
-        .where('companionAcctId', isEqualTo: companionAcctId)
-        .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => BackupCompanion.fromFirestore(doc))
-            .toList());
+    return FirestoreService.instance.getCollectionStream(
+      'backup_companions',
+      queryBuilder: (query) {
+        return query.where('companionAcctId', isEqualTo: companionAcctId);
+      },
+    ).map((snapshot) => snapshot.docs
+        .map((doc) => BackupCompanion.fromFirestore(doc))
+        .toList());
   }
 
   @override

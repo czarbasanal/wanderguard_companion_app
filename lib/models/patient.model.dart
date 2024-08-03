@@ -107,7 +107,7 @@ class Patient {
     );
   }
 
-  bool checkIfWithinGeofence() {
+  bool checkIfWithinGeofence(GeoPoint lastLocTracked) {
     return defaultGeofence.isWithinGeofence(lastLocTracked);
   }
 }

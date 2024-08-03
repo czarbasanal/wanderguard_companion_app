@@ -199,15 +199,18 @@ class _BackupCompanionListScreenState extends State<BackupCompanionListScreen> {
                     Positioned(
                         bottom: 20,
                         right: 10,
-                        child: IconButton(
-                          icon: Icon(
-                            CupertinoIcons.phone_arrow_up_right,
-                            color: CustomColors.primaryColor,
-                            size: 24,
+                        child: Transform.flip(
+                          flipX: true,
+                          child: IconButton(
+                            icon: Icon(
+                              CupertinoIcons.phone_solid,
+                              color: CustomColors.primaryColor,
+                              size: 24,
+                            ),
+                            onPressed: () {
+                              //handle call here
+                            },
                           ),
-                          onPressed: () {
-                            //handle call here
-                          },
                         ))
                   ],
                 ),

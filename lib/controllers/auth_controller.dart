@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart' as auth;
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -15,7 +15,7 @@ import 'package:wanderguard_companion_app/controllers/companion_data_controller.
 import 'package:wanderguard_companion_app/state/homescreen_state.dart';
 
 class AuthController with ChangeNotifier {
-  final auth.FirebaseAuth _auth = auth.FirebaseAuth.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   static void initialize() {
     GetIt.instance.registerSingleton<AuthController>(AuthController());
@@ -52,7 +52,7 @@ class AuthController with ChangeNotifier {
 
   Future<void> login(String email, String password) async {
     try {
-      final auth.UserCredential userCredential =
+      final UserCredential userCredential =
           await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
@@ -60,7 +60,14 @@ class AuthController with ChangeNotifier {
 
       final Companion? companion = await CompanionDataController.instance
           .getCompanion(userCredential.user!.uid);
+
+      if (companion == null ||
+          companion.acctType != AccountType.primaryCompanion) {
+        throw Exception('Invalid account type');
+      }
+
       CompanionDataController.instance.setCompanion(companion);
+      state = AuthState.authenticated;
     } catch (e) {
       print('Error logging in user: $e');
       throw Exception('Failed to log in');
@@ -87,7 +94,7 @@ class AuthController with ChangeNotifier {
       String address,
       GeoPoint currentLocation) async {
     try {
-      final auth.UserCredential userCredential =
+      final UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
