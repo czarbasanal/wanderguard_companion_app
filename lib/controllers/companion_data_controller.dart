@@ -25,6 +25,11 @@ class CompanionDataController with ChangeNotifier {
         'companions', companion.companionAcctId, companion.toFirestore());
   }
 
+  Future<void> updateCompanion(Companion companion) async {
+    await FirestoreService.instance.updateDocument(
+        'companions', companion.companionAcctId, companion.toFirestore());
+  }
+
   Future<Companion?> getCompanion(String companionAcctId) async {
     final doc = await FirestoreService.instance
         .getDocument('companions', companionAcctId);
@@ -37,6 +42,14 @@ class CompanionDataController with ChangeNotifier {
   Future<void> deleteCompanion(String companionAcctId) async {
     await FirestoreService.instance
         .deleteDocument('companions', companionAcctId);
+  }
+
+  Stream<DocumentSnapshot<Map<String, dynamic>>> getCompanionStream(
+      String companionAcctId) {
+    return FirebaseFirestore.instance
+        .collection("companions")
+        .doc(companionAcctId)
+        .snapshots();
   }
 
   void setCompanion(Companion? companion) {

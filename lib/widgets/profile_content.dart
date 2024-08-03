@@ -1,13 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:wanderguard_companion_app/models/companion.model.dart';
+import 'package:wanderguard_companion_app/routing/router.dart';
+import 'package:wanderguard_companion_app/screens/profile/backup_companions/backup_list_screen.dart';
 import 'package:wanderguard_companion_app/widgets/section.dart';
 import 'package:wanderguard_companion_app/widgets/section_item.dart';
-import '../../controllers/auth_controller.dart';
+import '../controllers/auth_controller.dart';
 import 'companion_detail.dart';
 
 class ProfileContent extends StatelessWidget {
-  final bool isEditMode;
+  final Companion companion;
+  final TextEditingController firstNameController;
+  final TextEditingController lastNameController;
+  final TextEditingController phoneNumberController;
+  final TextEditingController emailController;
+  final TextEditingController addressController;
 
-  ProfileContent({required this.isEditMode});
+  ProfileContent({
+    required this.companion,
+    required this.firstNameController,
+    required this.lastNameController,
+    required this.phoneNumberController,
+    required this.emailController,
+    required this.addressController,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -16,9 +31,16 @@ class ProfileContent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CompanionDetail(isEditMode: isEditMode),
+          CompanionDetail(
+            companion: companion,
+            firstNameController: firstNameController,
+            lastNameController: lastNameController,
+            phoneNumberController: phoneNumberController,
+            emailController: emailController,
+            addressController: addressController,
+          ),
           const SizedBox(height: 20),
-          Section(title: 'Content', items: [
+          Section(title: 'Others', items: [
             SectionItem(
                 leadingIcon: 'lib/assets/icons/transfer-patient.svg',
                 title: 'Patient Transfers',
@@ -32,7 +54,10 @@ class ProfileContent extends StatelessWidget {
                 trailingIcon: const Icon(
                   Icons.arrow_forward_ios_rounded,
                   color: Color(0xFF313131),
-                )),
+                ),
+                onTap: () {
+                  GlobalRouter.I.router.push(BackupCompanionListScreen.route);
+                }),
             SectionItem(
                 leadingIcon: 'lib/assets/icons/logout.svg',
                 title: 'Logout',
@@ -41,7 +66,6 @@ class ProfileContent extends StatelessWidget {
                   AuthController.instance.logout();
                 }),
           ]),
-          const SizedBox(height: 20),
         ],
       ),
     );

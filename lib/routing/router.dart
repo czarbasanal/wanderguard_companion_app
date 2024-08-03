@@ -6,6 +6,9 @@ import "package:wanderguard_companion_app/screens/patients/add_patient_screen.da
 import "package:wanderguard_companion_app/screens/notifications/notification_screen.dart";
 import "package:wanderguard_companion_app/screens/patients/patient_list_screen.dart";
 import "package:wanderguard_companion_app/screens/patients/set_geofence_screen.dart";
+import "package:wanderguard_companion_app/screens/profile/backup_companions/add_backup_screen.dart";
+import "package:wanderguard_companion_app/screens/profile/backup_companions/backup_list_screen.dart";
+import "package:wanderguard_companion_app/screens/profile/backup_companions/select_patient.dart";
 
 import "../controllers/auth_controller.dart";
 import "../enum/auth_state.enum.dart";
@@ -99,6 +102,31 @@ class GlobalRouter {
           name: AddPatientScreen.name,
           builder: (context, state) {
             return AddPatientScreen();
+          },
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: BackupCompanionListScreen.route,
+          name: BackupCompanionListScreen.name,
+          builder: (context, state) {
+            return BackupCompanionListScreen();
+          },
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: AddBackupCompanionScreen.route,
+          name: AddBackupCompanionScreen.name,
+          builder: (context, state) {
+            final initialFormData = state.extra as Map<String, dynamic>;
+            return AddBackupCompanionScreen(initialFormData: initialFormData);
+          },
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: SelectPatientScreen.route,
+          name: SelectPatientScreen.name,
+          builder: (context, state) {
+            return SelectPatientScreen();
           },
         ),
         ShellRoute(

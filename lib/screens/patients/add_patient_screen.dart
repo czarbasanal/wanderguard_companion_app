@@ -47,10 +47,10 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: CustomColors.secondaryColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.white,
+        backgroundColor: CustomColors.secondaryColor,
+        surfaceTintColor: CustomColors.secondaryColor,
         centerTitle: true,
         title: const Text(
           "Add Patient",

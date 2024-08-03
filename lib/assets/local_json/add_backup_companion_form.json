@@ -1,0 +1,338 @@
+{
+    "formName": "Add Backup Companion",
+    "title": "Add Backup Companion",
+    "description": "Please enter the details to add a new  backup companion",
+    "image": "",
+    "formType": "multi",
+    "step": {
+        "form1": {
+            "formName": "backupCompanionDetails",
+            "title": "Backup Details",
+            "description": "Please enter the  backup companion's personal details.",
+            "formFields": [
+                {
+                    "elementType": "input",
+                    "elementConfig": {
+                        "type": "text",
+                        "name": "first_name",
+                        "label": "First Name",
+                        "placeholder": "",
+                        "class": "form-control",
+                        "resetIcon": true
+                    },
+                    "value": "",
+                    "validation": {
+                        "required": true,
+                        "minLength": 2,
+                        "maxLength": 50,
+                        "isReadOnly": false,
+                        "isDisabled": false,
+                        "errorMessage": {
+                            "required": "Please enter the first name",
+                            "minLength": "Minimum 2 characters required",
+                            "maxLength": "Maximum 50 characters allowed"
+                        }
+                    },
+                    "valid": true,
+                    "onchange": false
+                },
+                {
+                    "elementType": "input",
+                    "elementConfig": {
+                        "type": "text",
+                        "name": "last_name",
+                        "label": "Last Name",
+                        "placeholder": "",
+                        "class": "form-control",
+                        "resetIcon": true
+                    },
+                    "value": "",
+                    "validation": {
+                        "required": true,
+                        "minLength": 2,
+                        "maxLength": 50,
+                        "isReadOnly": false,
+                        "isDisabled": false,
+                        "errorMessage": {
+                            "required": "Please enter the last name",
+                            "minLength": "Minimum 2 characters required",
+                            "maxLength": "Maximum 50 characters allowed"
+                        }
+                    },
+                    "valid": true,
+                    "onchange": false
+                },
+                {
+                    "elementType": "input",
+                    "elementConfig": {
+                        "type": "tel",
+                        "name": "contact_no",
+                        "label": "Contact Number",
+                        "keyboardRejex": "^[0-9+]+",
+                        "placeholder": "",
+                        "class": "form-control",
+                        "resetIcon": true
+                    },
+                    "value": "",
+                    "validation": {
+                        "required": true,
+                        "minLength": 11,
+                        "maxLength": 11,
+                        "isReadOnly": false,
+                        "isDisabled": false,
+                        "errorMessage": {
+                            "required": "Please enter the contact number",
+                            "minLength": "Minimum 11 digits required",
+                            "maxLength": "Maximum 11 digits allowed"
+                        }
+                    },
+                    "valid": true,
+                    "onchange": false
+                }
+            ]
+        },
+        "form2": {
+            "formName": "address",
+            "title": "Address",
+            "description": "Please enter the backup companion's address details.",
+            "formFields": [
+                {
+                    "elementType": "input",
+                    "elementConfig": {
+                        "type": "text",
+                        "name": "street",
+                        "label": "Street",
+                        "placeholder": "",
+                        "class": "form-control",
+                        "resetIcon": true
+                    },
+                    "value": "",
+                    "validation": {
+                        "required": true,
+                        "minLength": 2,
+                        "maxLength": 100,
+                        "isReadOnly": false,
+                        "isDisabled": false,
+                        "errorMessage": {
+                            "required": "Please enter the street",
+                            "minLength": "Minimum 2 characters required",
+                            "maxLength": "Maximum 100 characters allowed"
+                        }
+                    },
+                    "valid": true,
+                    "onchange": false
+                },
+                {
+                    "elementType": "input",
+                    "elementConfig": {
+                        "type": "text",
+                        "name": "barangay",
+                        "label": "Barangay",
+                        "placeholder": "",
+                        "class": "form-control",
+                        "resetIcon": true
+                    },
+                    "value": "",
+                    "validation": {
+                        "required": true,
+                        "minLength": 2,
+                        "maxLength": 50,
+                        "isReadOnly": false,
+                        "isDisabled": false,
+                        "errorMessage": {
+                            "required": "Please enter the barangay",
+                            "minLength": "Minimum 2 characters required",
+                            "maxLength": "Maximum 50 characters allowed"
+                        }
+                    },
+                    "valid": true,
+                    "onchange": false
+                },
+                {
+                    "elementType": "input",
+                    "elementConfig": {
+                        "type": "text",
+                        "name": "city",
+                        "label": "City/Municipality",
+                        "placeholder": "",
+                        "class": "form-control",
+                        "resetIcon": true
+                    },
+                    "value": "",
+                    "validation": {
+                        "required": true,
+                        "minLength": 2,
+                        "maxLength": 50,
+                        "isReadOnly": false,
+                        "isDisabled": false,
+                        "errorMessage": {
+                            "required": "Please enter the city/municipality",
+                            "minLength": "Minimum 2 characters required",
+                            "maxLength": "Maximum 50 characters allowed"
+                        }
+                    },
+                    "valid": true,
+                    "onchange": false
+                },
+                {
+                    "elementType": "input",
+                    "elementConfig": {
+                        "type": "text",
+                        "name": "province",
+                        "label": "Province",
+                        "placeholder": "",
+                        "class": "form-control",
+                        "resetIcon": true
+                    },
+                    "value": "",
+                    "validation": {
+                        "required": true,
+                        "minLength": 2,
+                        "maxLength": 50,
+                        "isReadOnly": false,
+                        "isDisabled": false,
+                        "errorMessage": {
+                            "required": "Please enter the province",
+                            "minLength": "Minimum 2 characters required",
+                            "maxLength": "Maximum 50 characters allowed"
+                        }
+                    },
+                    "valid": true,
+                    "onchange": false
+                },
+                {
+                    "elementType": "input",
+                    "elementConfig": {
+                        "type": "tel",
+                        "name": "postal_code",
+                        "label": "Postal Code",
+                        "placeholder": "",
+                        "class": "form-control",
+                        "resetIcon": true
+                    },
+                    "value": "",
+                    "validation": {
+                        "required": true,
+                        "minLength": 4,
+                        "maxLength": 4,
+                        "isReadOnly": false,
+                        "isDisabled": false,
+                        "errorMessage": {
+                            "required": "Please enter valid postal code",
+                            "minLength": "Minimum 4 digits required",
+                            "maxLength": "Maximum 4 digits allowed"
+                        }
+                    },
+                    "valid": true,
+                    "onchange": false
+                }
+            ]
+        },
+        "form3": {
+            "formName": "accountDetails",
+            "title": "Account Details",
+            "description": "Please enter the backup companion's account details.",
+            "formFields": [
+                {
+                    "elementType": "input",
+                    "elementConfig": {
+                        "type": "email",
+                        "name": "email",
+                        "label": "Email",
+                        "placeholder": "",
+                        "class": "form-control",
+                        "resetIcon": true
+                    },
+                    "value": "",
+                    "validation": {
+                        "required": true,
+                        "isEmail": true,
+                        "maxLength": 50,
+                        "rejex": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+                        "isReadOnly": false,
+                        "isDisabled": false,
+                        "errorMessage": {
+                            "required": "Please enter the email",
+                            "maxLength": "Maximum 50 characters allowed",
+                            "rejex": "Please enter a valid email"
+                        }
+                    },
+                    "valid": true,
+                    "onchange": false
+                },
+                {
+                    "elementType": "input",
+                    "elementConfig": {
+                        "type": "password",
+                        "name": "password",
+                        "label": "Password",
+                        "placeholder": "",
+                        "class": "form-control",
+                        "resetIcon": true
+                    },
+                    "value": "",
+                    "validation": {
+                        "required": true,
+                        "minLength": 6,
+                        "maxLength": 50,
+                        "isReadOnly": false,
+                        "isDisabled": false,
+                        "errorMessage": {
+                            "required": "Please enter the password",
+                            "minLength": "Minimum 6 characters required",
+                            "maxLength": "Maximum 50 characters allowed"
+                        }
+                    },
+                    "valid": true,
+                    "onchange": false
+                },
+                {
+                    "elementType": "input",
+                    "elementConfig": {
+                        "type": "password",
+                        "name": "confirm_password",
+                        "label": "Confirm Password",
+                        "placeholder": "",
+                        "class": "form-control",
+                        "resetIcon": true
+                    },
+                    "value": "",
+                    "validation": {
+                        "required": true,
+                        "minLength": 6,
+                        "maxLength": 50,
+                        "isReadOnly": false,
+                        "isDisabled": false,
+                        "errorMessage": {
+                            "required": "Please confirm your password",
+                            "minLength": "Minimum 6 characters required",
+                            "maxLength": "Maximum 50 characters allowed",
+                            "match": "Passwords do not match"
+                        }
+                    },
+                    "valid": true,
+                    "onchange": false
+                },
+                {
+                    "elementType": "upload_image",
+                    "elementConfig": {
+                        "name": "profile_photo",
+                        "label": "Upload Photo",
+                        "enableLabel": true,
+                        "initialValue": ""
+                    },
+                    "value": "",
+                    "validation": {
+                        "required": true,
+                        "isReadOnly": false,
+                        "isDisabled": false,
+                        "errorMessage": {
+                            "required": "Please upload photo"
+                        }
+                    },
+                    "valid": false
+                }
+            ]
+        }
+    }
+}
