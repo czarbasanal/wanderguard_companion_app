@@ -45,8 +45,7 @@ class PatientCardSmall extends StatelessWidget {
                   height: 85,
                   fit: BoxFit.cover,
                   placeholder: (context, url) => WaitingDialog(
-                    color: CustomColors.primaryColor,
-                  ),
+                      color: CustomColors.primaryColor, prompt: ''),
                   errorWidget: (context, url, error) => const Icon(Icons.error),
                 ),
               ),

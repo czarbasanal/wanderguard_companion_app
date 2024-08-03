@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:wanderguard_companion_app/models/patient.model.dart';
 import 'package:wanderguard_companion_app/routing/router.dart';
 import 'package:wanderguard_companion_app/screens/patients/add_patient_screen.dart';
+import 'package:wanderguard_companion_app/screens/patients/edit_patient_screen.dart';
 import 'package:wanderguard_companion_app/utils/colors.dart';
 import 'package:wanderguard_companion_app/utils/geopoint_converter.dart';
 import 'package:wanderguard_companion_app/widgets/dialogs/waiting_dialog.dart';
@@ -125,8 +126,8 @@ class _PatientListScreenState extends State<PatientListScreen> {
                                     fit: BoxFit.cover,
                                     placeholder: (context, url) =>
                                         WaitingDialog(
-                                      color: CustomColors.primaryColor,
-                                    ),
+                                            color: CustomColors.primaryColor,
+                                            prompt: ''),
                                     errorWidget: (context, url, error) =>
                                         const Icon(Icons.error),
                                   ),
@@ -147,7 +148,12 @@ class _PatientListScreenState extends State<PatientListScreen> {
                                       ),
                                     ),
                                     GestureDetector(
-                                      onTap: () {},
+                                      onTap: () {
+                                        PatientDataController.instance
+                                            .setPatient(patient);
+                                        GlobalRouter.I.router
+                                            .push(EditPatientScreen.route);
+                                      },
                                       child: SvgPicture.asset(
                                         'lib/assets/icons/edit-patient-icon.svg',
                                         width: 20,
@@ -249,7 +255,7 @@ Widget buildPatientInfo(String label, String value) {
           overflow: TextOverflow.ellipsis,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        SizedBox(width: 5),
+        const SizedBox(width: 5),
         Expanded(
           child: Text(
             value,

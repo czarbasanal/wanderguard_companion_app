@@ -101,6 +101,8 @@ class _SigninScreenState extends State<SigninScreen> {
                       child: Column(
                         children: [
                           TextFormField(
+                            cursorColor:
+                                CustomColors.primaryColor.withOpacity(0.75),
                             decoration: decoration.copyWith(
                                 labelText: "Username",
                                 labelStyle:
@@ -121,6 +123,8 @@ class _SigninScreenState extends State<SigninScreen> {
                           ),
                           const SizedBox(height: 16),
                           TextFormField(
+                            cursorColor:
+                                CustomColors.primaryColor.withOpacity(0.75),
                             keyboardType: TextInputType.visiblePassword,
                             obscureText: obfuscate,
                             decoration: decoration.copyWith(
@@ -266,9 +270,9 @@ class _SigninScreenState extends State<SigninScreen> {
         borderSide: BorderSide(color: Colors.grey.shade400, width: 1),
       ),
       focusedBorder: _baseBorder.copyWith(
-        borderSide: const BorderSide(color: Colors.deepPurpleAccent, width: 1),
+        borderSide: BorderSide(color: CustomColors.primaryColor, width: 1),
       ),
       errorBorder: _baseBorder.copyWith(
-        borderSide: const BorderSide(color: Colors.redAccent, width: 1),
+        borderSide: const BorderSide(color: Colors.red, width: 1),
       ));
 }

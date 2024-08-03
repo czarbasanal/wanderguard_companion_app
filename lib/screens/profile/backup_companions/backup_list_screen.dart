@@ -117,6 +117,7 @@ class _BackupCompanionListScreenState extends State<BackupCompanionListScreen> {
                                 fit: BoxFit.cover,
                                 placeholder: (context, url) => WaitingDialog(
                                   color: CustomColors.primaryColor,
+                                  prompt: '',
                                 ),
                                 errorWidget: (context, url, error) =>
                                     const Icon(Icons.error),
@@ -199,18 +200,15 @@ class _BackupCompanionListScreenState extends State<BackupCompanionListScreen> {
                     Positioned(
                         bottom: 20,
                         right: 10,
-                        child: Transform.flip(
-                          flipX: true,
-                          child: IconButton(
-                            icon: Icon(
-                              CupertinoIcons.phone_solid,
-                              color: CustomColors.primaryColor,
-                              size: 24,
-                            ),
-                            onPressed: () {
-                              //handle call here
-                            },
+                        child: IconButton(
+                          icon: Icon(
+                            CupertinoIcons.phone_solid,
+                            color: CustomColors.primaryColor,
+                            size: 24,
                           ),
+                          onPressed: () {
+                            //handle call here
+                          },
                         ))
                   ],
                 ),

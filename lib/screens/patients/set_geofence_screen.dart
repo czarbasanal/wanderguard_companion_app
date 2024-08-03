@@ -20,9 +20,11 @@ class SetGeofenceScreen extends StatefulWidget {
   static const String route = "/set_geofence";
   static const String name = "Set Geofence";
 
-  final Map<String, dynamic> formData;
+  final Map<String, dynamic>? formData;
+  final Patient? existingPatient;
 
-  const SetGeofenceScreen({Key? key, required this.formData}) : super(key: key);
+  const SetGeofenceScreen({Key? key, this.formData, this.existingPatient})
+      : super(key: key);
 
   @override
   _SetGeofenceScreenState createState() => _SetGeofenceScreenState();
@@ -31,6 +33,15 @@ class SetGeofenceScreen extends StatefulWidget {
 class _SetGeofenceScreenState extends State<SetGeofenceScreen> {
   GeoPoint? geofenceCenter;
   double? geofenceRadius;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.existingPatient != null) {
+      geofenceCenter = widget.existingPatient!.defaultGeofence.center;
+      geofenceRadius = widget.existingPatient!.defaultGeofence.radius;
+    }
+  }
 
   void _onGeofenceSet(GeoPoint center, double radius) {
     setState(() {
@@ -41,26 +52,53 @@ class _SetGeofenceScreenState extends State<SetGeofenceScreen> {
 
   Future<void> _onFinalSubmit() async {
     try {
-      // Extract form data
-      String firstName = widget.formData['first_name'];
-      String lastName = widget.formData['last_name'];
-      DateTime dateOfBirth =
-          DateFormat('dd/MM/yyyy').parse(widget.formData['date_of_birth']);
-      String contactNo = widget.formData['contact_no'];
-      String street = widget.formData['street'];
-      String barangay = widget.formData['barangay'];
-      String city = widget.formData['city'];
-      String province = widget.formData['province'];
-      String postalCode = widget.formData['postal_code'];
-      String email = widget.formData['email'];
-      String password = widget.formData['password'];
-      String photoPath = widget.formData['profile_photo'];
+      String firstName;
+      String lastName;
+      DateTime dateOfBirth;
+      String contactNo;
+      String street;
+      String barangay;
+      String city;
+      String province;
+      String postalCode;
+      String email;
+      String password;
+      String photoPath;
+
+      if (widget.existingPatient != null) {
+        firstName = widget.existingPatient!.firstName;
+        lastName = widget.existingPatient!.lastName;
+        dateOfBirth = widget.existingPatient!.dateOfBirth;
+        contactNo = widget.existingPatient!.contactNo;
+        street = widget.existingPatient!.homeAddress.split(', ')[0];
+        barangay = widget.existingPatient!.homeAddress.split(', ')[1];
+        city = widget.existingPatient!.homeAddress.split(', ')[2];
+        province = widget.existingPatient!.homeAddress.split(', ')[3];
+        postalCode = widget.existingPatient!.homeAddress.split(', ')[4];
+        email = widget.existingPatient!.email;
+        password = widget.existingPatient!.password;
+        photoPath = widget.existingPatient!.photoUrl;
+      } else {
+        firstName = widget.formData!['first_name'];
+        lastName = widget.formData!['last_name'];
+        dateOfBirth =
+            DateFormat('dd/MM/yyyy').parse(widget.formData!['date_of_birth']);
+        contactNo = widget.formData!['contact_no'];
+        street = widget.formData!['street'];
+        barangay = widget.formData!['barangay'];
+        city = widget.formData!['city'];
+        province = widget.formData!['province'];
+        postalCode = widget.formData!['postal_code'];
+        email = widget.formData!['email'];
+        password = widget.formData!['password'];
+        photoPath = widget.formData!['profile_photo'];
+      }
 
       String address = '$street, $barangay, $city, $province, $postalCode';
 
-      Future<void> createPatient() async {
-        String photoUrl = '';
-        if (photoPath.isNotEmpty) {
+      Future<void> createOrUpdatePatient() async {
+        String photoUrl = photoPath;
+        if (widget.existingPatient == null && photoPath.isNotEmpty) {
           File photoFile = File(photoPath);
           final storageRef = FirebaseStorage.instance
               .ref()
@@ -71,9 +109,8 @@ class _SetGeofenceScreenState extends State<SetGeofenceScreen> {
           photoUrl = await snapshot.ref.getDownloadURL();
         }
 
-        // Create patient model
-        final Patient newPatient = Patient(
-          patientAcctId: '',
+        final Patient patient = Patient(
+          patientAcctId: widget.existingPatient?.patientAcctId ?? '',
           firstName: firstName,
           lastName: lastName,
           email: email,
@@ -84,27 +121,35 @@ class _SetGeofenceScreenState extends State<SetGeofenceScreen> {
           photoUrl: photoUrl,
           acctType: AccountType.patient,
           acctStatus: AccountStatus.offline,
-          lastLocTracked: const GeoPoint(0, 0),
-          lastLocUpdated: DateTime.now(),
+          lastLocTracked:
+              widget.existingPatient?.lastLocTracked ?? const GeoPoint(0, 0),
+          lastLocUpdated:
+              widget.existingPatient?.lastLocUpdated ?? DateTime.now(),
           defaultGeofence: Geofence(
             center: geofenceCenter!,
             radius: geofenceRadius!,
           ),
-          geofences: [],
-          emergencyContacts: [],
-          isWithinGeofence: true,
-          createdAt: DateTime.now(),
+          geofences: widget.existingPatient?.geofences ?? [],
+          emergencyContacts: widget.existingPatient?.emergencyContacts ?? [],
+          isWithinGeofence: widget.existingPatient?.isWithinGeofence ?? true,
+          createdAt: widget.existingPatient?.createdAt ?? DateTime.now(),
           updatedAt: DateTime.now(),
-          companionAcctId: '',
+          companionAcctId: widget.existingPatient?.companionAcctId ?? '',
         );
 
-        await PatientDataController.instance.addPatient(newPatient);
+        if (widget.existingPatient == null) {
+          await PatientDataController.instance.addPatient(patient);
+        } else {
+          await PatientDataController.instance.updatePatient(patient);
+        }
       }
 
       await WaitingDialog.show(
         context,
-        future: createPatient(),
-        prompt: 'Adding patient...',
+        future: createOrUpdatePatient(),
+        prompt: widget.existingPatient == null
+            ? 'Adding patient...'
+            : 'Updating patient...',
       );
 
       if (mounted) {
@@ -157,9 +202,11 @@ class _SetGeofenceScreenState extends State<SetGeofenceScreen> {
                 minWidth: double.infinity,
                 height: 55,
                 onPressed: _onFinalSubmit,
-                child: const Text(
-                  'Add Patient',
-                  style: TextStyle(fontSize: 16),
+                child: Text(
+                  widget.existingPatient == null
+                      ? 'Add Patient'
+                      : 'Update Patient',
+                  style: const TextStyle(fontSize: 16),
                 ),
               ),
             ),

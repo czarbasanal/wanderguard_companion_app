@@ -1,6 +1,10 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wanderguard_companion_app/controllers/patient_data_controller.dart';
 import 'package:wanderguard_companion_app/models/patient.model.dart';
 import 'package:wanderguard_companion_app/services/shared_preferences_service.dart';
@@ -82,13 +86,52 @@ class HomeScreenState with ChangeNotifier {
     );
   }
 
+  // Future<void> addMarker(
+  //     LatLng position, String markerId, String imageUrl) async {
+  //   setLoadingMarker(true);
+  //   try {
+  //     final markerIcon = await createCustomMarker(imageUrl);
+  //     final marker = Marker(
+  //       markerId: MarkerId(markerId),
+  //       position: position,
+  //       icon: markerIcon,
+  //       infoWindow: InfoWindow(title: imageUrl),
+  //     );
+
+  //     setMarkers({...markers, marker});
+  //     await SharedPreferenceService.instance.saveMarkers(markers.toList());
+  //   } catch (e) {
+  //     print("Error creating marker: $e");
+  //   } finally {
+  //     setLoadingMarker(false);
+  //   }
+  // }
+
   Future<void> addMarker(
-      LatLng position, String markerId, String imageUrl) async {
+      LatLng position, String patientAcctId, String imageUrl) async {
     setLoadingMarker(true);
     try {
-      final markerIcon = await createCustomMarker(imageUrl);
+      BitmapDescriptor markerIcon;
+
+      // Retrieve custom marker from SharedPreferences using patientAcctId
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? customMarkerString =
+          prefs.getString('custom_marker_$patientAcctId');
+
+      if (customMarkerString != null) {
+        // Use the custom marker from SharedPreferences
+        Uint8List markerBytes = base64Decode(customMarkerString);
+        markerIcon = BitmapDescriptor.fromBytes(markerBytes);
+      } else {
+        // Create a new custom marker and save it to SharedPreferences
+        markerIcon = await createCustomMarker(imageUrl);
+        final Uint8List markerBytes = await createCustomMarkerBytes(imageUrl);
+        prefs.setString(
+            'custom_marker_$patientAcctId', base64Encode(markerBytes));
+      }
+
       final marker = Marker(
-        markerId: MarkerId(markerId),
+        markerId: MarkerId(patientAcctId),
         position: position,
         icon: markerIcon,
         infoWindow: InfoWindow(title: imageUrl),

@@ -2,8 +2,11 @@ import "dart:async";
 import "package:flutter/material.dart";
 import "package:get_it/get_it.dart";
 import "package:go_router/go_router.dart";
+import "package:wanderguard_companion_app/controllers/patient_data_controller.dart";
+import "package:wanderguard_companion_app/models/patient.model.dart";
 import "package:wanderguard_companion_app/screens/patients/add_patient_screen.dart";
 import "package:wanderguard_companion_app/screens/notifications/notification_screen.dart";
+import "package:wanderguard_companion_app/screens/patients/edit_patient_screen.dart";
 import "package:wanderguard_companion_app/screens/patients/patient_list_screen.dart";
 import "package:wanderguard_companion_app/screens/patients/set_geofence_screen.dart";
 import "package:wanderguard_companion_app/screens/profile/backup_companions/add_backup_screen.dart";
@@ -91,9 +94,20 @@ class GlobalRouter {
           path: SetGeofenceScreen.route,
           name: SetGeofenceScreen.name,
           builder: (context, state) {
-            final Map<String, dynamic> formData =
-                state.extra as Map<String, dynamic>;
-            return SetGeofenceScreen(formData: formData);
+            if (state.extra is Map<String, dynamic>) {
+              final Map<String, dynamic> formData =
+                  state.extra as Map<String, dynamic>;
+              return SetGeofenceScreen(formData: formData);
+            } else if (state.extra is Patient) {
+              final Patient existingPatient = state.extra as Patient;
+              return SetGeofenceScreen(existingPatient: existingPatient);
+            } else {
+              return const Scaffold(
+                body: Center(
+                  child: Text('Invalid data provided to the route.'),
+                ),
+              );
+            }
           },
         ),
         GoRoute(
@@ -102,6 +116,16 @@ class GlobalRouter {
           name: AddPatientScreen.name,
           builder: (context, state) {
             return AddPatientScreen();
+          },
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: EditPatientScreen.route,
+          name: EditPatientScreen.name,
+          builder: (context, state) {
+            return EditPatientScreen(
+                patient:
+                    PatientDataController.instance.patientModelNotifier.value!);
           },
         ),
         GoRoute(

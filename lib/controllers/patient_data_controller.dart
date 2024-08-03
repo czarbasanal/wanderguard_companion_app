@@ -105,6 +105,17 @@ class PatientDataController with ChangeNotifier {
     }
   }
 
+  Future<void> updatePatient(Patient patient) async {
+    try {
+      await FirestoreService.instance.updateDocument(
+          'patients', patient.patientAcctId, patient.toFirestore());
+      setPatient(patient);
+      notifyListeners();
+    } catch (e) {
+      throw Exception("Error updating patient: $e");
+    }
+  }
+
   Future<void> deletePatient(String patientAcctId) async {
     await FirestoreService.instance.deleteDocument('patients', patientAcctId);
   }

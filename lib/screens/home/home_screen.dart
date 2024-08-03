@@ -9,6 +9,7 @@ import 'package:wanderguard_companion_app/state/homescreen_state.dart';
 import 'package:wanderguard_companion_app/utils/colors.dart';
 import 'package:wanderguard_companion_app/utils/size_config.dart';
 import 'package:wanderguard_companion_app/widgets/dialogs/waiting_dialog.dart';
+import 'package:wanderguard_companion_app/widgets/draggable_backup_list.dart';
 import 'package:wanderguard_companion_app/widgets/draggable_patient_list.dart';
 import 'package:wanderguard_companion_app/widgets/google_map.dart';
 import 'package:wanderguard_companion_app/widgets/patient_card_small.dart';
@@ -23,12 +24,16 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+  late TabController _tabController;
+
   @override
   void initState() {
     super.initState();
     final homeScreenState =
         Provider.of<HomeScreenState>(context, listen: false);
+
+    _tabController = TabController(length: 2, vsync: this);
 
     LocationService.instance.getCurrentLocation().then((position) {
       homeScreenState.setInitialPosition(CameraPosition(
@@ -68,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Stack(
         children: [
           IndexedStack(
-            index: 0, // Only show the map at index 0
+            index: 0,
             children: [
               homeScreenState.loadingLocation
                   ? WaitingDialog(
@@ -82,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
             controller: homeScreenState.scrollableController,
             initialChildSize: 0.06,
             minChildSize: 0.06,
-            maxChildSize: 0.7,
+            maxChildSize: 0.8,
             builder: (BuildContext context, ScrollController scrollController) {
               return Container(
                 decoration: BoxDecoration(
@@ -102,11 +107,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 child: SingleChildScrollView(
                   controller: scrollController,
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
+                  child: SizedBox(
+                    height: SizeConfig.screenHeight * 0.715,
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        const SizedBox(
+                          height: 24,
+                        ),
                         ValueListenableBuilder(
                           valueListenable: homeScreenState.isSheetDragged,
                           builder: (context, isDragged, child) {
@@ -122,30 +129,87 @@ class _HomeScreenState extends State<HomeScreen> {
                             );
                           },
                         ),
-                        const SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              "Patient List",
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: null,
-                              child: Text(
-                                'Locate All',
-                                style: TextStyle(
-                                    fontSize: 15,
-                                    color: CustomColors.primaryColor),
-                              ),
-                            ),
+                        const SizedBox(height: 24),
+                        TabBar(
+                          controller: _tabController,
+                          tabs: const [
+                            Tab(text: "Patients"),
+                            Tab(text: "Backups"),
                           ],
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          dividerHeight: 0,
+                          indicatorColor: CustomColors.primaryColor,
+                          labelColor: CustomColors.primaryColor,
+                          unselectedLabelColor: Colors.grey,
+                          indicator: BoxDecoration(
+                              borderRadius: BorderRadius.circular(50),
+                              color:
+                                  CustomColors.primaryColor.withOpacity(0.075)),
+                          indicatorSize: TabBarIndicatorSize.tab,
                         ),
-                        const SizedBox(height: 10),
-                        const DraggablePatientList(),
+                        Expanded(
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.fromLTRB(24.0, 0, 24.0, 0),
+                            child: TabBarView(
+                              controller: _tabController,
+                              children: [
+                                Column(
+                                  children: [
+                                    const SizedBox(height: 16),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        const Text(
+                                          "Patients List",
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        TextButton(
+                                          onPressed: null,
+                                          child: Text(
+                                            'Locate All',
+                                            style: TextStyle(
+                                                color:
+                                                    CustomColors.primaryColor),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 10),
+                                    const Expanded(
+                                        child: DraggablePatientList()),
+                                  ],
+                                ),
+                                const Column(
+                                  children: [
+                                    SizedBox(height: 16),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Backup Companions List",
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 10),
+                                    Expanded(
+                                        child: DraggableBackupCompanionList()),
+                                  ],
+                                ),
+                                // Use your BackupCompanionList widget here
+                              ],
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),

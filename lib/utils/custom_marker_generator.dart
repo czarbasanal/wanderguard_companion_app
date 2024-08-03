@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:ui' as ui;
 
+// This is the createCustomMarker method for creating the custom marker from an image URL
 Future<BitmapDescriptor> createCustomMarker(String imageUrl) async {
   final Uint8List imageData = await _loadImage(imageUrl);
 
@@ -29,6 +30,33 @@ Future<BitmapDescriptor> createCustomMarker(String imageUrl) async {
       await markerImage.toByteData(format: ui.ImageByteFormat.png);
 
   return BitmapDescriptor.fromBytes(byteData!.buffer.asUint8List());
+}
+
+// This method will create and return the marker as bytes
+Future<Uint8List> createCustomMarkerBytes(String imageUrl) async {
+  final Uint8List imageData = await _loadImage(imageUrl);
+
+  final ui.Codec codec = await ui.instantiateImageCodec(imageData,
+      targetHeight: 100, targetWidth: 100);
+  final ui.FrameInfo frameInfo = await codec.getNextFrame();
+  final ui.Image image = frameInfo.image;
+
+  final ui.PictureRecorder pictureRecorder = ui.PictureRecorder();
+  final Canvas canvas = Canvas(pictureRecorder);
+  final Paint paint = Paint()..isAntiAlias = true;
+  const double size = 100.0;
+
+  canvas.drawCircle(
+      const Offset(size / 2, size / 2), size / 2, paint..color = Colors.white);
+  canvas.clipPath(Path()..addOval(const Rect.fromLTWH(0, 0, size, size)));
+  canvas.drawImage(image, const Offset(0, 0), paint);
+
+  final ui.Image markerImage =
+      await pictureRecorder.endRecording().toImage(size.toInt(), size.toInt());
+  final ByteData? byteData =
+      await markerImage.toByteData(format: ui.ImageByteFormat.png);
+
+  return byteData!.buffer.asUint8List();
 }
 
 Future<Uint8List> _loadImage(String imageUrl) async {
