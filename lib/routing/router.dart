@@ -3,7 +3,6 @@ import "package:flutter/material.dart";
 import "package:get_it/get_it.dart";
 import "package:go_router/go_router.dart";
 import "package:wanderguard_companion_app/controllers/patient_data_controller.dart";
-import "package:wanderguard_companion_app/models/patient.model.dart";
 import "package:wanderguard_companion_app/screens/patients/add_patient_screen.dart";
 import "package:wanderguard_companion_app/screens/notifications/notification_screen.dart";
 import "package:wanderguard_companion_app/screens/patients/edit_patient_screen.dart";
@@ -32,6 +31,8 @@ class GlobalRouter {
   late GoRouter router;
   late GlobalKey<NavigatorState> _rootNavigatorKey;
   late GlobalKey<NavigatorState> _shellNavigatorKey;
+
+  final ValueNotifier<int> selectedIndexNotifier = ValueNotifier<int>(0);
 
   FutureOr<String?> handleRedirect(
       BuildContext context, GoRouterState state) async {
@@ -94,20 +95,9 @@ class GlobalRouter {
           path: SetGeofenceScreen.route,
           name: SetGeofenceScreen.name,
           builder: (context, state) {
-            if (state.extra is Map<String, dynamic>) {
-              final Map<String, dynamic> formData =
-                  state.extra as Map<String, dynamic>;
-              return SetGeofenceScreen(formData: formData);
-            } else if (state.extra is Patient) {
-              final Patient existingPatient = state.extra as Patient;
-              return SetGeofenceScreen(existingPatient: existingPatient);
-            } else {
-              return const Scaffold(
-                body: Center(
-                  child: Text('Invalid data provided to the route.'),
-                ),
-              );
-            }
+            final Map<String, dynamic> formData =
+                state.extra as Map<String, dynamic>;
+            return SetGeofenceScreen(formData: formData);
           },
         ),
         GoRoute(
@@ -190,8 +180,22 @@ class GlobalRouter {
             ),
           ],
           builder: (context, state, child) {
+            // Update the selected index based on the current route
+            final location = state.uri.toString();
+            final routes = [
+              HomeScreen.route,
+              PatientListScreen.route,
+              NotificationScreen.route,
+              ProfileScreen.route
+            ];
+            final routeIndex = routes.indexOf(location);
+            if (routeIndex != -1) {
+              selectedIndexNotifier.value = routeIndex;
+            }
+
             return ScreenWrapper(
               child: child,
+              selectedIndexNotifier: selectedIndexNotifier,
             );
           },
         ),

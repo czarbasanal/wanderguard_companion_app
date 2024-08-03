@@ -24,6 +24,7 @@ class HomeScreenState with ChangeNotifier {
   GoogleMapController? _mapController;
 
   bool _loadingLocation = true;
+  bool _showCardCloseIcon = false;
   Set<Marker> _markers = {};
   Set<Circle> _circles = {};
   final ValueNotifier<bool> _isLoadingMarker = ValueNotifier(false);
@@ -43,6 +44,7 @@ class HomeScreenState with ChangeNotifier {
   DraggableScrollableController get scrollableController =>
       _scrollableController;
   ValueNotifier<bool> get isSheetDragged => _isSheetDragged;
+  bool get showCardCloseIcon => _showCardCloseIcon;
 
   void setInitialPosition(CameraPosition position) {
     _initialPosition = position;
@@ -76,6 +78,11 @@ class HomeScreenState with ChangeNotifier {
     _showFloatingCard.value = show;
   }
 
+  void setShowCloseIcon(bool show) {
+    _showCardCloseIcon = show;
+    notifyListeners();
+  }
+
   void setMapController(GoogleMapController controller) {
     _mapController = controller;
   }
@@ -86,44 +93,20 @@ class HomeScreenState with ChangeNotifier {
     );
   }
 
-  // Future<void> addMarker(
-  //     LatLng position, String markerId, String imageUrl) async {
-  //   setLoadingMarker(true);
-  //   try {
-  //     final markerIcon = await createCustomMarker(imageUrl);
-  //     final marker = Marker(
-  //       markerId: MarkerId(markerId),
-  //       position: position,
-  //       icon: markerIcon,
-  //       infoWindow: InfoWindow(title: imageUrl),
-  //     );
-
-  //     setMarkers({...markers, marker});
-  //     await SharedPreferenceService.instance.saveMarkers(markers.toList());
-  //   } catch (e) {
-  //     print("Error creating marker: $e");
-  //   } finally {
-  //     setLoadingMarker(false);
-  //   }
-  // }
-
   Future<void> addMarker(
       LatLng position, String patientAcctId, String imageUrl) async {
     setLoadingMarker(true);
     try {
       BitmapDescriptor markerIcon;
 
-      // Retrieve custom marker from SharedPreferences using patientAcctId
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? customMarkerString =
           prefs.getString('custom_marker_$patientAcctId');
 
       if (customMarkerString != null) {
-        // Use the custom marker from SharedPreferences
         Uint8List markerBytes = base64Decode(customMarkerString);
         markerIcon = BitmapDescriptor.fromBytes(markerBytes);
       } else {
-        // Create a new custom marker and save it to SharedPreferences
         markerIcon = await createCustomMarker(imageUrl);
         final Uint8List markerBytes = await createCustomMarkerBytes(imageUrl);
         prefs.setString(
@@ -148,6 +131,14 @@ class HomeScreenState with ChangeNotifier {
 
   void addCircle(Circle circle) {
     setCircles({...circles, circle});
+  }
+
+  void clearCircles() {
+    setCircles({});
+  }
+
+  void clearMarkers() {
+    setMarkers({});
   }
 
   void reset() {

@@ -58,6 +58,8 @@ class LocationService {
       patient.lastLocTracked.longitude,
     ));
 
+    homeScreenState.clearMarkers();
+
     await homeScreenState.addMarker(
       LatLng(patient.lastLocTracked.latitude, patient.lastLocTracked.longitude),
       patient.patientAcctId,
@@ -87,7 +89,7 @@ class LocationService {
         strokeColor: Colors.deepPurpleAccent,
         strokeWidth: 2,
       );
-
+      homeScreenState.clearCircles();
       homeScreenState.addCircle(circle);
     }
   }

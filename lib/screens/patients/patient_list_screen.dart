@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:wanderguard_companion_app/models/patient.model.dart';
 import 'package:wanderguard_companion_app/routing/router.dart';
+import 'package:wanderguard_companion_app/screens/home/home_screen.dart';
 import 'package:wanderguard_companion_app/screens/patients/add_patient_screen.dart';
 import 'package:wanderguard_companion_app/screens/patients/edit_patient_screen.dart';
 import 'package:wanderguard_companion_app/utils/colors.dart';
@@ -184,7 +185,7 @@ class _PatientListScreenState extends State<PatientListScreen> {
                                   minWidth: double.infinity,
                                   height: 50,
                                   onPressed: () {
-                                    // Implement locate patient here
+                                    GlobalRouter.I.router.go(HomeScreen.route);
                                   },
                                   child: const Text(
                                     'Locate',

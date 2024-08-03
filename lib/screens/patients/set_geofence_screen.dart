@@ -21,10 +21,8 @@ class SetGeofenceScreen extends StatefulWidget {
   static const String name = "Set Geofence";
 
   final Map<String, dynamic>? formData;
-  final Patient? existingPatient;
 
-  const SetGeofenceScreen({Key? key, this.formData, this.existingPatient})
-      : super(key: key);
+  const SetGeofenceScreen({super.key, this.formData});
 
   @override
   _SetGeofenceScreenState createState() => _SetGeofenceScreenState();
@@ -33,13 +31,17 @@ class SetGeofenceScreen extends StatefulWidget {
 class _SetGeofenceScreenState extends State<SetGeofenceScreen> {
   GeoPoint? geofenceCenter;
   double? geofenceRadius;
+  final Patient? existingPatient =
+      PatientDataController.instance.patientModelNotifier.value;
 
   @override
   void initState() {
     super.initState();
-    if (widget.existingPatient != null) {
-      geofenceCenter = widget.existingPatient!.defaultGeofence.center;
-      geofenceRadius = widget.existingPatient!.defaultGeofence.radius;
+    if (existingPatient != null) {
+      geofenceCenter = existingPatient!.defaultGeofence.center;
+      geofenceRadius = existingPatient!.defaultGeofence.radius;
+    } else {
+      print('Patient is null');
     }
   }
 
@@ -65,19 +67,19 @@ class _SetGeofenceScreenState extends State<SetGeofenceScreen> {
       String password;
       String photoPath;
 
-      if (widget.existingPatient != null) {
-        firstName = widget.existingPatient!.firstName;
-        lastName = widget.existingPatient!.lastName;
-        dateOfBirth = widget.existingPatient!.dateOfBirth;
-        contactNo = widget.existingPatient!.contactNo;
-        street = widget.existingPatient!.homeAddress.split(', ')[0];
-        barangay = widget.existingPatient!.homeAddress.split(', ')[1];
-        city = widget.existingPatient!.homeAddress.split(', ')[2];
-        province = widget.existingPatient!.homeAddress.split(', ')[3];
-        postalCode = widget.existingPatient!.homeAddress.split(', ')[4];
-        email = widget.existingPatient!.email;
-        password = widget.existingPatient!.password;
-        photoPath = widget.existingPatient!.photoUrl;
+      if (existingPatient != null) {
+        firstName = existingPatient!.firstName;
+        lastName = existingPatient!.lastName;
+        dateOfBirth = existingPatient!.dateOfBirth;
+        contactNo = existingPatient!.contactNo;
+        street = existingPatient!.homeAddress.split(', ')[0];
+        barangay = existingPatient!.homeAddress.split(', ')[1];
+        city = existingPatient!.homeAddress.split(', ')[2];
+        province = existingPatient!.homeAddress.split(', ')[3];
+        postalCode = existingPatient!.homeAddress.split(', ')[4];
+        email = existingPatient!.email;
+        password = existingPatient!.password;
+        photoPath = existingPatient!.photoUrl;
       } else {
         firstName = widget.formData!['first_name'];
         lastName = widget.formData!['last_name'];
@@ -98,7 +100,7 @@ class _SetGeofenceScreenState extends State<SetGeofenceScreen> {
 
       Future<void> createOrUpdatePatient() async {
         String photoUrl = photoPath;
-        if (widget.existingPatient == null && photoPath.isNotEmpty) {
+        if (existingPatient == null && photoPath.isNotEmpty) {
           File photoFile = File(photoPath);
           final storageRef = FirebaseStorage.instance
               .ref()
@@ -110,7 +112,7 @@ class _SetGeofenceScreenState extends State<SetGeofenceScreen> {
         }
 
         final Patient patient = Patient(
-          patientAcctId: widget.existingPatient?.patientAcctId ?? '',
+          patientAcctId: existingPatient?.patientAcctId ?? '',
           firstName: firstName,
           lastName: lastName,
           email: email,
@@ -122,32 +124,32 @@ class _SetGeofenceScreenState extends State<SetGeofenceScreen> {
           acctType: AccountType.patient,
           acctStatus: AccountStatus.offline,
           lastLocTracked:
-              widget.existingPatient?.lastLocTracked ?? const GeoPoint(0, 0),
-          lastLocUpdated:
-              widget.existingPatient?.lastLocUpdated ?? DateTime.now(),
+              existingPatient?.lastLocTracked ?? const GeoPoint(0, 0),
+          lastLocUpdated: existingPatient?.lastLocUpdated ?? DateTime.now(),
           defaultGeofence: Geofence(
             center: geofenceCenter!,
             radius: geofenceRadius!,
           ),
-          geofences: widget.existingPatient?.geofences ?? [],
-          emergencyContacts: widget.existingPatient?.emergencyContacts ?? [],
-          isWithinGeofence: widget.existingPatient?.isWithinGeofence ?? true,
-          createdAt: widget.existingPatient?.createdAt ?? DateTime.now(),
+          geofences: existingPatient?.geofences ?? [],
+          emergencyContacts: existingPatient?.emergencyContacts ?? [],
+          isWithinGeofence: existingPatient?.isWithinGeofence ?? true,
+          createdAt: existingPatient?.createdAt ?? DateTime.now(),
           updatedAt: DateTime.now(),
-          companionAcctId: widget.existingPatient?.companionAcctId ?? '',
+          companionAcctId: existingPatient?.companionAcctId ?? '',
         );
 
-        if (widget.existingPatient == null) {
+        if (existingPatient == null) {
           await PatientDataController.instance.addPatient(patient);
         } else {
           await PatientDataController.instance.updatePatient(patient);
+          PatientDataController.instance.patientModelNotifier.value = null;
         }
       }
 
       await WaitingDialog.show(
         context,
         future: createOrUpdatePatient(),
-        prompt: widget.existingPatient == null
+        prompt: existingPatient == null
             ? 'Adding patient...'
             : 'Updating patient...',
       );
@@ -164,6 +166,13 @@ class _SetGeofenceScreenState extends State<SetGeofenceScreen> {
     }
   }
 
+  void _deleteGeofence() {
+    setState(() {
+      geofenceCenter = const GeoPoint(0, 0);
+      geofenceRadius = 0;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -171,6 +180,7 @@ class _SetGeofenceScreenState extends State<SetGeofenceScreen> {
       appBar: AppBar(
         backgroundColor: CustomColors.tertiaryColor,
         surfaceTintColor: CustomColors.tertiaryColor,
+        centerTitle: true,
         title: const Text(
           "Set Geofence",
           style: TextStyle(fontWeight: FontWeight.w800),
@@ -181,13 +191,17 @@ class _SetGeofenceScreenState extends State<SetGeofenceScreen> {
             size: 20,
           ),
           onPressed: () {
-            GlobalRouter.I.router.go(PatientListScreen.route);
+            GlobalRouter.I.router.pop(true);
           },
         ),
       ),
       body: Stack(
         children: [
-          GeofenceWidget(onGeofenceSet: _onGeofenceSet),
+          GeofenceWidget(
+            onGeofenceSet: _onGeofenceSet,
+            initialGeofenceCenter: geofenceCenter,
+            initialGeofenceRadius: geofenceRadius,
+          ),
           if (geofenceCenter != null && geofenceRadius != null)
             Positioned(
               bottom: 16,
@@ -203,10 +217,29 @@ class _SetGeofenceScreenState extends State<SetGeofenceScreen> {
                 height: 55,
                 onPressed: _onFinalSubmit,
                 child: Text(
-                  widget.existingPatient == null
-                      ? 'Add Patient'
-                      : 'Update Patient',
+                  existingPatient == null ? 'Add Patient' : 'Update Patient',
                   style: const TextStyle(fontSize: 16),
+                ),
+              ),
+            ),
+          if (existingPatient != null)
+            Positioned(
+              bottom: 90,
+              left: 16,
+              right: 16,
+              child: OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.red,
+                  side: const BorderSide(color: Colors.red),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  minimumSize: const Size(double.infinity, 50),
+                ),
+                onPressed: _deleteGeofence,
+                child: const Text(
+                  'Delete Geofence',
+                  style: TextStyle(fontSize: 16),
                 ),
               ),
             ),

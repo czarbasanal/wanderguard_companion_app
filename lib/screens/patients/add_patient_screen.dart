@@ -27,6 +27,12 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
     _loadFormJson();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadFormJson();
+  }
+
   Future<void> _loadFormJson() async {
     try {
       addPatientConfig = null;

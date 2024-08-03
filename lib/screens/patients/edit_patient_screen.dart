@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:wanderguard_companion_app/models/patient.model.dart';
 import 'package:wanderguard_companion_app/routing/router.dart';
+import 'package:wanderguard_companion_app/screens/patients/set_geofence_screen.dart';
 import 'package:wanderguard_companion_app/utils/colors.dart';
 import 'package:wanderguard_companion_app/widgets/dialogs/waiting_dialog.dart';
 import 'package:wanderguard_companion_app/controllers/patient_data_controller.dart';
@@ -165,7 +166,7 @@ class _EditPatientScreenState extends State<EditPatientScreen> {
         context.pop(true);
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Patient updated successfully')),
+          const SnackBar(content: Text('Patient updated successfully')),
         );
       } catch (e) {
         context.pop();
@@ -206,6 +207,7 @@ class _EditPatientScreenState extends State<EditPatientScreen> {
           ),
           onPressed: () {
             GlobalRouter.I.router.pop();
+            PatientDataController.instance.dispose();
           },
         ),
       ),
@@ -338,17 +340,23 @@ class _EditPatientScreenState extends State<EditPatientScreen> {
                           },
                         ),
                         const SizedBox(height: 24),
-                        MaterialButton(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                        OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: CustomColors.primaryColor,
+                            side: BorderSide(color: CustomColors.primaryColor),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            minimumSize: const Size(double.infinity, 50),
                           ),
-                          textColor: CustomColors.secondaryColor,
-                          color: CustomColors.primaryColor,
-                          minWidth: double.infinity,
-                          height: 50,
-                          onPressed: _saveChanges,
+                          onPressed: () {
+                            context.push(SetGeofenceScreen.route, extra: {
+                              'existingPatient': PatientDataController
+                                  .instance.patientModelNotifier.value,
+                            });
+                          },
                           child: const Text(
-                            'Save Changes',
+                            'Edit Geofence',
                             style: TextStyle(fontSize: 16),
                           ),
                         ),
@@ -377,6 +385,23 @@ class _EditPatientScreenState extends State<EditPatientScreen> {
                 ),
               ),
             ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: MaterialButton(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          textColor: CustomColors.secondaryColor,
+          color: CustomColors.primaryColor,
+          minWidth: double.infinity,
+          height: 50,
+          onPressed: _saveChanges,
+          child: const Text(
+            'Save Changes',
+            style: TextStyle(fontSize: 16),
           ),
         ),
       ),

@@ -65,6 +65,7 @@ class DraggablePatientList extends StatelessWidget {
                         .then((_) {
                       homeScreenState.setSelectedPatient(updatedPatient);
                       homeScreenState.setShowFloatingCard(true);
+                      homeScreenState.setShowCloseIcon(true);
                     });
                   },
                 );
