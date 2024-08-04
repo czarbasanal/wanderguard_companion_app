@@ -117,6 +117,7 @@ class _BackupCompanionListScreenState extends State<BackupCompanionListScreen> {
                                 fit: BoxFit.cover,
                                 placeholder: (context, url) => WaitingDialog(
                                   color: CustomColors.primaryColor,
+                                  prompt: '',
                                 ),
                                 errorWidget: (context, url, error) =>
                                     const Icon(Icons.error),
@@ -201,7 +202,7 @@ class _BackupCompanionListScreenState extends State<BackupCompanionListScreen> {
                         right: 10,
                         child: IconButton(
                           icon: Icon(
-                            CupertinoIcons.phone_arrow_up_right,
+                            CupertinoIcons.phone_solid,
                             color: CustomColors.primaryColor,
                             size: 24,
                           ),

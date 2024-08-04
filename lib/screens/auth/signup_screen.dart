@@ -31,7 +31,6 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   void initState() {
     super.initState();
-
     _loadFormJson();
   }
 
@@ -49,6 +48,12 @@ class _SignupScreenState extends State<SignupScreen> {
         );
       });
     }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadFormJson();
   }
 
   @override

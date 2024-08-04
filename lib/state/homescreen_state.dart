@@ -1,6 +1,10 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wanderguard_companion_app/controllers/patient_data_controller.dart';
 import 'package:wanderguard_companion_app/models/patient.model.dart';
 import 'package:wanderguard_companion_app/services/shared_preferences_service.dart';
@@ -20,6 +24,7 @@ class HomeScreenState with ChangeNotifier {
   GoogleMapController? _mapController;
 
   bool _loadingLocation = true;
+  bool _showCardCloseIcon = false;
   Set<Marker> _markers = {};
   Set<Circle> _circles = {};
   final ValueNotifier<bool> _isLoadingMarker = ValueNotifier(false);
@@ -39,6 +44,7 @@ class HomeScreenState with ChangeNotifier {
   DraggableScrollableController get scrollableController =>
       _scrollableController;
   ValueNotifier<bool> get isSheetDragged => _isSheetDragged;
+  bool get showCardCloseIcon => _showCardCloseIcon;
 
   void setInitialPosition(CameraPosition position) {
     _initialPosition = position;
@@ -72,6 +78,11 @@ class HomeScreenState with ChangeNotifier {
     _showFloatingCard.value = show;
   }
 
+  void setShowCloseIcon(bool show) {
+    _showCardCloseIcon = show;
+    notifyListeners();
+  }
+
   void setMapController(GoogleMapController controller) {
     _mapController = controller;
   }
@@ -83,12 +94,27 @@ class HomeScreenState with ChangeNotifier {
   }
 
   Future<void> addMarker(
-      LatLng position, String markerId, String imageUrl) async {
+      LatLng position, String patientAcctId, String imageUrl) async {
     setLoadingMarker(true);
     try {
-      final markerIcon = await createCustomMarker(imageUrl);
+      BitmapDescriptor markerIcon;
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? customMarkerString =
+          prefs.getString('custom_marker_$patientAcctId');
+
+      if (customMarkerString != null) {
+        Uint8List markerBytes = base64Decode(customMarkerString);
+        markerIcon = BitmapDescriptor.fromBytes(markerBytes);
+      } else {
+        markerIcon = await createCustomMarker(imageUrl);
+        final Uint8List markerBytes = await createCustomMarkerBytes(imageUrl);
+        prefs.setString(
+            'custom_marker_$patientAcctId', base64Encode(markerBytes));
+      }
+
       final marker = Marker(
-        markerId: MarkerId(markerId),
+        markerId: MarkerId(patientAcctId),
         position: position,
         icon: markerIcon,
         infoWindow: InfoWindow(title: imageUrl),
@@ -105,6 +131,14 @@ class HomeScreenState with ChangeNotifier {
 
   void addCircle(Circle circle) {
     setCircles({...circles, circle});
+  }
+
+  void clearCircles() {
+    setCircles({});
+  }
+
+  void clearMarkers() {
+    setMarkers({});
   }
 
   void reset() {

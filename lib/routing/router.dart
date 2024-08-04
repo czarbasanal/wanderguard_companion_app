@@ -2,8 +2,10 @@ import "dart:async";
 import "package:flutter/material.dart";
 import "package:get_it/get_it.dart";
 import "package:go_router/go_router.dart";
+import "package:wanderguard_companion_app/controllers/patient_data_controller.dart";
 import "package:wanderguard_companion_app/screens/patients/add_patient_screen.dart";
 import "package:wanderguard_companion_app/screens/notifications/notification_screen.dart";
+import "package:wanderguard_companion_app/screens/patients/edit_patient_screen.dart";
 import "package:wanderguard_companion_app/screens/patients/patient_list_screen.dart";
 import "package:wanderguard_companion_app/screens/patients/set_geofence_screen.dart";
 import "package:wanderguard_companion_app/screens/profile/backup_companions/add_backup_screen.dart";
@@ -29,6 +31,8 @@ class GlobalRouter {
   late GoRouter router;
   late GlobalKey<NavigatorState> _rootNavigatorKey;
   late GlobalKey<NavigatorState> _shellNavigatorKey;
+
+  final ValueNotifier<int> selectedIndexNotifier = ValueNotifier<int>(0);
 
   FutureOr<String?> handleRedirect(
       BuildContext context, GoRouterState state) async {
@@ -106,6 +110,16 @@ class GlobalRouter {
         ),
         GoRoute(
           parentNavigatorKey: _rootNavigatorKey,
+          path: EditPatientScreen.route,
+          name: EditPatientScreen.name,
+          builder: (context, state) {
+            return EditPatientScreen(
+                patient:
+                    PatientDataController.instance.patientModelNotifier.value!);
+          },
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
           path: BackupCompanionListScreen.route,
           name: BackupCompanionListScreen.name,
           builder: (context, state) {
@@ -166,8 +180,22 @@ class GlobalRouter {
             ),
           ],
           builder: (context, state, child) {
+            // Update the selected index based on the current route
+            final location = state.uri.toString();
+            final routes = [
+              HomeScreen.route,
+              PatientListScreen.route,
+              NotificationScreen.route,
+              ProfileScreen.route
+            ];
+            final routeIndex = routes.indexOf(location);
+            if (routeIndex != -1) {
+              selectedIndexNotifier.value = routeIndex;
+            }
+
             return ScreenWrapper(
               child: child,
+              selectedIndexNotifier: selectedIndexNotifier,
             );
           },
         ),

@@ -1,6 +1,7 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:wanderguard_companion_app/controllers/patient_data_controller.dart';
 
 class NotificationService {
   static Future<void> initialize() async {
@@ -25,7 +26,18 @@ class NotificationService {
       ],
       debug: true,
     );
+
+    // AwesomeNotifications().setListeners(
+    //   onActionReceivedMethod: NotificationService.onActionReceived,
+    // );
   }
+
+  // @pragma("vm:entry-point")
+  // static Future<void> onActionReceived(ReceivedAction receivedAction) async {
+  //   if (receivedAction.buttonKeyPressed == 'DISMISS') {
+  //     PatientDataController.instance.stopListeningToGeofence();
+  //   }
+  // }
 
   static Future<void> showPersistentNotification(
       int id, String title, String body) async {
@@ -35,12 +47,12 @@ class NotificationService {
         channelKey: 'persistent_channel_id',
         title: title,
         body: body,
-        notificationLayout: NotificationLayout.Default,
+        notificationLayout: NotificationLayout.BigText,
         autoDismissible: false,
         displayOnForeground: true,
         displayOnBackground: true,
         wakeUpScreen: true,
-        locked: false,
+        locked: true,
         ticker: 'WanderGuard Alert',
         progress: null, // No progress bar
         customSound: 'resource://raw/alarm_sound',

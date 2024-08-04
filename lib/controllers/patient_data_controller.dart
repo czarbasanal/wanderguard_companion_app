@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:wanderguard_companion_app/controllers/companion_data_controller.dart';
 import 'package:wanderguard_companion_app/enum/account_status.enum.dart';
 import 'package:wanderguard_companion_app/enum/account_type.enum.dart';
 import 'package:wanderguard_companion_app/models/patient.model.dart';
@@ -104,6 +105,17 @@ class PatientDataController with ChangeNotifier {
     }
   }
 
+  Future<void> updatePatient(Patient patient) async {
+    try {
+      await FirestoreService.instance.updateDocument(
+          'patients', patient.patientAcctId, patient.toFirestore());
+      setPatient(patient);
+      notifyListeners();
+    } catch (e) {
+      throw Exception("Error updating patient: $e");
+    }
+  }
+
   Future<void> deletePatient(String patientAcctId) async {
     await FirestoreService.instance.deleteDocument('patients', patientAcctId);
   }
@@ -118,9 +130,18 @@ class PatientDataController with ChangeNotifier {
   }
 
   Stream<List<Patient>> getPatientsStream() {
-    return FirestoreService.instance.getCollectionStream('patients').map(
-        (snapshot) =>
-            snapshot.docs.map((doc) => Patient.fromFirestore(doc)).toList());
+    final companionId = CompanionDataController
+        .instance.companionModelNotifier.value?.companionAcctId;
+
+    if (companionId == null) {
+      return Stream.value([]);
+    }
+
+    return FirestoreService.instance.getCollectionStream('patients',
+        queryBuilder: (query) {
+      return query.where('companionAcctId', isEqualTo: companionId);
+    }).map((snapshot) =>
+        snapshot.docs.map((doc) => Patient.fromFirestore(doc)).toList());
   }
 
   ValueNotifier<Patient?> getPatientNotifier(String patientAcctId) {

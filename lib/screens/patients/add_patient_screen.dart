@@ -7,10 +7,10 @@ import 'package:wanderguard_companion_app/utils/colors.dart';
 import 'package:wanderguard_companion_app/widgets/dialogs/waiting_dialog.dart';
 
 class AddPatientScreen extends StatefulWidget {
+  const AddPatientScreen({super.key});
+
   static const String route = "/add_patient";
   static const String name = "Add Patient";
-
-  const AddPatientScreen({super.key});
 
   @override
   State<AddPatientScreen> createState() => _AddPatientScreenState();
@@ -24,6 +24,12 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
   @override
   void initState() {
     super.initState();
+    _loadFormJson();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _loadFormJson();
   }
 

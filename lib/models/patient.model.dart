@@ -107,7 +107,53 @@ class Patient {
     );
   }
 
-  bool checkIfWithinGeofence() {
+  bool checkIfWithinGeofence(GeoPoint lastLocTracked) {
     return defaultGeofence.isWithinGeofence(lastLocTracked);
+  }
+
+  Patient copyWith({
+    String? patientAcctId,
+    String? firstName,
+    String? lastName,
+    String? email,
+    String? password,
+    String? homeAddress,
+    String? contactNo,
+    DateTime? dateOfBirth,
+    String? photoUrl,
+    AccountType? acctType,
+    AccountStatus? acctStatus,
+    GeoPoint? lastLocTracked,
+    DateTime? lastLocUpdated,
+    Geofence? defaultGeofence,
+    List<Geofence>? geofences,
+    List<EmergencyContact>? emergencyContacts,
+    bool? isWithinGeofence,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? companionAcctId,
+  }) {
+    return Patient(
+      patientAcctId: patientAcctId ?? this.patientAcctId,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      email: email ?? this.email,
+      password: password ?? this.password,
+      homeAddress: homeAddress ?? this.homeAddress,
+      contactNo: contactNo ?? this.contactNo,
+      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
+      photoUrl: photoUrl ?? this.photoUrl,
+      acctType: acctType ?? this.acctType,
+      acctStatus: acctStatus ?? this.acctStatus,
+      lastLocTracked: lastLocTracked ?? this.lastLocTracked,
+      lastLocUpdated: lastLocUpdated ?? this.lastLocUpdated,
+      defaultGeofence: defaultGeofence ?? this.defaultGeofence,
+      geofences: geofences ?? this.geofences,
+      emergencyContacts: emergencyContacts ?? this.emergencyContacts,
+      isWithinGeofence: isWithinGeofence ?? this.isWithinGeofence,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      companionAcctId: companionAcctId ?? this.companionAcctId,
+    );
   }
 }

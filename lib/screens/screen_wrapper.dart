@@ -9,15 +9,15 @@ import 'profile/profile_screen.dart';
 
 class ScreenWrapper extends StatefulWidget {
   final Widget? child;
-  const ScreenWrapper({super.key, this.child});
+  final ValueNotifier<int> selectedIndexNotifier;
+  const ScreenWrapper(
+      {super.key, this.child, required this.selectedIndexNotifier});
 
   @override
   State<ScreenWrapper> createState() => _ScreenWrapperState();
 }
 
 class _ScreenWrapperState extends State<ScreenWrapper> {
-  int index = 0;
-
   List<String> routes = [
     HomeScreen.route,
     PatientListScreen.route,
@@ -26,10 +26,8 @@ class _ScreenWrapperState extends State<ScreenWrapper> {
   ];
 
   void _onItemTapped(int i) {
-    setState(() {
-      index = i;
-      GlobalRouter.I.router.go(routes[i]);
-    });
+    widget.selectedIndexNotifier.value = i;
+    GlobalRouter.I.router.go(routes[i]);
   }
 
   @override
@@ -37,11 +35,16 @@ class _ScreenWrapperState extends State<ScreenWrapper> {
     return Scaffold(
       extendBody: true,
       body: SafeArea(child: widget.child ?? const Placeholder()),
-      bottomNavigationBar: CustomBottomNavBar(
-        iconGap: SizeConfig.screenWidth * 0.16,
-        height: 65.0,
-        onTap: _onItemTapped,
-        selectedIndex: index,
+      bottomNavigationBar: ValueListenableBuilder<int>(
+        valueListenable: widget.selectedIndexNotifier,
+        builder: (context, index, child) {
+          return CustomBottomNavBar(
+            iconGap: SizeConfig.screenWidth * 0.16,
+            height: 65.0,
+            onTap: _onItemTapped,
+            selectedIndex: index,
+          );
+        },
       ),
     );
   }
