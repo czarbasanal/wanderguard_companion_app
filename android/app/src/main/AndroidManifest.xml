@@ -44,25 +44,11 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-
-        <!-- FlutterLocalNotificationsPlugin receiver configurations -->
-        <receiver android:name="com.dexterous.flutterlocalnotifications.receivers.ActionBroadcastReceiver" android:exported="true"/>
-        <receiver android:name="com.dexterous.flutterlocalnotifications.receivers.DismissedReceiver" android:exported="true"/>
-        <receiver android:name="com.dexterous.flutterlocalnotifications.receivers.NotificationReceiver" android:exported="true"/>
-
-        <!-- Firebase Messaging Service with tools:replace -->
         <service
-            android:name="com.google.firebase.messaging.FirebaseMessagingService"
+            android:name="id.flutter.flutter_background_service.BackgroundService"
             android:exported="true"
-            android:permission="android.permission.BIND_JOB_SERVICE"
-            tools:replace="android:exported">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
-            </intent-filter>
+            android:permission="android.permission.BIND_JOB_SERVICE">
         </service>
-
-        <!-- Default notification channel meta-data -->
-        <meta-data android:name="com.google.firebase.messaging.default_notification_channel_id" android:value="persistent_channel_id"/>
 
     </application>
 

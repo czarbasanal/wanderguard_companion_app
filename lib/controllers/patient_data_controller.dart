@@ -50,8 +50,8 @@ class PatientDataController with ChangeNotifier {
         notifyListeners();
 
         if (!patient.isWithinGeofence) {
-          NotificationService.showPersistentNotification(
-            1,
+          NotificationService.showAlertNotification(
+            0,
             'WanderGuard Alert',
             'Patient ${patient.firstName} ${patient.lastName} is outside the geofence!',
           );

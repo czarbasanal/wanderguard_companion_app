@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:wanderguard_companion_app/controllers/backup_companion_data_controller.dart';
 import 'package:wanderguard_companion_app/controllers/patient_data_controller.dart';
+import 'package:wanderguard_companion_app/services/background_service.dart';
 import 'package:wanderguard_companion_app/services/location_service.dart';
 import 'package:wanderguard_companion_app/services/notification_service.dart';
 import 'package:wanderguard_companion_app/services/permission_service.dart';
@@ -36,6 +37,7 @@ void main() async {
   await NotificationService.initialize();
   await AuthController.instance.loadSession();
   HomeScreenState.initialize();
+  startBackgroundService();
 
   ConfigurationSetting.instance.setTextFieldViewConfig =
       FormTextFieldConfig.textFieldConfiguration;

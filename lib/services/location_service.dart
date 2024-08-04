@@ -7,7 +7,6 @@ import 'package:wanderguard_companion_app/models/geofence.model.dart';
 import '../models/companion.model.dart';
 import '../models/patient.model.dart';
 import '../controllers/companion_data_controller.dart';
-import '../controllers/patient_data_controller.dart';
 import '../state/homescreen_state.dart';
 import 'permission_service.dart';
 
