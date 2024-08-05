@@ -33,8 +33,50 @@ class NotificationService {
       ],
       debug: true,
     );
+    AwesomeNotifications().setListeners(
+      onNotificationCreatedMethod: onNotificationCreatedMethod,
+      onNotificationDisplayedMethod: onNotificationDisplayedMethod,
+      onDismissActionReceivedMethod: onDismissActionReceivedMethod,
+      onActionReceivedMethod: onActionReceivedMethod,
+    );
   }
 
+  @pragma('vm:entry-point')
+  static Future<void> onNotificationCreatedMethod(
+      ReceivedNotification receivedNotification) async {
+    // Handle notification creation
+  }
+
+  @pragma('vm:entry-point')
+  static Future<void> onNotificationDisplayedMethod(
+      ReceivedNotification receivedNotification) async {
+    // Handle notification display
+  }
+
+  @pragma('vm:entry-point')
+  static Future<void> onDismissActionReceivedMethod(
+      ReceivedAction receivedAction) async {
+    // Handle notification dismissal
+    if (receivedAction.id == 0) {
+      // This was the geofence alert notification
+      print('Geofence alert notification dismissed');
+    }
+    if (receivedAction.id == 1) {
+      // This was the persistent notification
+      print('Persistent notification dismissed');
+      showPersistentNotification(
+        1,
+        'WanderGuard Service',
+        'Running ${DateTime.now()}',
+      );
+    }
+  }
+
+  @pragma('vm:entry-point')
+  static Future<void> onActionReceivedMethod(
+      ReceivedAction receivedAction) async {
+    // Handle notification action
+  }
   static Future<void> showAlertNotification(
       int id, String title, String body) async {
     await AwesomeNotifications().createNotification(

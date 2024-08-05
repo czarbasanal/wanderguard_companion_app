@@ -8,7 +8,7 @@ import 'package:wanderguard_companion_app/firebase_options.dart';
 import 'package:wanderguard_companion_app/services/notification_service.dart';
 import 'dart:async';
 
-void startBackgroundService() {
+Future<void> startBackgroundService() async {
   FlutterBackgroundService().configure(
     androidConfiguration: AndroidConfiguration(
       onStart: onStart,
@@ -28,6 +28,11 @@ void startBackgroundService() {
 }
 
 void onStart(ServiceInstance service) async {
+  NotificationService.showPersistentNotification(
+    1,
+    'WanderGuard Service',
+    'Running ${DateTime.now()}',
+  );
   DartPluginRegistrant.ensureInitialized();
 
   await Firebase.initializeApp(
@@ -39,11 +44,13 @@ void onStart(ServiceInstance service) async {
     service.stopSelf();
   });
 
-  NotificationService.showPersistentNotification(
-    1,
-    'WanderGuard Service',
-    'Service is running',
-  );
+  Timer.periodic(const Duration(seconds: 1), (timer) async {
+    NotificationService.showPersistentNotification(
+      1,
+      'WanderGuard Service',
+      'Running ${DateTime.now()}',
+    );
+  });
 
   Timer.periodic(const Duration(seconds: 5), (timer) async {
     final User? user = FirebaseAuth.instance.currentUser;
