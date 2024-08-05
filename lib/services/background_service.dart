@@ -16,7 +16,7 @@ void startBackgroundService() {
       isForegroundMode: true,
       notificationChannelId: 'persistent_channel_id',
       initialNotificationTitle: 'WanderGuard Service',
-      initialNotificationContent: 'Service is running',
+      initialNotificationContent: 'Initializing service',
       foregroundServiceNotificationId: 1,
     ),
     iosConfiguration: IosConfiguration(
@@ -39,8 +39,15 @@ void onStart(ServiceInstance service) async {
     service.stopSelf();
   });
 
+  NotificationService.showPersistentNotification(
+    1,
+    'WanderGuard Service',
+    'Service is running',
+  );
+
   Timer.periodic(const Duration(seconds: 5), (timer) async {
     final User? user = FirebaseAuth.instance.currentUser;
+
     if (user != null) {
       listenToPatientGeofenceStatus(user.uid);
     }

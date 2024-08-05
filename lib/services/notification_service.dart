@@ -29,7 +29,7 @@ class NotificationService {
                 'This channel is used for persistent notifications.',
             defaultColor: Colors.deepPurple,
             ledColor: Colors.blue,
-            importance: NotificationImportance.Max),
+            importance: NotificationImportance.Low),
       ],
       debug: true,
     );
