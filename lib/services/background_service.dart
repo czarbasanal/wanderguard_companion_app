@@ -61,10 +61,10 @@ void onStart(ServiceInstance service) async {
   });
 }
 
-void listenToPatientGeofenceStatus(String companionAcctId) {
+void listenToPatientGeofenceStatus(String acctId) {
   FirebaseFirestore.instance
       .collection('patients')
-      .where('companionAcctId', isEqualTo: companionAcctId)
+      .where('companionAcctId', isEqualTo: acctId)
       .snapshots()
       .listen((snapshot) {
     for (var doc in snapshot.docs) {
@@ -76,6 +76,33 @@ void listenToPatientGeofenceStatus(String companionAcctId) {
           'Patient ${doc.data()['firstName']} ${doc.data()['lastName']} is outside the geofence!',
         );
       }
+    }
+  });
+
+  FirebaseFirestore.instance
+      .collection('backup_companions')
+      .where('backupCompanionAcctId', isEqualTo: acctId)
+      .snapshots()
+      .listen((snapshot) {
+    for (var doc in snapshot.docs) {
+      String patientAcctId = doc.data()['patientAcctId'];
+      FirebaseFirestore.instance
+          .collection('patients')
+          .doc(patientAcctId)
+          .snapshots()
+          .listen((patientDoc) {
+        if (patientDoc.exists) {
+          bool isWithinGeofence =
+              patientDoc.data()!['isWithinGeofence'] ?? true;
+          if (!isWithinGeofence) {
+            NotificationService.showAlertNotification(
+              patientDoc.id.hashCode,
+              'WanderGuard Alert',
+              'Patient ${patientDoc.data()!['firstName']} ${patientDoc.data()!['lastName']} is outside the geofence!',
+            );
+          }
+        }
+      });
     }
   });
 }

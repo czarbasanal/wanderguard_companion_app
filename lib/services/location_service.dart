@@ -3,11 +3,14 @@ import 'package:geolocator/geolocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:wanderguard_companion_app/controllers/patient_data_controller.dart';
 import 'package:wanderguard_companion_app/models/geofence.model.dart';
+import '../controllers/backup_companion_data_controller.dart';
+import '../controllers/patient_data_controller.dart';
+import '../models/backup_companion.model.dart';
 import '../models/companion.model.dart';
 import '../models/patient.model.dart';
 import '../controllers/companion_data_controller.dart';
+import '../state/backup_companion_homescreen_state.dart';
 import '../state/homescreen_state.dart';
 import 'permission_service.dart';
 
@@ -27,6 +30,9 @@ class LocationService {
     try {
       Companion? companion =
           CompanionDataController.instance.companionModelNotifier.value;
+      BackupCompanion? backupCompanion = BackupCompanionDataController
+          .instance.backupCompanionModelNotifier.value;
+
       if (companion != null) {
         companion.updateCurrentLocation(
             GeoPoint(position.latitude, position.longitude));
@@ -37,43 +43,90 @@ class LocationService {
           'currentLocation': GeoPoint(position.latitude, position.longitude),
           'updatedAt': DateTime.now(),
         });
+      } else if (backupCompanion != null) {
+        backupCompanion.updateCurrentLocation(
+            GeoPoint(position.latitude, position.longitude));
+        await FirebaseFirestore.instance
+            .collection('backup_companions')
+            .doc(backupCompanion.backupCompanionAcctId)
+            .update({
+          'currentLocation': GeoPoint(position.latitude, position.longitude),
+          'updatedAt': DateTime.now(),
+        });
+      } else {
+        throw 'No companion or backup companion found';
       }
     } catch (e) {
       throw 'Failed to update location: $e';
     }
   }
 
-  Future<void> locatePatient(
-      HomeScreenState homeScreenState, Patient patient) async {
-    await homeScreenState.scrollableController.animateTo(
-      0.06,
-      duration: const Duration(milliseconds: 500),
-      curve: Curves.easeInOut,
-    );
+  Future<void> locatePatient(dynamic homeScreenState, Patient patient) async {
+    if (homeScreenState is HomeScreenState) {
+      await homeScreenState.scrollableController.animateTo(
+        0.06,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
 
-    homeScreenState.setLoadingMarker(true);
+      homeScreenState.setLoadingMarker(true);
 
-    await homeScreenState.moveCamera(LatLng(
-      patient.lastLocTracked.latitude,
-      patient.lastLocTracked.longitude,
-    ));
+      await homeScreenState.moveCamera(LatLng(
+        patient.lastLocTracked.latitude,
+        patient.lastLocTracked.longitude,
+      ));
 
-    homeScreenState.clearMarkers();
+      homeScreenState.clearMarkers();
 
-    await homeScreenState.addMarker(
-      LatLng(patient.lastLocTracked.latitude, patient.lastLocTracked.longitude),
-      patient.patientAcctId,
-      patient.photoUrl,
-    );
+      await homeScreenState.addMarker(
+        LatLng(
+            patient.lastLocTracked.latitude, patient.lastLocTracked.longitude),
+        patient.patientAcctId,
+        patient.photoUrl,
+      );
 
-    homeScreenState.clearCircles();
-    drawGeofence(homeScreenState, patient.defaultGeofence,
-        Colors.deepPurpleAccent, Colors.deepPurpleAccent);
+      drawGeofence(homeScreenState, patient.defaultGeofence,
+          Colors.deepPurpleAccent, Colors.deepPurpleAccent);
 
-    homeScreenState.setLoadingMarker(false);
-    homeScreenState.setSelectedPatient(patient);
-    homeScreenState.setShowFloatingCard(true);
-    homeScreenState.setShowCloseIcon(true);
+      homeScreenState.setLoadingMarker(false);
+
+      homeScreenState.setSelectedPatient(patient);
+      homeScreenState.setShowFloatingCard(true);
+    } else if (homeScreenState is BackupCompanionHomeScreenState) {
+      print('I AM A BACKUP COMPANION HOME SCREEN STATE');
+      await homeScreenState.scrollableController.animateTo(
+        0.06,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+
+      homeScreenState.setLoadingMarker(true);
+
+      await homeScreenState.moveCamera(LatLng(
+        patient.lastLocTracked.latitude,
+        patient.lastLocTracked.longitude,
+      ));
+
+      homeScreenState.clearMarkers();
+
+      await homeScreenState.addMarker(
+        LatLng(
+            patient.lastLocTracked.latitude, patient.lastLocTracked.longitude),
+        patient.patientAcctId,
+        patient.photoUrl,
+      );
+
+      homeScreenState.clearCircles();
+      drawGeofence(homeScreenState, patient.defaultGeofence,
+          Colors.deepPurpleAccent, Colors.deepPurpleAccent);
+
+      homeScreenState.setLoadingMarker(false);
+      homeScreenState.setSelectedPatient(patient);
+      homeScreenState.setShowFloatingCard(true);
+      homeScreenState.setShowCloseIcon(true);
+    } else {
+      print('Invalid homeScreenState type');
+    }
   }
 
   Future<void> locateAllPatients(HomeScreenState homeScreenState) async {
@@ -120,7 +173,7 @@ class LocationService {
     }
   }
 
-  void drawGeofence(HomeScreenState homeScreenState, Geofence? geofence,
+  void drawGeofence(dynamic homeScreenState, Geofence? geofence,
       Color fillColor, Color strokeColor) {
     if (geofence != null) {
       final center =
@@ -132,11 +185,17 @@ class LocationService {
             'geofence_${geofence.center.latitude}_${geofence.center.longitude}'),
         center: center,
         radius: radius,
-        fillColor: fillColor.withOpacity(0.2),
-        strokeColor: strokeColor,
+        fillColor: Colors.deepPurpleAccent.withOpacity(0.2),
+        strokeColor: Colors.deepPurpleAccent,
         strokeWidth: 2,
       );
-      homeScreenState.addCircle(circle);
+
+      if (homeScreenState is HomeScreenState) {
+        homeScreenState.clearCircles();
+        homeScreenState.addCircle(circle);
+      } else if (homeScreenState is BackupCompanionHomeScreenState) {
+        homeScreenState.addCircle(circle);
+      }
     }
   }
 }

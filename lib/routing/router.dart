@@ -1,25 +1,31 @@
-import "dart:async";
-import "package:flutter/material.dart";
-import "package:get_it/get_it.dart";
-import "package:go_router/go_router.dart";
-import "package:wanderguard_companion_app/controllers/patient_data_controller.dart";
-import "package:wanderguard_companion_app/screens/patients/add_patient_screen.dart";
-import "package:wanderguard_companion_app/screens/notifications/notification_screen.dart";
-import "package:wanderguard_companion_app/screens/patients/edit_patient_screen.dart";
-import "package:wanderguard_companion_app/screens/patients/patient_list_screen.dart";
-import "package:wanderguard_companion_app/screens/patients/set_geofence_screen.dart";
-import "package:wanderguard_companion_app/screens/profile/backup_companions/add_backup_screen.dart";
-import "package:wanderguard_companion_app/screens/profile/backup_companions/backup_list_screen.dart";
-import "package:wanderguard_companion_app/screens/profile/backup_companions/select_patient.dart";
+import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
+import 'package:wanderguard_companion_app/controllers/patient_data_controller.dart';
+import 'package:wanderguard_companion_app/screens/notifications/backup_companion_notification_screen.dart';
+import 'package:wanderguard_companion_app/screens/patients/add_patient_screen.dart';
+import 'package:wanderguard_companion_app/screens/notifications/notification_screen.dart';
+import 'package:wanderguard_companion_app/screens/patients/edit_patient_screen.dart';
+import 'package:wanderguard_companion_app/screens/patients/patient_list_screen.dart';
+import 'package:wanderguard_companion_app/screens/patients/set_geofence_screen.dart';
+import 'package:wanderguard_companion_app/screens/profile/backup_companions/add_backup_screen.dart';
+import 'package:wanderguard_companion_app/screens/profile/backup_companions/backup_list_screen.dart';
+import 'package:wanderguard_companion_app/screens/profile/backup_companions/select_patient.dart';
 
-import "../controllers/auth_controller.dart";
-import "../enum/auth_state.enum.dart";
-import "../screens/auth/signin_screen.dart";
-import "../screens/onboarding/onboarding_screen.dart";
-import "../screens/auth/signup_screen.dart";
-import "../screens/home/home_screen.dart";
-import "../screens/profile/profile_screen.dart";
-import "../screens/screen_wrapper.dart";
+import '../controllers/auth_controller.dart';
+import '../enum/auth_state.enum.dart';
+import '../screens/auth/signin_screen.dart';
+import '../screens/backup_companion_screen_wrapper.dart';
+import '../screens/home/backup_companion_home_screen.dart';
+import '../screens/onboarding/onboarding_screen.dart';
+import '../screens/auth/signup_screen.dart';
+import '../screens/home/home_screen.dart';
+import '../screens/profile/backup_companion_profile_screen.dart';
+import '../screens/profile/profile_screen.dart';
+import '../screens/screen_wrapper.dart';
+import 'account_type_checker.dart';
 
 class GlobalRouter {
   static void initialize() {
@@ -33,15 +39,26 @@ class GlobalRouter {
   late GlobalKey<NavigatorState> _shellNavigatorKey;
 
   final ValueNotifier<int> selectedIndexNotifier = ValueNotifier<int>(0);
+  String? _acctType;
 
   FutureOr<String?> handleRedirect(
       BuildContext context, GoRouterState state) async {
     if (AuthController.instance.state == AuthState.authenticated) {
-      if (state.matchedLocation == SigninScreen.route) {
-        return HomeScreen.route;
-      }
-      if (state.matchedLocation == SignupScreen.route) {
-        return HomeScreen.route;
+      _acctType = await getCurrentUserAccountType();
+      if (_acctType == 'primary_companion') {
+        if (state.matchedLocation == SigninScreen.route) {
+          return HomeScreen.route;
+        }
+        if (state.matchedLocation == SignupScreen.route) {
+          return HomeScreen.route;
+        }
+      } else if (_acctType == 'backup_companion') {
+        if (state.matchedLocation == SigninScreen.route) {
+          return BackupCompanionHomeScreen.route;
+        }
+        if (state.matchedLocation == SignupScreen.route) {
+          return BackupCompanionHomeScreen.route;
+        }
       }
       return null;
     }
@@ -156,6 +173,14 @@ class GlobalRouter {
             ),
             GoRoute(
               parentNavigatorKey: _shellNavigatorKey,
+              path: BackupCompanionHomeScreen.route,
+              name: BackupCompanionHomeScreen.name,
+              builder: (context, _) {
+                return BackupCompanionHomeScreen();
+              },
+            ),
+            GoRoute(
+              parentNavigatorKey: _shellNavigatorKey,
               path: PatientListScreen.route,
               name: PatientListScreen.name,
               builder: (context, _) {
@@ -172,31 +197,68 @@ class GlobalRouter {
             ),
             GoRoute(
               parentNavigatorKey: _shellNavigatorKey,
+              path: BackupCompanionNotificationScreen.route,
+              name: BackupCompanionNotificationScreen.name,
+              builder: (context, _) {
+                return BackupCompanionNotificationScreen();
+              },
+            ),
+            GoRoute(
+              parentNavigatorKey: _shellNavigatorKey,
               path: ProfileScreen.route,
               name: ProfileScreen.name,
               builder: (context, _) {
                 return ProfileScreen();
               },
             ),
+            GoRoute(
+              parentNavigatorKey: _shellNavigatorKey,
+              path: BackupCompanionProfileScreen.route,
+              name: BackupCompanionProfileScreen.name,
+              builder: (context, _) {
+                return BackupCompanionProfileScreen();
+              },
+            ),
           ],
           builder: (context, state, child) {
             // Update the selected index based on the current route
             final location = state.uri.toString();
-            final routes = [
-              HomeScreen.route,
-              PatientListScreen.route,
-              NotificationScreen.route,
-              ProfileScreen.route
-            ];
+            List<String> routes;
+
+            if (_acctType == 'backup_companion') {
+              routes = [
+                BackupCompanionHomeScreen.route,
+                BackupCompanionNotificationScreen.route,
+                BackupCompanionProfileScreen.route,
+              ];
+            } else {
+              routes = [
+                HomeScreen.route,
+                PatientListScreen.route,
+                NotificationScreen.route,
+                ProfileScreen.route,
+              ];
+            }
+
             final routeIndex = routes.indexOf(location);
             if (routeIndex != -1) {
               selectedIndexNotifier.value = routeIndex;
+            } else {
+              selectedIndexNotifier.value = 0;
+              GlobalRouter.I.router.go(routes[0]);
             }
 
-            return ScreenWrapper(
-              child: child,
-              selectedIndexNotifier: selectedIndexNotifier,
-            );
+            if (_acctType == 'backup_companion') {
+              return BackupCompanionScreenWrapper(
+                child: child,
+                selectedIndexNotifier: selectedIndexNotifier,
+              );
+            } else {
+              return ScreenWrapper(
+                child: child,
+                selectedIndexNotifier: selectedIndexNotifier,
+              );
+            }
           },
         ),
       ],
