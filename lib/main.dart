@@ -19,6 +19,7 @@ import 'controllers/companion_data_controller.dart';
 import 'firebase_options.dart';
 import 'routing/router.dart';
 import 'services/firestore_service.dart';
+import 'state/backup_companion_homescreen_state.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,6 +38,7 @@ void main() async {
   await NotificationService.initialize();
   await AuthController.instance.loadSession();
   HomeScreenState.initialize();
+  BackupCompanionHomeScreenState.initialize();
   startBackgroundService();
 
   ConfigurationSetting.instance.setTextFieldViewConfig =
@@ -48,6 +50,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => HomeScreenState()),
+        ChangeNotifierProvider(create: (_) => BackupCompanionHomeScreenState()),
       ],
       child: const MyApp(),
     ),

@@ -9,6 +9,8 @@ import 'package:wanderguard_companion_app/enum/account_type.enum.dart';
 import 'package:wanderguard_companion_app/models/patient.model.dart';
 import 'package:wanderguard_companion_app/services/firestore_service.dart';
 
+import 'backup_companion_data_controller.dart';
+
 class PatientDataController with ChangeNotifier {
   ValueNotifier<Patient?> patientModelNotifier = ValueNotifier(null);
   StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? patientStream;
@@ -133,6 +135,31 @@ class PatientDataController with ChangeNotifier {
       return query.where('companionAcctId', isEqualTo: companionId);
     }).map((snapshot) =>
         snapshot.docs.map((doc) => Patient.fromFirestore(doc)).toList());
+  }
+
+  Stream<List<Patient>> getPatientsStreamFromBackupCompanion() {
+    final backupCompanionId = BackupCompanionDataController
+        .instance.backupCompanionModelNotifier.value?.backupCompanionAcctId;
+
+    if (backupCompanionId == null) {
+      return Stream.value([]);
+    }
+
+    return FirestoreService.instance.getCollectionStream('backup_companions',
+        queryBuilder: (query) {
+      return query.where('backupCompanionAcctId', isEqualTo: backupCompanionId);
+    }).asyncMap((snapshot) async {
+      final List<Patient> patients = [];
+      for (final doc in snapshot.docs) {
+        final patientId = doc['patientAcctId'];
+        final patientDoc =
+            await FirestoreService.instance.getDocument('patients', patientId);
+        if (patientDoc.exists) {
+          patients.add(Patient.fromFirestore(patientDoc));
+        }
+      }
+      return patients;
+    });
   }
 
   ValueNotifier<Patient?> getPatientNotifier(String patientAcctId) {

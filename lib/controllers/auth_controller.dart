@@ -1,7 +1,5 @@
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -11,8 +9,13 @@ import 'package:wanderguard_companion_app/enum/account_status.enum.dart';
 import 'package:wanderguard_companion_app/enum/account_type.enum.dart';
 import 'package:wanderguard_companion_app/enum/auth_state.enum.dart';
 import 'package:wanderguard_companion_app/models/companion.model.dart';
+import 'package:wanderguard_companion_app/models/backup_companion.model.dart';
 import 'package:wanderguard_companion_app/controllers/companion_data_controller.dart';
+import 'package:wanderguard_companion_app/controllers/backup_companion_data_controller.dart';
 import 'package:wanderguard_companion_app/state/homescreen_state.dart';
+import 'package:wanderguard_companion_app/state/backup_companion_homescreen_state.dart';
+
+import '../routing/account_type_checker.dart';
 
 class AuthController with ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -43,9 +46,15 @@ class AuthController with ChangeNotifier {
     if (user == null) {
       state = AuthState.unauthenticated;
       await prefs.remove('companionAcctId');
+      await prefs.remove('backupCompanionAcctId');
     } else {
       state = AuthState.authenticated;
-      await prefs.setString('companionAcctId', user.uid);
+      final accountType = await getCurrentUserAccountType();
+      if (accountType == 'primary_companion') {
+        await prefs.setString('companionAcctId', user.uid);
+      } else if (accountType == 'backup_companion') {
+        await prefs.setString('backupCompanionAcctId', user.uid);
+      }
     }
     notifyListeners();
   }
@@ -58,15 +67,25 @@ class AuthController with ChangeNotifier {
         password: password,
       );
 
-      final Companion? companion = await CompanionDataController.instance
-          .getCompanion(userCredential.user!.uid);
-
-      if (companion == null ||
-          companion.acctType != AccountType.primaryCompanion) {
-        throw Exception('Invalid account type');
+      final accountType = await getCurrentUserAccountType();
+      if (accountType == 'primary_companion') {
+        final Companion? companion = await CompanionDataController.instance
+            .getCompanion(userCredential.user!.uid);
+        if (companion == null) {
+          throw Exception('Invalid account type');
+        }
+        CompanionDataController.instance.setCompanion(companion);
+      } else if (accountType == 'backup_companion') {
+        final BackupCompanion? backupCompanion =
+            await BackupCompanionDataController.instance
+                .getBackupCompanion(userCredential.user!.uid);
+        if (backupCompanion == null) {
+          throw Exception('Invalid account type');
+        }
+        BackupCompanionDataController.instance
+            .setBackupCompanion(backupCompanion);
       }
 
-      CompanionDataController.instance.setCompanion(companion);
       state = AuthState.authenticated;
     } catch (e) {
       print('Error logging in user: $e');
@@ -128,20 +147,35 @@ class AuthController with ChangeNotifier {
     }
     await _auth.signOut();
     CompanionDataController.instance.setCompanion(null);
+    BackupCompanionDataController.instance.setBackupCompanion(null);
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
     HomeScreenState.instance.reset();
+    BackupCompanionHomeScreenState.instance.reset();
   }
 
   Future<void> loadSession() async {
     listen();
     final prefs = await SharedPreferences.getInstance();
     String? companionAcctId = prefs.getString('companionAcctId');
+    String? backupCompanionAcctId = prefs.getString('backupCompanionAcctId');
     if (companionAcctId != null) {
       try {
         final Companion? companion = await CompanionDataController.instance
             .getCompanion(companionAcctId);
         CompanionDataController.instance.setCompanion(companion);
+        handleUserChanges(FirebaseAuth.instance.currentUser);
+      } catch (e) {
+        print('Error loading user session: $e');
+        handleUserChanges(null);
+      }
+    } else if (backupCompanionAcctId != null) {
+      try {
+        final BackupCompanion? backupCompanion =
+            await BackupCompanionDataController.instance
+                .getBackupCompanion(backupCompanionAcctId);
+        BackupCompanionDataController.instance
+            .setBackupCompanion(backupCompanion);
         handleUserChanges(FirebaseAuth.instance.currentUser);
       } catch (e) {
         print('Error loading user session: $e');
