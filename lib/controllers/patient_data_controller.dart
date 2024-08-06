@@ -8,7 +8,6 @@ import 'package:wanderguard_companion_app/enum/account_status.enum.dart';
 import 'package:wanderguard_companion_app/enum/account_type.enum.dart';
 import 'package:wanderguard_companion_app/models/patient.model.dart';
 import 'package:wanderguard_companion_app/services/firestore_service.dart';
-import 'package:wanderguard_companion_app/services/notification_service.dart';
 
 import 'backup_companion_data_controller.dart';
 
@@ -50,14 +49,6 @@ class PatientDataController with ChangeNotifier {
         final patient = Patient.fromFirestore(snapshot);
         patientModelNotifier.value = patient;
         notifyListeners();
-
-        if (!patient.isWithinGeofence) {
-          NotificationService.showAlertNotification(
-            0,
-            'WanderGuard Alert',
-            'Patient ${patient.firstName} ${patient.lastName} is outside the geofence!',
-          );
-        }
       }
     }
   }

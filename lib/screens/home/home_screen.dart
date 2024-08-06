@@ -54,6 +54,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           homeScreenState.scrollableController.size > 0.06;
       if (homeScreenState.isSheetDragged.value) {
         homeScreenState.setShowFloatingCard(false);
+        homeScreenState.setShowCloseIcon(false);
       }
     });
   }
@@ -169,7 +170,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                           ),
                                         ),
                                         TextButton(
-                                          onPressed: null,
+                                          onPressed: () {
+                                            LocationService.instance
+                                                .locateAllPatients(
+                                                    homeScreenState);
+                                          },
                                           child: Text(
                                             'Locate All',
                                             style: TextStyle(
@@ -205,7 +210,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                         child: DraggableBackupCompanionList()),
                                   ],
                                 ),
-                                // Use your BackupCompanionList widget here
                               ],
                             ),
                           ),
