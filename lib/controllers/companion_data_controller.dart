@@ -6,7 +6,9 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get_it/get_it.dart';
 import 'package:wanderguard_companion_app/services/firestore_service.dart';
 
+import '../models/backup_companion.model.dart';
 import '../models/companion.model.dart';
+import 'backup_companion_data_controller.dart';
 
 class CompanionDataController with ChangeNotifier {
   ValueNotifier<Companion?> companionModelNotifier = ValueNotifier(null);
@@ -85,18 +87,33 @@ class CompanionDataController with ChangeNotifier {
 
   Future<void> updateCompanionLocation(Position position) async {
     try {
-      Companion? companion = companionModelNotifier.value;
+      Companion? companion =
+          CompanionDataController.instance.companionModelNotifier.value;
+      BackupCompanion? backupCompanion = BackupCompanionDataController
+          .instance.backupCompanionModelNotifier.value;
+
       if (companion != null) {
         companion.updateCurrentLocation(
             GeoPoint(position.latitude, position.longitude));
-        await FirestoreService.instance.updateDocument(
-          'companions',
-          companion.companionAcctId,
-          {
-            'currentLocation': GeoPoint(position.latitude, position.longitude),
-            'updatedAt': Timestamp.fromDate(DateTime.now()),
-          },
-        );
+        await FirebaseFirestore.instance
+            .collection('companions')
+            .doc(companion.companionAcctId)
+            .update({
+          'currentLocation': GeoPoint(position.latitude, position.longitude),
+          'updatedAt': DateTime.now(),
+        });
+      } else if (backupCompanion != null) {
+        backupCompanion.updateCurrentLocation(
+            GeoPoint(position.latitude, position.longitude));
+        await FirebaseFirestore.instance
+            .collection('backup_companions')
+            .doc(backupCompanion.backupCompanionAcctId)
+            .update({
+          'currentLocation': GeoPoint(position.latitude, position.longitude),
+          'updatedAt': DateTime.now(),
+        });
+      } else {
+        throw 'No companion or backup companion found';
       }
     } catch (e) {
       throw 'Failed to update location: $e';

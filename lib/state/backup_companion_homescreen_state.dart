@@ -10,13 +10,15 @@ import 'package:wanderguard_companion_app/models/patient.model.dart';
 import 'package:wanderguard_companion_app/services/shared_preferences_service.dart';
 import 'package:wanderguard_companion_app/utils/custom_marker_generator.dart';
 
-class HomeScreenState with ChangeNotifier {
+class BackupCompanionHomeScreenState with ChangeNotifier {
   static void initialize() {
-    GetIt.instance.registerSingleton<HomeScreenState>(HomeScreenState());
-    print('HomeScreenState initialized');
+    GetIt.instance.registerSingleton<BackupCompanionHomeScreenState>(
+        BackupCompanionHomeScreenState());
+    print('BackupCompanionHomeScreenState initialized');
   }
 
-  static HomeScreenState get instance => GetIt.instance<HomeScreenState>();
+  static BackupCompanionHomeScreenState get instance =>
+      GetIt.instance<BackupCompanionHomeScreenState>();
 
   CameraPosition _initialPosition = const CameraPosition(
     target: LatLng(0, 0),
@@ -54,11 +56,13 @@ class HomeScreenState with ChangeNotifier {
 
   void setLoadingLocation(bool loading) {
     _loadingLocation = loading;
+    print('Loading location set to: $loading');
     notifyListeners();
   }
 
   void setMarkers(Set<Marker> markers) {
     _markers = markers;
+    print('Markers updated: $markers');
     notifyListeners();
   }
 
@@ -69,29 +73,39 @@ class HomeScreenState with ChangeNotifier {
 
   void setLoadingMarker(bool loading) {
     _isLoadingMarker.value = loading;
+    print('Loading marker set to: $loading');
   }
 
   void setSelectedPatient(Patient? patient) {
     PatientDataController.instance.setPatient(patient);
+    print('Selected patient set to: $patient');
   }
 
   void setShowFloatingCard(bool show) {
     _showFloatingCard.value = show;
+    print('Show floating card set to: $show');
   }
 
   void setShowCloseIcon(bool show) {
     _showCardCloseIcon = show;
+    print('Show close icon set to: $show');
     notifyListeners();
   }
 
   void setMapController(GoogleMapController controller) {
     _mapController = controller;
+    print('Map controller set');
   }
 
   Future<void> moveCamera(LatLng position) async {
-    await _mapController?.animateCamera(
-      CameraUpdate.newLatLng(position),
-    );
+    if (_mapController != null) {
+      await _mapController?.animateCamera(
+        CameraUpdate.newLatLng(position),
+      );
+      print('Camera moved to: $position');
+    } else {
+      print('Map controller is not initialized');
+    }
   }
 
   Future<void> addMarker(
@@ -123,6 +137,7 @@ class HomeScreenState with ChangeNotifier {
 
       setMarkers({...markers, marker});
       await SharedPreferenceService.instance.saveMarkers(markers.toList());
+      print('Marker added at: $position for patient: $patientAcctId');
     } catch (e) {
       print("Error creating marker: $e");
     } finally {
@@ -132,14 +147,17 @@ class HomeScreenState with ChangeNotifier {
 
   void addCircle(Circle circle) {
     setCircles({...circles, circle});
+    print('Circle added: $circle');
   }
 
   void clearCircles() {
     setCircles({});
+    print('Circles cleared');
   }
 
   void clearMarkers() {
     setMarkers({});
+    print('Markers cleared');
   }
 
   void reset() {
@@ -155,6 +173,7 @@ class HomeScreenState with ChangeNotifier {
     _isLoadingMarker.value = false;
     _showFloatingCard.value = false;
     _isSheetDragged.value = false;
+    print('State reset');
     notifyListeners();
   }
 
