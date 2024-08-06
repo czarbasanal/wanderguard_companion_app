@@ -44,7 +44,7 @@ void onStart(ServiceInstance service) async {
     service.stopSelf();
   });
 
-  Timer.periodic(const Duration(seconds: 60), (timer) async {
+  Timer.periodic(const Duration(seconds: 1), (timer) async {
     NotificationService.showPersistentNotification(
       1,
       'WanderGuard Service',
