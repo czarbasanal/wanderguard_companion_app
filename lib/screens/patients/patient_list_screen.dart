@@ -42,7 +42,7 @@ class _PatientListScreenState extends State<PatientListScreen> {
       try {
         await PatientDataController.instance.deletePatient(patientAcctId);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Patient deleted successfully')),
+          const SnackBar(content: Text('Patient deleted successfully')),
         );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
