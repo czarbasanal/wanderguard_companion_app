@@ -167,6 +167,7 @@ class PatientCardSmall extends StatelessWidget {
                 onPressed: () {
                   homeScreenState.setShowFloatingCard(false);
                   homeScreenState.setShowCloseIcon(false);
+                  homeScreenState.setSelectedPatient(null);
                 },
                 icon: const Icon(
                   Icons.close_rounded,

@@ -207,7 +207,7 @@ class _EditPatientScreenState extends State<EditPatientScreen> {
           ),
           onPressed: () {
             GlobalRouter.I.router.pop();
-            PatientDataController.instance.dispose();
+            PatientDataController.instance.setPatient(null);
           },
         ),
       ),

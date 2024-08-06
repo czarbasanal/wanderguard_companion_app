@@ -3,6 +3,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:wanderguard_companion_app/controllers/patient_data_controller.dart';
 import 'package:wanderguard_companion_app/models/geofence.model.dart';
 import '../models/companion.model.dart';
 import '../models/patient.model.dart';
@@ -65,15 +66,62 @@ class LocationService {
       patient.photoUrl,
     );
 
-    drawGeofence(homeScreenState, patient.defaultGeofence);
+    homeScreenState.clearCircles();
+    drawGeofence(homeScreenState, patient.defaultGeofence,
+        Colors.deepPurpleAccent, Colors.deepPurpleAccent);
 
     homeScreenState.setLoadingMarker(false);
-
     homeScreenState.setSelectedPatient(patient);
     homeScreenState.setShowFloatingCard(true);
+    homeScreenState.setShowCloseIcon(true);
   }
 
-  void drawGeofence(HomeScreenState homeScreenState, Geofence? geofence) {
+  Future<void> locateAllPatients(HomeScreenState homeScreenState) async {
+    await homeScreenState.scrollableController.animateTo(
+      0.06,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeInOut,
+    );
+
+    homeScreenState.setLoadingMarker(true);
+
+    try {
+      Stream<List<Patient>> patientsStream =
+          PatientDataController.instance.getPatientsStream();
+
+      patientsStream.listen((List<Patient> patients) {
+        homeScreenState.clearMarkers();
+        homeScreenState.clearCircles();
+
+        for (Patient patient in patients) {
+          drawGeofence(homeScreenState, patient.defaultGeofence,
+              Colors.deepPurpleAccent, Colors.deepPurpleAccent);
+
+          for (Geofence geofence in patient.geofences) {
+            drawGeofence(homeScreenState, geofence, Colors.grey, Colors.grey);
+          }
+
+          LatLng patientPosition = LatLng(
+            patient.lastLocTracked.latitude,
+            patient.lastLocTracked.longitude,
+          );
+
+          homeScreenState.addMarker(
+            patientPosition,
+            patient.patientAcctId,
+            patient.photoUrl,
+          );
+        }
+      });
+    } catch (e) {
+      print("Error locating all patients: $e");
+    } finally {
+      homeScreenState.setLoadingMarker(false);
+    }
+  }
+
+  void drawGeofence(HomeScreenState homeScreenState, Geofence? geofence,
+      Color fillColor, Color strokeColor) {
     if (geofence != null) {
       final center =
           LatLng(geofence.center.latitude, geofence.center.longitude);
@@ -84,11 +132,10 @@ class LocationService {
             'geofence_${geofence.center.latitude}_${geofence.center.longitude}'),
         center: center,
         radius: radius,
-        fillColor: Colors.deepPurpleAccent.withOpacity(0.2),
-        strokeColor: Colors.deepPurpleAccent,
+        fillColor: fillColor.withOpacity(0.2),
+        strokeColor: strokeColor,
         strokeWidth: 2,
       );
-      homeScreenState.clearCircles();
       homeScreenState.addCircle(circle);
     }
   }
