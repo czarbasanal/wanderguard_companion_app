@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:wanderguard_companion_app/main.dart';
 import 'package:wanderguard_companion_app/models/patient.model.dart';
 import 'package:wanderguard_companion_app/routing/router.dart';
 import 'package:wanderguard_companion_app/screens/home/home_screen.dart';
 import 'package:wanderguard_companion_app/screens/patients/add_patient_screen.dart';
 import 'package:wanderguard_companion_app/screens/patients/edit_patient_screen.dart';
+import 'package:wanderguard_companion_app/services/zegocloud_service.dart';
 import 'package:wanderguard_companion_app/utils/colors.dart';
 import 'package:wanderguard_companion_app/utils/geopoint_converter.dart';
 import 'package:wanderguard_companion_app/widgets/dialogs/waiting_dialog.dart';
 import 'package:wanderguard_companion_app/controllers/patient_data_controller.dart';
 import 'package:wanderguard_companion_app/widgets/dialogs/confirmation_dialog.dart';
+import 'package:wanderguard_companion_app/widgets/call_patient_button.dart'; // Import the CallPatientButton
 
 class PatientListScreen extends StatefulWidget {
   const PatientListScreen({super.key});
@@ -127,8 +130,9 @@ class _PatientListScreenState extends State<PatientListScreen> {
                                     fit: BoxFit.cover,
                                     placeholder: (context, url) =>
                                         WaitingDialog(
-                                            color: CustomColors.primaryColor,
-                                            prompt: ''),
+                                      color: CustomColors.primaryColor,
+                                      prompt: '',
+                                    ),
                                     errorWidget: (context, url, error) =>
                                         const Icon(Icons.error),
                                   ),
@@ -192,27 +196,70 @@ class _PatientListScreenState extends State<PatientListScreen> {
                                     style: TextStyle(fontSize: 16),
                                   ),
                                 ),
-                                const SizedBox(height: 16),
-                                OutlinedButton(
-                                  style: OutlinedButton.styleFrom(
-                                    foregroundColor: CustomColors.primaryColor,
-                                    side: BorderSide(
-                                        color: CustomColors
-                                            .primaryColor), // Border color
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
+                                const SizedBox(height: 6),
+                                Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    // Static button behind the row of call patient buttons
+                                    Container(
+                                      width: double.infinity,
+                                      height: 50,
+                                      margin: const EdgeInsets.only(
+                                          top:
+                                              20), // Adjust the margin to align with the row
+                                      child: ElevatedButton(
+                                        onPressed: () {},
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: CustomColors
+                                              .primaryColor, // Button color
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                        ),
+                                        child: const Text(
+                                          'Call Patient',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                      ),
                                     ),
-                                    minimumSize: const Size(
-                                        double.infinity, 50), // Text color
-                                  ),
-                                  onPressed: () {
-                                    // Implement call patient here
-                                  },
-                                  child: const Text(
-                                    'Call Patient',
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                )
+                                    // Row of CallPatientButton widgets
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        CallPatientButton(
+                                          patientAcctId: patient.patientAcctId,
+                                          patientName:
+                                              '${patient.firstName} ${patient.lastName}',
+                                          callType: CallType.videoCall,
+                                          opacity: 0.0,
+                                        ),
+                                        CallPatientButton(
+                                          patientAcctId: patient.patientAcctId,
+                                          patientName:
+                                              '${patient.firstName} ${patient.lastName}',
+                                          callType: CallType.videoCall,
+                                          opacity: 0.0,
+                                        ),
+                                        CallPatientButton(
+                                          patientAcctId: patient.patientAcctId,
+                                          patientName:
+                                              '${patient.firstName} ${patient.lastName}',
+                                          callType: CallType.videoCall,
+                                          opacity: 0.0,
+                                        ),
+                                        CallPatientButton(
+                                          patientAcctId: patient.patientAcctId,
+                                          patientName:
+                                              '${patient.firstName} ${patient.lastName}',
+                                          callType: CallType.videoCall,
+                                          opacity: 0.0,
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ],
                             ),
                           ),
@@ -231,7 +278,7 @@ class _PatientListScreenState extends State<PatientListScreen> {
                               color: Colors.red,
                             ),
                           ),
-                        )
+                        ),
                       ],
                     ),
                   );

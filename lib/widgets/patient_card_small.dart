@@ -8,6 +8,7 @@ import 'package:wanderguard_companion_app/utils/colors.dart';
 import 'package:wanderguard_companion_app/utils/geopoint_converter.dart';
 import 'package:wanderguard_companion_app/utils/size_config.dart';
 import 'package:wanderguard_companion_app/widgets/dialogs/waiting_dialog.dart';
+import 'package:wanderguard_companion_app/widgets/call_patient_button.dart';
 
 class PatientCardSmall extends StatelessWidget {
   final Patient patient;
@@ -123,33 +124,47 @@ class PatientCardSmall extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            OutlinedButton(
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: CustomColors.primaryColor,
-                                side: BorderSide(
-                                    color: CustomColors.primaryColor),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5),
+                            Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                OutlinedButton(
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: CustomColors.primaryColor,
+                                    side: BorderSide(
+                                        color: CustomColors.primaryColor),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    minimumSize: Size(
+                                        SizeConfig.screenWidth * 0.05,
+                                        SizeConfig.screenHeight * 0.048),
+                                  ),
+                                  onPressed: onCall,
+                                  child: const Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        CupertinoIcons.phone_fill,
+                                        size: 24,
+                                      ),
+                                      SizedBox(width: 8),
+                                      Text(
+                                        'Call',
+                                        style: TextStyle(fontSize: 15),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                minimumSize: Size(SizeConfig.screenWidth * 0.05,
-                                    SizeConfig.screenHeight * 0.048),
-                              ),
-                              onPressed: onCall,
-                              child: const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    CupertinoIcons.phone_fill,
-                                    size: 24,
-                                  ),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    'Call',
-                                    style: TextStyle(fontSize: 15),
-                                  ),
-                                ],
-                              ),
-                            )
+                                // Invisible CallPatientButton stacked on top
+                                CallPatientButton(
+                                  patientAcctId: patient.patientAcctId,
+                                  patientName:
+                                      '${patient.firstName} ${patient.lastName}',
+                                  callType: CallType.videoCall,
+                                  opacity: 0.0,
+                                ),
+                              ],
+                            ),
                           ],
                         )
                       ],

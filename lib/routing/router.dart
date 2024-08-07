@@ -20,6 +20,7 @@ import "../screens/auth/signup_screen.dart";
 import "../screens/home/home_screen.dart";
 import "../screens/profile/profile_screen.dart";
 import "../screens/screen_wrapper.dart";
+import '../main.dart'; // Import the main file to get the navigatorKey
 
 class GlobalRouter {
   static void initialize() {
@@ -29,7 +30,6 @@ class GlobalRouter {
   static GlobalRouter get I => GetIt.instance<GlobalRouter>();
 
   late GoRouter router;
-  late GlobalKey<NavigatorState> _rootNavigatorKey;
   late GlobalKey<NavigatorState> _shellNavigatorKey;
 
   final ValueNotifier<int> selectedIndexNotifier = ValueNotifier<int>(0);
@@ -58,16 +58,15 @@ class GlobalRouter {
   }
 
   GlobalRouter() {
-    _rootNavigatorKey = GlobalKey<NavigatorState>();
     _shellNavigatorKey = GlobalKey<NavigatorState>();
     router = GoRouter(
-      navigatorKey: _rootNavigatorKey,
+      navigatorKey: navigatorKey, // Register the navigator key
       initialLocation: OnBoardingScreen.route,
       redirect: handleRedirect,
       refreshListenable: AuthController.instance,
       routes: [
         GoRoute(
-          parentNavigatorKey: _rootNavigatorKey,
+          parentNavigatorKey: navigatorKey, // Set the parent navigator key
           path: OnBoardingScreen.route,
           name: OnBoardingScreen.name,
           builder: (context, _) {
@@ -75,7 +74,7 @@ class GlobalRouter {
           },
         ),
         GoRoute(
-          parentNavigatorKey: _rootNavigatorKey,
+          parentNavigatorKey: navigatorKey, // Set the parent navigator key
           path: SigninScreen.route,
           name: SigninScreen.name,
           builder: (context, _) {
@@ -83,7 +82,7 @@ class GlobalRouter {
           },
         ),
         GoRoute(
-          parentNavigatorKey: _rootNavigatorKey,
+          parentNavigatorKey: navigatorKey, // Set the parent navigator key
           path: SignupScreen.route,
           name: SignupScreen.name,
           builder: (context, _) {
@@ -91,7 +90,7 @@ class GlobalRouter {
           },
         ),
         GoRoute(
-          parentNavigatorKey: _rootNavigatorKey,
+          parentNavigatorKey: navigatorKey, // Set the parent navigator key
           path: SetGeofenceScreen.route,
           name: SetGeofenceScreen.name,
           builder: (context, state) {
@@ -101,7 +100,7 @@ class GlobalRouter {
           },
         ),
         GoRoute(
-          parentNavigatorKey: _rootNavigatorKey,
+          parentNavigatorKey: navigatorKey, // Set the parent navigator key
           path: AddPatientScreen.route,
           name: AddPatientScreen.name,
           builder: (context, state) {
@@ -109,7 +108,7 @@ class GlobalRouter {
           },
         ),
         GoRoute(
-          parentNavigatorKey: _rootNavigatorKey,
+          parentNavigatorKey: navigatorKey, // Set the parent navigator key
           path: EditPatientScreen.route,
           name: EditPatientScreen.name,
           builder: (context, state) {
@@ -119,7 +118,7 @@ class GlobalRouter {
           },
         ),
         GoRoute(
-          parentNavigatorKey: _rootNavigatorKey,
+          parentNavigatorKey: navigatorKey, // Set the parent navigator key
           path: BackupCompanionListScreen.route,
           name: BackupCompanionListScreen.name,
           builder: (context, state) {
@@ -127,7 +126,7 @@ class GlobalRouter {
           },
         ),
         GoRoute(
-          parentNavigatorKey: _rootNavigatorKey,
+          parentNavigatorKey: navigatorKey, // Set the parent navigator key
           path: AddBackupCompanionScreen.route,
           name: AddBackupCompanionScreen.name,
           builder: (context, state) {
@@ -136,7 +135,7 @@ class GlobalRouter {
           },
         ),
         GoRoute(
-          parentNavigatorKey: _rootNavigatorKey,
+          parentNavigatorKey: navigatorKey, // Set the parent navigator key
           path: SelectPatientScreen.route,
           name: SelectPatientScreen.name,
           builder: (context, state) {

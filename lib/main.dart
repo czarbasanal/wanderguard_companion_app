@@ -13,12 +13,16 @@ import 'package:wanderguard_companion_app/state/homescreen_state.dart';
 import 'package:wanderguard_companion_app/utils/colors.dart';
 import 'package:wanderguard_companion_app/utils/form_textfield_config.dart';
 import 'package:wanderguard_companion_app/utils/size_config.dart';
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart'; // Import Zego
+import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart'; // Import Zego signaling
+
 import 'controllers/auth_controller.dart';
 import 'controllers/companion_data_controller.dart';
-
 import 'firebase_options.dart';
 import 'routing/router.dart';
 import 'services/firestore_service.dart';
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,14 +48,25 @@ void main() async {
   ConfigurationSetting.instance.setTelTextFieldViewConfig =
       FormTextFieldConfig.telTextFieldConfiguration;
 
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => HomeScreenState()),
-      ],
-      child: const MyApp(),
-    ),
-  );
+  ZegoUIKitPrebuiltCallInvitationService().setNavigatorKey(navigatorKey);
+  print('Navigator key set for Zego');
+
+  ZegoUIKit().initLog().then((value) {
+    print('Zego log initialized');
+    ZegoUIKitPrebuiltCallInvitationService().useSystemCallingUI(
+      [ZegoUIKitSignalingPlugin()],
+    );
+    print('Zego system calling UI set up');
+
+    runApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => HomeScreenState()),
+        ],
+        child: const MyApp(),
+      ),
+    );
+  });
 }
 
 class MyApp extends StatelessWidget {

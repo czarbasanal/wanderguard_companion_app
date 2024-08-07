@@ -12,6 +12,8 @@ class CompanionDataController with ChangeNotifier {
   ValueNotifier<Companion?> companionModelNotifier = ValueNotifier(null);
   StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? companionStream;
 
+  Companion? get currentCompanion => companionModelNotifier.value;
+
   static void initialize() {
     GetIt.instance
         .registerSingleton<CompanionDataController>(CompanionDataController());
@@ -21,25 +23,32 @@ class CompanionDataController with ChangeNotifier {
       GetIt.instance<CompanionDataController>();
 
   Future<void> addCompanion(Companion companion) async {
+    print('Adding companion: ${companion.companionAcctId}');
     await FirestoreService.instance.addDocument(
         'companions', companion.companionAcctId, companion.toFirestore());
   }
 
   Future<void> updateCompanion(Companion companion) async {
+    print('Updating companion: ${companion.companionAcctId}');
     await FirestoreService.instance.updateDocument(
         'companions', companion.companionAcctId, companion.toFirestore());
   }
 
   Future<Companion?> getCompanion(String companionAcctId) async {
+    print('Fetching companion data for: $companionAcctId');
     final doc = await FirestoreService.instance
         .getDocument('companions', companionAcctId);
     if (doc.exists) {
+      print('Companion data found: ${doc.data()}');
       return Companion.fromFirestore(doc);
+    } else {
+      print('Companion not found');
     }
     return null;
   }
 
   Future<void> deleteCompanion(String companionAcctId) async {
+    print('Deleting companion: $companionAcctId');
     await FirestoreService.instance
         .deleteDocument('companions', companionAcctId);
   }
@@ -56,6 +65,7 @@ class CompanionDataController with ChangeNotifier {
     companionModelNotifier.value = companion;
     notifyListeners();
     if (companion != null) {
+      print('Listening to changes for companion: ${companion.companionAcctId}');
       listenToCompanionChanges(companion.companionAcctId);
     } else {
       companionStream?.cancel();
@@ -76,6 +86,7 @@ class CompanionDataController with ChangeNotifier {
     if (snapshot.exists) {
       final data = snapshot.data();
       if (data != null) {
+        print('Companion data changed: $data');
         final companion = Companion.fromFirestore(snapshot);
         companionModelNotifier.value = companion;
         notifyListeners();
@@ -97,8 +108,10 @@ class CompanionDataController with ChangeNotifier {
             'updatedAt': Timestamp.fromDate(DateTime.now()),
           },
         );
+        print('Updated location for companion: ${companion.companionAcctId}');
       }
     } catch (e) {
+      print('Failed to update location: $e');
       throw 'Failed to update location: $e';
     }
   }

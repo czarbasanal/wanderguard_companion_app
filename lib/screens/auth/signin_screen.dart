@@ -3,12 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:go_router/go_router.dart';
+import 'package:wanderguard_companion_app/controllers/companion_data_controller.dart';
+import 'package:wanderguard_companion_app/main.dart';
 import 'package:wanderguard_companion_app/screens/onboarding/onboarding_screen.dart';
+import 'package:wanderguard_companion_app/services/zegocloud_service.dart';
 import 'package:wanderguard_companion_app/utils/size_config.dart';
-
-import '../../controllers/auth_controller.dart';
-import '../../utils/colors.dart';
-import '../../widgets/dialogs/waiting_dialog.dart';
+import 'package:wanderguard_companion_app/utils/colors.dart';
+import 'package:wanderguard_companion_app/widgets/dialogs/waiting_dialog.dart';
+import 'package:wanderguard_companion_app/controllers/auth_controller.dart';
+import 'package:wanderguard_companion_app/screens/home/home_screen.dart';
 
 class SigninScreen extends StatefulWidget {
   const SigninScreen({super.key});
@@ -39,11 +42,11 @@ class _SigninScreenState extends State<SigninScreen> {
 
   @override
   void dispose() {
-    super.dispose();
     username.dispose();
     password.dispose();
     usernameFn.dispose();
     passwordFn.dispose();
+    super.dispose();
   }
 
   @override
@@ -182,7 +185,7 @@ class _SigninScreenState extends State<SigninScreen> {
                             minWidth: double.infinity,
                             height: 55,
                             onPressed: () {
-                              onSubmit();
+                              signIn();
                             },
                             child: const Text(
                               'Sign In',
@@ -247,11 +250,62 @@ class _SigninScreenState extends State<SigninScreen> {
     );
   }
 
-  onSubmit() {
+  Future<void> signIn() async {
     if (formKey.currentState?.validate() ?? false) {
-      WaitingDialog.show(context,
-          future: AuthController.instance
-              .login(username.text.trim(), password.text.trim()));
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return WaitingDialog(prompt: 'Logging in...');
+        },
+      );
+
+      try {
+        print('Attempting to log in...');
+        await AuthController.instance.login(
+          username.text.trim(),
+          password.text.trim(),
+        );
+
+        print('Login successful');
+        final companion = CompanionDataController.instance.currentCompanion;
+        if (companion != null) {
+          print('Companion data found: ${companion.companionAcctId}');
+          ZegoServiceHelper zegoServiceHelper = ZegoServiceHelper(
+            companionAcctId: companion.companionAcctId,
+            companionName: '${companion.firstName} ${companion.lastName}',
+            navigatorKey: navigatorKey,
+          );
+
+          try {
+            print('Attempting to initialize Zego...');
+            zegoServiceHelper.initialize();
+            print('Zego initialized successfully');
+          } catch (e) {
+            print('Failed to initialize Zego: $e');
+          }
+
+          if (mounted) {
+            Navigator.of(context).pop(); // Close the WaitingDialog
+            await Future.delayed(Duration(
+                milliseconds:
+                    300)); // Add a delay to ensure the dialog is closed
+            if (mounted) {
+              context.go(HomeScreen.route);
+            }
+          }
+        } else {
+          throw Exception('Companion data not found');
+        }
+      } catch (e) {
+        if (mounted) {
+          Navigator.of(context).pop();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Login failed: $e')),
+          );
+          print('Login failed: $e');
+        }
+      }
     }
   }
 
