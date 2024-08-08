@@ -1,9 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:wanderguard_companion_app/main.dart';
 import 'package:wanderguard_companion_app/models/patient.model.dart';
 import 'package:wanderguard_companion_app/routing/router.dart';
+import 'package:wanderguard_companion_app/screens/call_screen.dart';
 import 'package:wanderguard_companion_app/screens/home/home_screen.dart';
 import 'package:wanderguard_companion_app/screens/patients/add_patient_screen.dart';
 import 'package:wanderguard_companion_app/screens/patients/edit_patient_screen.dart';
@@ -26,6 +29,7 @@ class PatientListScreen extends StatefulWidget {
 }
 
 class _PatientListScreenState extends State<PatientListScreen> {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   void _deletePatient(String patientAcctId) async {
     final bool confirmed = await showDialog(
       context: context,
@@ -53,6 +57,27 @@ class _PatientListScreenState extends State<PatientListScreen> {
         );
       }
     }
+  }
+
+  void startCustomCall(BuildContext context, String userId, String userName) {
+    final callId = _firestore.collection('custom_calls').doc().id;
+    _firestore.collection('custom_calls').doc(callId).set({
+      'callerId': "yourCurrentUserId", // Replace with actual current user ID
+      'receiverId': userId,
+      'callerName': userName,
+      'status': 'calling',
+    });
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CallScreen(
+          currentUserId: "yourCurrentUserId", // Replace with actual
+          userId: userId,
+          userName: userName,
+        ),
+      ),
+    );
   }
 
   @override
@@ -180,21 +205,58 @@ class _PatientListScreenState extends State<PatientListScreen> {
                                     'Status:', patient.acctStatus.name),
                                 buildPatientInfo('Last Location:', address),
                                 const SizedBox(height: 24),
-                                MaterialButton(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  textColor: CustomColors.secondaryColor,
-                                  color: CustomColors.primaryColor,
-                                  minWidth: double.infinity,
-                                  height: 50,
-                                  onPressed: () {
-                                    GlobalRouter.I.router.go(HomeScreen.route);
-                                  },
-                                  child: const Text(
-                                    'Locate',
-                                    style: TextStyle(fontSize: 16),
-                                  ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    SizedBox(
+                                      width: 150, // Specify the width
+                                      height: 50, // Specify the height
+                                      child: ElevatedButton(
+                                        onPressed: () => Navigator.of(context)
+                                            .pushNamed(HomeScreen.route),
+                                        child: Text('Locate',
+                                            style: GoogleFonts.poppins(
+                                                color: Colors
+                                                    .white)), // Apply Poppins font here
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: CustomColors
+                                              .primaryColor, // Primary color for background
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                                10), // Rounded borders
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    SizedBox(
+                                      width: 150, // Specify the width
+                                      height: 50, // Specify the height
+                                      child: OutlinedButton(
+                                        onPressed: () => startCustomCall(
+                                            context,
+                                            patient.patientAcctId,
+                                            '${patient.firstName} ${patient.lastName}'),
+                                        child: Text('Force Call',
+                                            style: GoogleFonts.poppins(
+                                              color: CustomColors
+                                                  .primaryColor, // Primary color text
+                                            )),
+                                        style: OutlinedButton.styleFrom(
+                                          backgroundColor:
+                                              Colors.white, // White background
+                                          side: BorderSide(
+                                              color: CustomColors
+                                                  .primaryColor), // Primary color outline
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                                10), // Rounded borders
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 const SizedBox(height: 6),
                                 Stack(
@@ -228,20 +290,6 @@ class _PatientListScreenState extends State<PatientListScreen> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceEvenly,
                                       children: [
-                                        CallPatientButton(
-                                          patientAcctId: patient.patientAcctId,
-                                          patientName:
-                                              '${patient.firstName} ${patient.lastName}',
-                                          callType: CallType.videoCall,
-                                          opacity: 0.0,
-                                        ),
-                                        CallPatientButton(
-                                          patientAcctId: patient.patientAcctId,
-                                          patientName:
-                                              '${patient.firstName} ${patient.lastName}',
-                                          callType: CallType.videoCall,
-                                          opacity: 0.0,
-                                        ),
                                         CallPatientButton(
                                           patientAcctId: patient.patientAcctId,
                                           patientName:
